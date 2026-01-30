@@ -23,23 +23,25 @@
         .page.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         .admin-box { border: 1px solid var(--premium); padding: 12px; border-radius: 12px; background: rgba(234, 179, 8, 0.05); margin-bottom: 20px; }
-        .user-list-container { max-height: 180px; overflow-y: auto; background: #000; border-radius: 8px; margin-top: 10px; padding: 8px; font-size: 11px; border: 1px solid #222; text-align: left; }
-        .user-row { padding: 6px 0; border-bottom: 1px solid #111; display: flex; justify-content: space-between; align-items: center; }
-        
-        /* Müzik Butonu */
-        .music-btn { background: #1e293b; border: 1px solid #334155; color: #94a3b8; padding: 10px; border-radius: 10px; font-size: 12px; cursor: pointer; margin-top: 10px; width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px; }
+        .user-list-container { max-height: 200px; overflow-y: auto; background: #000; border-radius: 8px; margin-top: 10px; padding: 8px; font-size: 11px; border: 1px solid #333; text-align: left; }
+        .user-row { padding: 8px 0; border-bottom: 1px solid #111; display: flex; justify-content: space-between; align-items: center; }
+        .music-btn { background: #1e293b; border: 1px solid #334155; color: #94a3b8; padding: 10px; border-radius: 10px; font-size: 12px; cursor: pointer; margin: 10px 0; width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px; }
     </style>
 </head>
-<body onclick="startMusic()"> <audio id="bgMusic" loop>
+<body onclick="startMusic()">
+
+<audio id="bgMusic" loop>
     <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
 </audio>
 
 <div id="authScreen" style="position:fixed; inset:0; background:#000; z-index:99999; display:flex; align-items:center; justify-content:center;">
-    <div style="background:var(--card-bg); padding:2.5rem; border-radius:20px; border:1px solid var(--primary); width:85%; max-width:350px; text-align:center;">
-        <h2 id="authTitle" style="color: var(--primary); margin-bottom: 5px;">WROX VIP</h2>
+    <div style="background:var(--card-bg); padding:2rem; border-radius:20px; border:1px solid var(--primary); width:85%; max-width:350px; text-align:center;">
+        <h2 id="authTitle" style="color: var(--primary); margin:0;">WROX VIP</h2>
+        <p id="authSubtitle" style="color:#475569; font-size:11px; margin-bottom:20px;">Premium Sorgu Paneli</p>
         <input type="email" id="logEmail" class="input-box" placeholder="E-posta">
         <input type="password" id="logPass" class="input-box" placeholder="Şifre">
-        <button onclick="handleAuth()" style="width: 100%; background: var(--primary); border:none; padding:15px; color:white; border-radius:10px; font-weight:bold; cursor:pointer;">PANELİ AÇ</button>
+        <button onclick="handleAuth()" id="authBtn" style="width: 100%; background: var(--primary); border:none; padding:15px; color:white; border-radius:10px; font-weight:bold; cursor:pointer;">GİRİŞ YAP</button>
+        <p onclick="toggleAuthMode()" id="authSwitcher" style="font-size:12px; color:#475569; margin-top:20px; cursor:pointer; text-decoration: underline;">Hesabın yok mu? Kayıt Ol</p>
     </div>
 </div>
 
@@ -49,24 +51,22 @@
     <div class="side-menu" id="sideMenu">
         <div id="adminArea" style="display:none;">
             <div class="admin-box">
-                <p style="color:var(--premium); font-size:12px; font-weight:bold; text-align:center;">👑 ADMİN PANELİ</p>
-                <input type="text" id="targetMail" class="input-box" placeholder="Mail..." style="font-size:11px;">
+                <p style="color:var(--premium); font-size:12px; font-weight:bold; text-align:center; margin:0 0 10px 0;">👑 ADMİN KONTROL</p>
+                <input type="text" id="targetMail" class="input-box" placeholder="Kullanıcı Maili..." style="font-size:11px;">
                 <div style="display:grid; grid-template-columns: 1fr 1fr; gap:5px;">
-                    <button onclick="setRole('premium')" style="background:var(--premium); border:none; padding:8px; border-radius:5px; font-weight:bold;">PRE YAP</button>
-                    <button onclick="setRole('freemium')" style="background:#334155; border:none; padding:8px; border-radius:5px; color:white;">PRE SİL</button>
+                    <button onclick="setRole('premium')" style="background:var(--premium); border:none; padding:8px; border-radius:5px; font-weight:bold; cursor:pointer;">PRE YAP</button>
+                    <button onclick="setRole('freemium')" style="background:#334155; border:none; padding:8px; border-radius:5px; color:white; cursor:pointer;">PRE SİL</button>
                 </div>
-                <div class="user-list-container" id="userListDisplay">Yükleniyor...</div>
+                <p style="color:#666; font-size:10px; margin-top:15px; font-weight:bold;">👤 KAYITLI KULLANICILAR</p>
+                <div class="user-list-container" id="userListDisplay">Veriler yükleniyor...</div>
             </div>
         </div>
         
-        <p style="color:#475569; font-size:11px; margin-bottom:10px; font-weight:bold;">SİSTEM</p>
+        <p style="color:#475569; font-size:11px; font-weight:bold;">SİSTEM</p>
         <div class="menu-item" onclick="openPage('home')">🏠 Anasayfa</div>
-        
-        <div class="music-btn" onclick="toggleMusic()">
-            <span id="musicIcon">🔈</span> <span id="musicTxt">Müzik Çalmıyor</span>
-        </div>
+        <div class="music-btn" onclick="toggleMusic()"><span id="musicIcon">🔈</span> <span id="musicTxt">Müzik Durdu</span></div>
 
-        <p style="color:#475569; font-size:11px; margin-top:20px; font-weight:bold;">SORGULAR</p>
+        <p style="color:#475569; font-size:11px; margin-top:15px; font-weight:bold;">SORGULAR</p>
         <div class="menu-item" onclick="openPage('adsoyad')">🔍 Ad Soyad Sorgu</div>
         <div class="menu-item" onclick="openPage('tc')">🆔 T.C. Sorgu</div>
         <div class="menu-item" onclick="openPage('aile')">👨‍👩‍👧‍👦 Aile Sorgu</div>
@@ -77,6 +77,7 @@
             <div class="menu-item" onclick="openPage('banka')">💰 Banka Sorgu <span class="vip-tag">GOLD</span></div>
             <div class="menu-item" onclick="openPage('tcgsm')">📱 T.C. -> GSM <span class="vip-tag">PRE</span></div>
             <div class="menu-item" onclick="openPage('gsmtc')">📞 GSM -> T.C. <span class="vip-tag">PRE</span></div>
+            <div class="menu-item" onclick="openPage('plaka')">🚗 Plaka Sorgu <span class="vip-tag">VIP</span></div>
         </div>
         <button onclick="logout()" style="width:100%; background:var(--danger); border:none; padding:12px; border-radius:10px; margin-top:20px; color:white; font-weight:bold;">ÇIKIŞ YAP</button>
     </div>
@@ -88,7 +89,7 @@
     </div>
 
     <div id="contentArea">
-        <div id="page-home" class="page active"><h2 style="margin-top:60px;">Hoş Geldin</h2><p>Müziği yan menüden kontrol edebilirsin.</p></div>
+        <div id="page-home" class="page active"><h2 style="margin-top:60px; color:var(--primary);">Hoş Geldin</h2><p>Panel aktif durumdadır.</p></div>
         
         <div id="page-adsoyad" class="page">
             <h3>🔍 AD SOYAD SORGULAMA</h3>
@@ -98,7 +99,16 @@
             <input class="input-box" id="inp-ilce" placeholder="İlçe">
             <button class="btn-sorgu">SORGULA</button>
         </div>
-        </div>
+        
+        <div id="page-tc" class="page"><h3>🆔 T.C. SORGU</h3><input type="number" class="input-box" placeholder="T.C. Numarası"><button class="btn-sorgu">SORGULA</button></div>
+        <div id="page-aile" class="page"><h3>👨‍👩‍👧‍👦 AİLE SORGU</h3><input type="number" class="input-box" placeholder="T.C. Numarası"><button class="btn-sorgu">AİLE GETİR</button></div>
+        <div id="page-adres" class="page"><h3>📍 ADRES SORGU</h3><input type="number" class="input-box" placeholder="T.C. Numarası"><button class="btn-sorgu">ADRES BUL</button></div>
+        <div id="page-tapu" class="page"><h3>🏠 TAPU SORGU</h3><input type="number" class="input-box" placeholder="T.C. Numarası"><button class="btn-sorgu">MÜLKLERİ GÖR</button></div>
+        <div id="page-banka" class="page"><h3>💰 BANKA SORGU</h3><input type="number" class="input-box" placeholder="T.C. Numarası"><button class="btn-sorgu">HESAPLAR</button></div>
+        <div id="page-tcgsm" class="page"><h3>📱 T.C. -> GSM</h3><input type="number" class="input-box" placeholder="T.C. Numarası"><button class="btn-sorgu">GSM BUL</button></div>
+        <div id="page-gsmtc" class="page"><h3>📞 GSM -> T.C.</h3><input type="number" class="input-box" placeholder="05XX..."><button class="btn-sorgu">T.C. BUL</button></div>
+        <div id="page-plaka" class="page"><h3>🚗 PLAKA SORGU</h3><input class="input-box" placeholder="34..."><button class="btn-sorgu">ARAÇ BUL</button></div>
+    </div>
 </div>
 
 <script>
@@ -111,74 +121,111 @@
     };
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
-    const audio = document.getElementById("bgMusic");
-    let musicStarted = false;
 
-    function startMusic() {
-        if(!musicStarted) {
-            audio.play().catch(() => {});
-            musicStarted = true;
-            updateMusicUI();
-        }
-    }
-
-    function toggleMusic() {
-        if (audio.paused) { audio.play(); } 
-        else { audio.pause(); }
-        updateMusicUI();
-    }
-
-    function updateMusicUI() {
-        const icon = document.getElementById("musicIcon");
-        const txt = document.getElementById("musicTxt");
-        if(audio.paused) { icon.innerText = "🔈"; txt.innerText = "Müzik Durdu"; }
-        else { icon.innerText = "🔊"; txt.innerText = "Müzik Çalıyor"; }
-    }
-
-    // AUTH VE DİĞER FONKSİYONLAR
     const BOSS_MAIL = "afavan66@gmail.com";
     const BOSS_PASS = "Efecan1903";
+
+    let isLoginMode = true;
+
+    function toggleAuthMode() {
+        isLoginMode = !isLoginMode;
+        const title = document.getElementById('authTitle');
+        const btn = document.getElementById('authBtn');
+        const switcher = document.getElementById('authSwitcher');
+
+        if(isLoginMode) {
+            title.innerText = "WROX VIP";
+            btn.innerText = "GİRİŞ YAP";
+            switcher.innerText = "Hesabın yok mu? Kayıt Ol";
+        } else {
+            title.innerText = "YENİ KAYIT";
+            btn.innerText = "KAYIT OL";
+            switcher.innerText = "Zaten hesabın var mı? Giriş Yap";
+        }
+    }
 
     function handleAuth() {
         const email = document.getElementById('logEmail').value.trim().toLowerCase();
         const pass = document.getElementById('logPass').value;
+        if(!email || !pass) return alert("Lütfen alanları doldur!");
+
+        // Boss Girişi
         if(email === BOSS_MAIL && pass === BOSS_PASS) {
             localStorage.setItem('wrox_session', JSON.stringify({email, role:'admin'}));
             location.reload(); return;
         }
+
         const key = email.replace(/\./g,'_');
-        db.ref('users/'+key).once('value', s => {
-            const u = s.val();
-            if(u && u.pass === pass) { localStorage.setItem('wrox_session', JSON.stringify(u)); location.reload(); }
-            else { db.ref('users/'+key).set({email, pass, role:'freemium'}).then(() => { alert("Kayıt olundu!"); location.reload(); }); }
-        });
+
+        if(isLoginMode) {
+            // GİRİŞ YAP
+            db.ref('users/'+key).once('value', s => {
+                const u = s.val();
+                if(u && u.pass === pass) {
+                    localStorage.setItem('wrox_session', JSON.stringify(u));
+                    location.reload();
+                } else {
+                    alert("Hatalı e-posta veya şifre!");
+                }
+            });
+        } else {
+            // KAYIT OL
+            db.ref('users/'+key).once('value', s => {
+                if(s.exists()) {
+                    alert("Bu e-posta zaten kayıtlı!");
+                } else {
+                    db.ref('users/'+key).set({email, pass, role:'freemium'}).then(() => {
+                        alert("Kayıt başarılı! Şimdi giriş yapabilirsin.");
+                        toggleAuthMode();
+                    });
+                }
+            });
+        }
     }
 
     const session = JSON.parse(localStorage.getItem('wrox_session'));
     if(session) {
         document.getElementById('authScreen').style.display = 'none';
         document.getElementById('mainApp').style.display = 'block';
+
         if(session.role === 'admin' || session.role === 'premium' || session.email === BOSS_MAIL) {
             document.getElementById('premiumMenu').style.display = 'block';
         }
+
         if(session.role === 'admin' || session.email === BOSS_MAIL) {
             document.getElementById('adminArea').style.display = 'block';
             db.ref('users').on('value', snapshot => {
                 const users = snapshot.val();
                 let html = "";
-                for(let k in users) {
-                    let u = users[k];
-                    let rColor = u.role === 'premium' ? 'var(--premium)' : '#666';
-                    html += `<div class="user-row"><span>${u.email}</span><span style="color:${rColor}; font-weight:bold;">${u.role.toUpperCase()}</span></div>`;
-                }
+                if(users) {
+                    for(let k in users) {
+                        let u = users[k];
+                        let rColor = u.role === 'premium' ? 'var(--premium)' : '#666';
+                        html += `<div class="user-row">
+                            <span style="color:#eee; font-size:10px;">${u.email}</span>
+                            <span style="color:${rColor}; font-weight:bold;">${u.role.toUpperCase()}</span>
+                        </div>`;
+                    }
+                } else { html = "Kullanıcı yok."; }
                 document.getElementById('userListDisplay').innerHTML = html;
             });
         }
     }
 
+    // Müzik & Menü Fonksiyonları
+    const audio = document.getElementById("bgMusic");
+    let musicStarted = false;
+    function startMusic() { if(!musicStarted) { audio.play().catch(() => {}); musicStarted = true; updateMusicUI(); } }
+    function toggleMusic() { if (audio.paused) { audio.play(); } else { audio.pause(); } updateMusicUI(); }
+    function updateMusicUI() {
+        const icon = document.getElementById("musicIcon");
+        const txt = document.getElementById("musicTxt");
+        if(audio.paused) { icon.innerText = "🔈"; txt.innerText = "Müzik Durdu"; }
+        else { icon.innerText = "🔊"; txt.innerText = "Müzik Çalıyor"; }
+    }
     function toggleMenu() { document.getElementById('sideMenu').classList.toggle('active'); document.getElementById('overlay').classList.toggle('active'); }
     function openPage(p) { toggleMenu(); document.querySelectorAll('.page').forEach(x => x.classList.remove('active')); document.getElementById('page-' + p).classList.add('active'); }
-    function setRole(r) { const t = document.getElementById('targetMail').value.trim().replace(/\./g,'_'); if(t) db.ref('users/'+t).update({role:r}).then(() => alert("Güncellendi!")); }
+    function setRole(r) { const t = document.getElementById('targetMail').value.trim().toLowerCase().replace(/\./g,'_'); if(t) { db.ref('users/'+t).update({role:r}).then(() => alert("Yetki güncellendi!")); } }
     function logout() { localStorage.removeItem('wrox_session'); location.reload(); }
 </script>
 </body>
