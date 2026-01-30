@@ -3,19 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
-    <title>WROX VIP - Admin Panel</title>
+    <title>WROX VIP - Patron Paneli</title>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
     <style>
         :root { --primary: #3b82f6; --premium: #eab308; --danger: #ef4444; }
         body { margin: 0; font-family: 'Segoe UI', sans-serif; background: #0c111d; color: white; height: 100vh; overflow: hidden; }
+        
+        /* Giriş Ekranı */
         #authScreen { position: fixed; inset: 0; background: #000; z-index: 99999; display: flex; align-items: center; justify-content: center; }
         .card { background: #111827; padding: 2.5rem; border-radius: 20px; border: 1px solid var(--primary); width: 85%; max-width: 360px; text-align: center; }
         .input { width: 100%; padding: 14px; margin: 10px 0; background: #000; border: 1px solid #333; border-radius: 10px; color: white; box-sizing: border-box; outline: none; }
         .button { width: 100%; padding: 14px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; margin-top: 10px; color: white; }
+        
+        /* Panel Tasarımı */
         .sidebar { position: fixed; top: 0; left: -300px; width: 280px; height: 100%; background: #070a11; padding: 80px 20px; transition: 0.4s; z-index: 10000; border-right: 1px solid #1e293b; }
         .sidebar.active { left: 0; }
-        .admin-badge { background: rgba(234, 179, 8, 0.1); border: 2px solid var(--premium); padding: 15px; border-radius: 15px; display: inline-block; margin-top: 20px; color: var(--premium); font-weight: bold; }
+        .admin-box { background: rgba(234, 179, 8, 0.1); border: 2px solid var(--premium); padding: 15px; border-radius: 15px; margin-bottom: 25px; }
+        .user-list { font-size: 11px; color: #aaa; background: #000; padding: 10px; border-radius: 8px; max-height: 200px; overflow-y: auto; }
+        
+        #logoutBtn { position: fixed; top: 15px; right: 15px; z-index: 10001; background: var(--danger); border: 1px solid white; padding: 8px 15px; border-radius: 8px; font-weight: bold; cursor: pointer; display: none; }
+        .menu-icon { position: fixed; top: 15px; left: 15px; z-index: 10002; cursor: pointer; font-size: 28px; color: var(--primary); }
     </style>
 </head>
 <body>
@@ -30,18 +38,26 @@
     </div>
 </div>
 
+<div id="logoutBtn" onclick="logout()">GÜVENLİ ÇIKIŞ</div>
+<div class="menu-icon" onclick="toggleSidebar()">☰</div>
+
 <div id="mainApp" style="display:none;">
     <div class="sidebar" id="sidebar">
         <div id="adminArea" style="display:none;">
-            <p style="color: var(--premium); font-weight: bold;">👑 ADMİN PANELİ</p>
-            <div id="userList" style="font-size: 11px; margin-top: 10px; background: #000; padding: 5px; border-radius: 5px;"></div>
+            <div class="admin-box">
+                <p style="color: var(--premium); font-weight: bold; margin: 0;">👑 ADMİN PANELİ</p>
+                <p style="font-size: 10px; color: #888;">Tüm sistem yetkileri aktif.</p>
+            </div>
+            <p style="font-size: 13px; color: var(--primary);">👥 KULLANICI LİSTESİ</p>
+            <div id="userList" class="user-list">Yükleniyor...</div>
         </div>
-        <p style="margin-top:20px;">📁 Sorgu Menüsü</p>
+        <p style="margin-top:20px; color: #444;">📁 Sorgu Menüsü</p>
     </div>
     
     <div style="padding: 120px 20px; text-align: center;">
-        <h2 id="welcomeText">HOŞ GELDİN</h2>
-        <div id="roleDisplay"></div>
+        <h2 style="font-size: 30px; margin: 0;">WROX VIP PANEL</h2>
+        <p id="displayMail" style="color: #aaa; font-weight: bold; margin-top: 10px;"></p>
+        <div id="badgeArea" style="margin-top: 20px;"></div>
     </div>
 </div>
 
@@ -69,15 +85,15 @@
             db.ref('users/' + key).once('value', s => {
                 const u = s.val();
                 if(u && u.pass === pass) {
-                    // SENİN MAİLİNİ KONTROL EDİP ADMİN YAPIYOR
-                    if(email === "afavan66@gmail.com") u.role = 'admin'; 
+                    // SENİN MAİLİNSE DİREKT ADMİN YAP
+                    if(email === "afavan66@gmail.com") u.role = 'admin';
                     localStorage.setItem('wrox_user', JSON.stringify(u));
                     location.reload();
-                } else alert("Giriş başarısız!");
+                } else alert("Hata! Bilgiler yanlış.");
             });
         } else {
             db.ref('users/' + key).set({ email, pass, role: 'freemium' })
-            .then(() => { alert("Kayıt başarılı! Giriş yap."); location.reload(); });
+            .then(() => { alert("Kayıt ok! Giriş yap."); location.reload(); });
         }
     }
 
@@ -85,26 +101,27 @@
     if(session) {
         document.getElementById('authScreen').style.display = 'none';
         document.getElementById('mainApp').style.display = 'block';
-        document.getElementById('welcomeText').innerText = "HOŞ GELDİN " + session.email.toUpperCase();
+        document.getElementById('logoutBtn').style.display = 'block';
+        document.getElementById('displayMail').innerText = session.email;
         
-        // ADMIN KONTROLÜ
+        // ADMİN KONTROLÜ
         if(session.email === "afavan66@gmail.com" || session.role === 'admin') {
             document.getElementById('adminArea').style.display = 'block';
-            document.getElementById('roleDisplay').innerHTML = "<div class='admin-badge'>KURUCU ADMİN AKTİF</div>";
+            document.getElementById('badgeArea').innerHTML = "<div style='border:2px solid var(--premium); padding:15px; border-radius:15px; color:var(--premium); font-weight:bold;'>KURUCU ADMİN AKTİF</div>";
             
             db.ref('users').on('value', s => {
                 const users = s.val(); let h = "";
-                for(let k in users) h += `<div>${users[k].email} [${users[k].role}]</div>`;
-                document.getElementById('userList').innerHTML = h;
+                for(let k in users) h += `<div style='border-bottom:1px solid #222; padding:5px;'>${users[k].email} <span style='color:var(--premium)'>[${users[k].role}]</span></div>`;
+                document.getElementById('userList').innerHTML = h || "Kayıt yok.";
             });
         } else {
-            document.getElementById('roleDisplay').innerHTML = "<span>Yetki: Freemium</span>";
+            document.getElementById('badgeArea').innerHTML = "<div style='border:1px solid var(--primary); padding:10px; border-radius:10px;'>Üyelik: " + session.role.toUpperCase() + "</div>";
         }
     }
 
     function toggleMode() { isLogin = !isLogin; document.getElementById('toggleT').innerText = isLogin ? "Kayıt Ol" : "Giriş Yap"; }
     function toggleSidebar() { document.getElementById('sidebar').classList.toggle('active'); }
+    function logout() { localStorage.removeItem('wrox_user'); location.reload(); }
 </script>
-<div onclick="toggleSidebar()" style="position:fixed; top:15px; left:15px; font-size:24px; cursor:pointer; z-index:10001;">☰</div>
 </body>
 </html>
