@@ -9,58 +9,57 @@
         
         body { 
             margin: 0; font-family: 'Segoe UI', sans-serif; 
-            background: url('https://r.resimlink.com/5rb9MuLzfam.jpg') center/cover fixed !important; 
+            background: url('arka_plan.jpg') center/cover fixed !important; 
+            background-color: #000;
             color: white; height: 100vh; overflow: hidden;
         }
 
-        /* Hamburger Menü (3 Çizgi) */
         #menuBtn {
             position: fixed; top: 15px; left: 15px; z-index: 10001;
-            background: rgba(0, 0, 0, 0.6); border: 1px solid var(--primary);
+            background: rgba(0, 0, 0, 0.7); border: 1px solid var(--primary);
             color: white; padding: 12px; border-radius: 8px; cursor: pointer;
             display: flex; flex-direction: column; gap: 4px; backdrop-filter: blur(5px);
         }
         #menuBtn span { width: 22px; height: 2px; background: white; transition: 0.3s; }
 
-        /* Giriş Ekranı */
+        #logoutIcon {
+            position: fixed; top: 15px; right: 15px; z-index: 10001;
+            background: var(--danger); border: 2px solid white;
+            color: white; padding: 10px 15px; border-radius: 10px; cursor: pointer;
+            font-weight: bold; font-size: 12px; box-shadow: 0 0 15px rgba(239, 68, 68, 0.5);
+            display: none;
+        }
+
         #authScreen { position: fixed; inset: 0; background: rgba(0,0,0,0.96); z-index: 99999; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(15px); }
         .card { background: rgba(15, 23, 42, 0.95); padding: 2rem; border-radius: 15px; border: 1px solid var(--primary); width: 85%; max-width: 350px; box-shadow: 0 0 30px rgba(59, 130, 246, 0.3); }
         
         .input { width: 100%; padding: 12px; margin: 8px 0; background: #000; border: 1px solid #333; border-radius: 8px; color: white; box-sizing: border-box; outline: none; }
-        .input:focus { border-color: var(--primary); }
         .button { width: 100%; padding: 12px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.2s; margin-top: 5px; }
         .button-primary { background: var(--primary); color: white; }
-        .button-premium { background: var(--premium); color: black; }
         .button-danger { background: var(--danger); color: white; }
         
-        /* Sidebar (Mobil Uyumlu) */
         .sidebar { 
             position: fixed; top: 0; left: -320px; width: 300px; height: 100%;
-            background: rgba(0,0,0,0.95); padding: 80px 20px 20px 20px; 
+            background: rgba(0,0,0,0.98); padding: 80px 20px 20px 20px; 
             overflow-y: auto; border-right: 1px solid #222; 
             transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1); z-index: 10000;
         }
         .sidebar.active { left: 0; }
         
-        /* İçerik Alanı */
-        #contentArea { padding: 80px 15px 20px 15px; height: 100vh; box-sizing: border-box; overflow-y: auto; text-align: center; }
+        #contentArea { padding: 90px 15px 20px 15px; height: 100vh; box-sizing: border-box; overflow-y: auto; text-align: center; }
 
-        /* Sorgu Kartları */
-        .query-item { background: rgba(255,255,255,0.03); padding: 15px; margin-bottom: 12px; border-radius: 12px; cursor: pointer; position: relative; border: 1px solid rgba(255,255,255,0.1); transition: 0.3s; }
-        .query-item:hover { border-color: var(--primary); background: rgba(59, 130, 246, 0.1); }
+        .query-item { background: rgba(255,255,255,0.03); padding: 15px; margin-bottom: 12px; border-radius: 12px; cursor: pointer; position: relative; border: 1px solid rgba(255,255,255,0.1); }
         .query-title { font-weight: bold; color: var(--primary); font-size: 14px; }
-        .query-desc { font-size: 11px; opacity: 0.6; margin-top: 5px; line-height: 1.3; }
-        
         .lock { position: absolute; inset: 0; background: rgba(0,0,0,0.85); display: flex; align-items: center; justify-content: center; color: var(--premium); font-size: 11px; border-radius: 12px; font-weight: bold; border: 1px solid var(--premium); z-index: 5; }
         
-        /* Admin Bölümü */
-        #adminArea { background: rgba(30, 41, 59, 0.8); border: 1px solid var(--premium); padding: 15px; border-radius: 12px; margin-bottom: 25px; }
-        .admin-btns { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 5px; margin-top: 10px; }
-        .admin-btns button { font-size: 9px; padding: 8px 0; }
+        /* Admin Alanı Düzenlemesi */
+        #adminArea { background: rgba(30, 41, 59, 0.95); border: 2px solid var(--premium); padding: 15px; border-radius: 12px; margin-bottom: 25px; }
+        .user-list { background: rgba(0,0,0,0.5); border-radius: 8px; padding: 10px; margin-top: 10px; max-height: 150px; overflow-y: auto; font-size: 10px; text-align: left; border: 1px solid #444; }
+        .user-list-item { border-bottom: 1px solid #333; padding: 5px 0; display: flex; justify-content: space-between; }
 
-        .result-box { background: #000; padding: 15px; border-radius: 10px; border: 1px solid #333; margin-top: 20px; white-space: pre-wrap; font-family: monospace; color: #10b981; text-align: left; font-size: 13px; }
-        #toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); padding: 12px 25px; border-radius: 30px; display: none; z-index: 100005; font-weight: bold; box-shadow: 0 5px 15px rgba(0,0,0,0.5); }
-        #musicControl { position: fixed; bottom: 20px; right: 20px; z-index: 1000; background: rgba(0,0,0,0.7); width: 45px; height: 45px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; border: 1px solid var(--primary); color: white; }
+        .result-box { background: #000; padding: 15px; border-radius: 10px; border: 1px solid #333; margin-top: 20px; white-space: pre-wrap; font-family: monospace; color: #10b981; text-align: left; }
+        #toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); padding: 12px 25px; border-radius: 30px; display: none; z-index: 100005; font-weight: bold; }
+        #musicControl { position: fixed; bottom: 20px; left: 20px; z-index: 1000; background: rgba(0,0,0,0.7); width: 45px; height: 45px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; border: 1px solid var(--primary); color: white; }
     </style>
 </head>
 <body>
@@ -70,40 +69,39 @@
 
     <div id="authScreen">
         <div class="card">
-            <h1 style="text-align:center; color: var(--primary); margin: 0 0 20px 0; letter-spacing: 2px;">WROX VIP</h1>
-            <input type="email" id="authEmail" class="input" placeholder="E-posta Adresi">
+            <h1 style="text-align:center; color: var(--primary); letter-spacing: 2px;">WROX VIP</h1>
+            <input type="email" id="authEmail" class="input" placeholder="E-posta">
             <input type="password" id="authPass" class="input" placeholder="Şifre">
-            <button class="button button-primary" onclick="handleAuth()" id="authBtn">Giriş Yap</button>
-            <p onclick="toggleAuth()" id="toggleTxt" style="text-align:center; font-size:13px; margin-top:20px; cursor:pointer; color:#777;">Hesabın yok mu? <span style="color:var(--primary)">Kayıt Ol</span></p>
+            <button class="button button-primary" onclick="handleAuth()">GİRİŞ YAP</button>
+            <p onclick="toggleAuth()" style="text-align:center; font-size:13px; margin-top:20px; cursor:pointer; color:#777;">Kayıt Ol</p>
         </div>
     </div>
 
-    <div id="menuBtn" onclick="toggleSidebar()">
-        <span></span><span></span><span></span>
-    </div>
+    <div id="menuBtn" onclick="toggleSidebar()"><span></span><span></span><span></span></div>
+    <div id="logoutIcon" onclick="logout()">ÇIKIŞ</div>
 
     <div id="mainApp" style="display: none;">
         <div class="sidebar" id="sidebar">
             <div id="adminArea" style="display: none;">
-                <h4 style="margin:0 0 10px 0; color:var(--premium); font-size: 12px;">👑 ADMIN PANELI</h4>
-                <input type="email" id="targetMail" class="input" placeholder="Kullanıcı Maili..." style="font-size:11px;">
-                <div class="admin-btns">
-                    <button class="button button-premium" onclick="adminAction('premium')">PRE VER</button>
-                    <button class="button button-primary" onclick="adminAction('freemium')" style="background:#475569">AL</button>
-                    <button class="button button-danger" onclick="adminAction('delete')">SİL</button>
+                <h4 style="margin:0; color:var(--premium);">👑 ADMIN KONTROL</h4>
+                <div class="user-list" id="userDisplay"></div>
+                <input type="email" id="targetMail" class="input" placeholder="Hedef Mail..." style="font-size:11px; margin-top:10px;">
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:5px;">
+                    <button class="button button-primary" style="font-size:10px; background:var(--premium); color:black;" onclick="adminAction('premium')">PRE VER</button>
+                    <button class="button button-danger" style="font-size:10px;" onclick="adminAction('delete')">SİL</button>
                 </div>
             </div>
             <div id="qList"></div>
-            <button onclick="logout()" class="button button-danger" style="margin-top:20px; opacity:0.6; font-size: 12px;">Güvenli Çıkış</button>
+            <button onclick="logout()" class="button button-danger" style="margin-top:30px; border: 1px solid white;">HESAPTAN ÇIK</button>
         </div>
 
         <div id="contentArea">
             <div id="workArea">
-                <h2 style="color:var(--primary); font-size: 28px; margin-bottom: 10px;">WROX VIP</h2>
-                <p style="font-size: 14px; opacity: 0.8;">Sorgu listesini görmek için sol üstteki ☰ butonuna dokunun.</p>
-                <div style="margin-top:40px; padding: 15px; background: rgba(255,255,255,0.05); border-radius: 10px; display: inline-block;">
+                <h2 style="color:var(--primary); font-size: 28px;">WROX VIP</h2>
+                <p>İşlem yapmak için menüyü kullanın.</p>
+                <div style="margin-top:40px; padding: 15px; background: rgba(255,255,255,0.05); border-radius: 10px; display: inline-block; border: 1px solid rgba(59,130,246,0.3);">
                     <span id="uMail" style="color:var(--primary); font-weight: bold;"></span><br>
-                    <span id="uRole" style="font-size: 12px; opacity: 0.6;"></span>
+                    <span id="uRole" style="font-size: 11px; opacity: 0.6; text-transform: uppercase;"></span>
                 </div>
             </div>
         </div>
@@ -114,29 +112,21 @@
     <script>
         const ADMIN_MAIL = "afavan66@gmail.com";
         const ADMIN_PASS = "Efecan1903";
-        const FREE_LIST = ['hayat', 'isyeri', 'vergi']; 
+        const FREE_LIST = ['adsoyad', 'tc', 'aile'];
 
         const queries = [
-            { id: 'hayat', title: 'Hayat Hikayesi Sorgulama', desc: 'TC ile kişinin detaylı geçmiş bilgileri' },
-            { id: 'isyeri', title: 'İş Yeri Sorgulama', desc: 'TC ile kayıtlı iş yeri bilgileri' },
-            { id: 'vergi', title: 'Vergi No Sorgulama', desc: 'Vergi numarası üzerinden sorgu' },
-            { id: 'yasv4', title: 'Yaş V4 Sorgulama', desc: 'Gelişmiş yaş hesaplama ve sorgu' },
-            { id: 'tcgsm', title: 'TC GSM Sorgulama', desc: 'TC no üzerinden telefon numarası bulma' },
-            { id: 'gsmtc', title: 'GSM TC Sorgulama', desc: 'Telefon no üzerinden TC kimlik bulma' },
-            { id: 'adres', title: 'Adres Sorgulama', desc: 'TC ile güncel ikametgah sorgulama' },
-            { id: 'hane', title: 'Hane Sorgulama', desc: 'Aynı adreste yaşayan kişileri bulma' },
-            { id: 'aile', title: 'Aile Sorgulama', desc: 'Anne, baba ve kardeş bilgilerini getirir' },
-            { id: 'sulale', title: 'Sülale Sorgulama', desc: 'Geniş kapsamlı soy ağacı bilgileri' },
-            { id: 'leak', title: 'Leak Sorgulama', desc: 'Data sızıntısı kontrolü' },
-            { id: 'yabanci', title: 'Yabancı Sorgulama', desc: 'Yabancı uyruklu şahıs sorgulama' },
-            { id: 'sitelog', title: 'Site Log Sorgulama', desc: 'Web sitesi log verilerini getirir' },
-            { id: 'papara', title: 'Papara No Sorgulama', desc: 'Papara ID ile şahıs sorgulama' },
-            { id: 'inal', title: 'İnal No Sorgulama', desc: 'İninal kart no ile sorgulama' },
-            { id: 'plaka', title: 'Plaka Sorgulama', desc: 'Araç plakasından sahip bilgisi' },
-            { id: 'plakaisim', title: 'Plaka İsim Sorgulama', desc: 'İsimden plaka sorgulama' },
-            { id: 'akp', title: 'AKP Üye Sorgulama', desc: 'Parti üyelik durum sorgulama' },
-            { id: 'uni', title: 'Üniversite V2 Sorgulama', desc: 'Eğitim ve üniversite kayıt bilgileri' },
-            { id: 'info', title: 'Bilgilendirme ve İletişim', desc: 'Sistem duyuruları ve destek' }
+            { id: 'adsoyad', title: 'Ad Soyad Sorgulama' },
+            { id: 'tc', title: 'TC Sorgulama' },
+            { id: 'aile', title: 'Aile Sorgulama' },
+            { id: 'hayat', title: 'Hayat Hikayesi' },
+            { id: 'tcgsm', title: 'TC GSM Sorgulama' },
+            { id: 'gsmtc', title: 'GSM TC Sorgulama' },
+            { id: 'adres', title: 'Adres Sorgulama' },
+            { id: 'hane', title: 'Hane Sorgulama' },
+            { id: 'sulale', title: 'Sülale Sorgulama' },
+            { id: 'leak', title: 'Leak Sorgulama' },
+            { id: 'papara', title: 'Papara Sorgulama' },
+            { id: 'plaka', title: 'Plaka Sorgulama' }
         ];
 
         let users = JSON.parse(localStorage.getItem('wrox_users')) || [];
@@ -147,11 +137,26 @@
             if (curr) {
                 document.getElementById('authScreen').style.display = 'none';
                 document.getElementById('mainApp').style.display = 'block';
+                document.getElementById('logoutIcon').style.display = 'block';
                 document.getElementById('uMail').innerText = curr.email;
-                document.getElementById('uRole').innerText = "YETKİ: " + curr.role.toUpperCase();
-                if (curr.email === ADMIN_MAIL) document.getElementById('adminArea').style.display = 'block';
+                document.getElementById('uRole').innerText = "Yetki: " + curr.role;
+                if (curr.email === ADMIN_MAIL) {
+                    document.getElementById('adminArea').style.display = 'block';
+                    updateUserList();
+                }
                 render();
             }
+        }
+
+        function updateUserList() {
+            const display = document.getElementById('userDisplay');
+            if (users.length === 0) { display.innerHTML = "Kayıtlı kullanıcı yok."; return; }
+            display.innerHTML = users.map(u => `
+                <div class="user-list-item">
+                    <span>${u.email}</span>
+                    <span style="color:${u.role === 'premium' ? 'var(--premium)' : '#aaa'}">${u.role.toUpperCase()}</span>
+                </div>
+            `).join('');
         }
 
         function toggleSidebar() { document.getElementById('sidebar').classList.toggle('active'); }
@@ -159,30 +164,24 @@
         function handleAuth() {
             const e = document.getElementById('authEmail').value.trim().toLowerCase();
             const p = document.getElementById('authPass').value;
-            if(!e || !p) return msg("Alanları doldurun!", "err");
-
             if (loginMode) {
                 if (e === ADMIN_MAIL && p === ADMIN_PASS) curr = { email: e, role: 'admin' };
                 else {
                     const u = users.find(x => x.email === e && x.pass === p);
-                    if (!u) return msg("Giriş bilgileri hatalı!", "err");
+                    if (!u) return msg("Hata: Bilgiler yanlış!", "err");
                     curr = u;
                 }
                 localStorage.setItem('current_wrox_user', JSON.stringify(curr));
                 location.reload();
             } else {
-                if (users.find(x => x.email === e)) return msg("Bu mail zaten kayıtlı!");
+                if (users.find(x => x.email === e)) return msg("Bu mail zaten var!");
                 users.push({ email: e, pass: p, role: 'freemium' });
                 localStorage.setItem('wrox_users', JSON.stringify(users));
-                msg("Kayıt başarılı, giriş yapın!"); toggleAuth();
+                msg("Kayıt Başarılı!"); toggleAuth();
             }
         }
 
-        function toggleAuth() { 
-            loginMode = !loginMode; 
-            document.getElementById('authBtn').innerText = loginMode ? "Giriş Yap" : "Kayıt Ol";
-            document.getElementById('toggleTxt').innerHTML = loginMode ? 'Hesabın yok mu? <span style="color:var(--primary)">Kayıt Ol</span>' : 'Zaten üye misin? <span style="color:var(--primary)">Giriş Yap</span>';
-        }
+        function toggleAuth() { loginMode = !loginMode; document.querySelector('#authScreen button').innerText = loginMode ? "GİRİŞ YAP" : "KAYIT OL"; }
 
         function render() {
             const l = document.getElementById('qList');
@@ -190,9 +189,8 @@
                 const lock = (curr.role === 'freemium' && !FREE_LIST.includes(q.id));
                 return `
                     <div class="query-item" onclick="${lock ? "msg('Premium Üyelik Gerekli!', 'err')" : "openQ('"+q.id+"', '"+q.title+"')" }">
-                        ${lock ? '<div class="lock">🔒 SADECE PREMIUM</div>' : ''}
+                        ${lock ? '<div class="lock">🔒 PREMIUM</div>' : ''}
                         <div class="query-title">${q.title}</div>
-                        <div class="query-desc">${q.desc}</div>
                     </div>
                 `;
             }).join('');
@@ -201,10 +199,10 @@
         function openQ(id, title) {
             if(window.innerWidth < 768) toggleSidebar(); 
             document.getElementById('workArea').innerHTML = `
-                <div class="card" style="width:100%; max-width:500px; margin:auto; text-align:left; border-color:var(--primary);">
-                    <h2 style="color:var(--primary); font-size:18px; margin-top:0;">${title}</h2>
-                    <input type="text" id="val" class="input" placeholder="Sorgu verisini buraya yazın...">
-                    <button class="button button-primary" onclick="callApi('${id}')">VERİLERİ ÇEK</button>
+                <div class="card" style="width:100%; max-width:500px; margin:auto; text-align:left;">
+                    <h3 style="color:var(--primary); margin-top:0;">${title}</h3>
+                    <input type="text" id="val" class="input" placeholder="Veri girin...">
+                    <button class="button button-primary" onclick="callApi('${id}')">SORGULA</button>
                     <div id="res" class="result-box" style="display:none;"></div>
                 </div>`;
         }
@@ -212,9 +210,9 @@
         async function callApi(id) {
             const v = document.getElementById('val').value;
             const r = document.getElementById('res');
-            if (!v) return msg("Lütfen veri girin!", "err");
-            r.style.display = "block"; r.innerHTML = "⌛ Veritabanına bağlanılıyor...";
-            setTimeout(() => { r.innerHTML = `[WROX SİSTEM MESAJI]\n----------------------\nSorgu: ${id.toUpperCase()}\nDeğer: ${v}\nDurum: Aktif\nSonuç: API bağlantısı kurulmadı.`; }, 1200);
+            if (!v) return msg("Veri girin!", "err");
+            r.style.display = "block"; r.innerHTML = "⌛ Sorgulanıyor...";
+            setTimeout(() => { r.innerHTML = `[WROX-DB]\nSorgu: ${id.toUpperCase()}\nSonuç: Kayıt bulunamadı.`; }, 1000);
         }
 
         function adminAction(act) {
@@ -222,13 +220,15 @@
             let i = users.findIndex(x => x.email === m);
             if (act === 'delete') users = users.filter(x => x.email !== m);
             else if (i !== -1) users[i].role = act;
+            else return msg("Kullanıcı bulunamadı!", "err");
             localStorage.setItem('wrox_users', JSON.stringify(users));
+            updateUserList();
             msg("İşlem Başarılı!"); render();
         }
 
         function toggleMusic() { const m = document.getElementById('bgMusic'); m.paused ? m.play() : m.pause(); }
         function logout() { localStorage.removeItem('current_wrox_user'); location.reload(); }
-        function msg(m, t) { const x = document.getElementById('toast'); x.innerText = m; x.style.background = t === "err" ? "var(--danger)" : "#10b981"; x.style.display = "block"; setTimeout(() => x.style.display = "none", 3000); }
+        function msg(m, t) { const x = document.getElementById('toast'); x.innerText = m; x.style.background = t === "err" ? "red" : "green"; x.style.display = "block"; setTimeout(() => x.style.display = "none", 3000); }
         
         document.body.addEventListener('click', () => { if(document.getElementById('bgMusic').paused) document.getElementById('bgMusic').play(); }, { once: true });
         init();
