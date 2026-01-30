@@ -3,32 +3,38 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
-    <title>WROX VIP - Full Edition</title>
+    <title>WROX VIP - Admin</title>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
     <style>
-        :root { --primary: #3b82f6; --premium: #eab308; --danger: #ef4444; --dark-bg: #0c111d; }
+        :root { --primary: #3b82f6; --premium: #eab308; --danger: #ef4444; --dark-bg: #0c111d; --card-bg: #111827; }
         body { margin: 0; font-family: 'Segoe UI', sans-serif; background: var(--dark-bg); color: white; height: 100vh; overflow-x: hidden; }
         
-        /* Auth */
+        /* Auth Screen */
         #authScreen { position: fixed; inset: 0; background: #000; z-index: 99999; display: flex; align-items: center; justify-content: center; }
-        .auth-card { background: #111827; padding: 2.5rem; border-radius: 20px; border: 1px solid var(--primary); width: 85%; max-width: 360px; text-align: center; }
+        .auth-card { background: var(--card-bg); padding: 2.5rem; border-radius: 20px; border: 1px solid var(--primary); width: 85%; max-width: 360px; text-align: center; }
         .input-box { width: 100%; padding: 14px; margin: 10px 0; background: #000; border: 1px solid #333; border-radius: 10px; color: white; outline: none; box-sizing: border-box; }
         
         /* Layout */
         .top-bar { display: flex; justify-content: space-between; align-items: center; padding: 15px; background: var(--dark-bg); border-bottom: 1px solid #1e293b; position: sticky; top: 0; z-index: 100; }
-        .btn-exit { background: var(--danger); color: white; border: 1px solid white; padding: 8px 15px; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 11px; }
-        
-        /* Admin Paneli */
-        .admin-container { margin: 15px; padding: 20px; border: 2px solid var(--premium); border-radius: 15px; background: rgba(17, 24, 39, 0.9); }
-        .admin-title { color: var(--premium); font-weight: bold; margin-bottom: 15px; font-size: 16px; }
-        
-        /* SORGULAR LİSTESİ */
-        .sorgu-list { padding: 15px; display: flex; flex-direction: column; gap: 10px; padding-bottom: 50px; }
-        .sorgu-cat { color: #475569; font-size: 11px; font-weight: bold; margin-top: 10px; letter-spacing: 1px; }
-        .sorgu-item { background: #111827; padding: 16px; border-radius: 12px; border: 1px solid #1e293b; color: var(--primary); font-weight: bold; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
-        .sorgu-item:active { background: #1e293b; transform: scale(0.98); }
-        .vip-badge { background: rgba(234, 179, 8, 0.1); border: 1px solid var(--premium); color: var(--premium); padding: 2px 8px; border-radius: 5px; font-size: 9px; }
+        .menu-btn { font-size: 28px; cursor: pointer; color: var(--primary); }
+
+        /* Side Menu (Admin Paneli) */
+        .side-menu { position: fixed; top: 0; left: -100%; width: 85%; max-width: 320px; height: 100%; background: #070a11; transition: 0.4s; z-index: 1000; padding: 20px; border-right: 2px solid var(--premium); overflow-y: auto; box-sizing: border-box; }
+        .side-menu.active { left: 0; }
+        .menu-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); display: none; z-index: 999; }
+        .menu-overlay.active { display: block; }
+
+        .admin-box { border: 1px solid var(--premium); padding: 15px; border-radius: 12px; background: rgba(234, 179, 8, 0.05); margin-top: 15px; }
+        .user-list-container { margin-top: 15px; background: #000; border-radius: 10px; padding: 10px; border: 1px solid #222; max-height: 250px; overflow-y: auto; font-size: 11px; }
+        .user-item { display: flex; justify-content: space-between; padding: 8px; border-bottom: 1px solid #111; color: #888; }
+        .user-item span.role { color: var(--premium); font-weight: bold; }
+
+        /* Sorgu Items */
+        .sorgu-list { padding: 15px; }
+        .sorgu-cat { color: #475569; font-size: 11px; font-weight: bold; margin: 15px 0 8px 0; letter-spacing: 1px; }
+        .sorgu-item { background: var(--card-bg); padding: 16px; border-radius: 12px; border: 1px solid #1e293b; color: var(--primary); font-weight: bold; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
+        .vip-badge { background: rgba(234, 179, 8, 0.1); border: 1px solid var(--premium); color: var(--premium); padding: 2px 6px; border-radius: 4px; font-size: 9px; }
     </style>
 </head>
 <body>
@@ -38,54 +44,54 @@
         <h2 style="color: var(--primary); margin: 0;">WROX VIP</h2>
         <input type="email" id="logEmail" class="input-box" placeholder="E-posta">
         <input type="password" id="logPass" class="input-box" placeholder="Şifre">
-        <button onclick="login()" style="width: 100%; background: var(--primary); border:none; padding:14px; color:white; border-radius:10px; cursor:pointer; font-weight:bold; margin-top: 10px;">PANELİ BAŞLAT</button>
+        <button onclick="login()" style="width: 100%; background: var(--primary); border:none; padding:14px; color:white; border-radius:10px; cursor:pointer; font-weight:bold; margin-top: 10px;">PANELİ AÇ</button>
     </div>
 </div>
 
 <div id="mainApp" style="display:none;">
-    <div class="top-bar">
-        <div style="font-size: 22px;">☰</div>
-        <div style="color: var(--primary); font-weight: bold; letter-spacing: 1px;">WROX VIP</div>
-        <div onclick="logout()" class="btn-exit">ÇIKIŞ</div>
+    <div class="menu-overlay" id="overlay" onclick="toggleMenu()"></div>
+
+    <div class="side-menu" id="sideMenu">
+        <h3 style="color: var(--primary); border-bottom: 1px solid #222; padding-bottom: 10px; margin-top: 0;">ADMİN PANELİ</h3>
+        <div id="adminArea" style="display:none;">
+            <div class="admin-box">
+                <p style="color:var(--premium); font-size: 12px; font-weight:bold; margin-bottom:8px;">ADMİN KONTROL</p>
+                <input type="text" id="targetMail" class="input-box" placeholder="Üye Mail Adresi..." style="font-size: 12px; margin-top:0;">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 5px;">
+                    <button onclick="setRole('premium')" style="background:var(--premium); border:none; padding:10px; border-radius:8px; font-weight:bold; cursor:pointer;">PRE YAP</button>
+                    <button onclick="setRole('freemium')" style="background:#334155; border:none; padding:10px; border-radius:8px; color:white; cursor:pointer;">PRE SİL</button>
+                </div>
+            </div>
+            
+            <p style="color: #475569; font-size: 11px; margin-top: 20px; font-weight: bold;">TÜM KAYITLI ÜYELER</p>
+            <div class="user-list-container" id="allUsersList">Yükleniyor...</div>
+        </div>
+        <button onclick="logout()" style="width:100%; background:var(--danger); color:white; border:none; padding:10px; border-radius:8px; margin-top:20px; cursor:pointer; font-weight:bold;">GÜVENLİ ÇIKIŞ</button>
     </div>
 
-    <div id="adminPanel" class="admin-container" style="display:none;">
-        <div class="admin-title">👑 PATRON KONTROL SİSTEMİ</div>
-        <input type="text" id="targetMail" class="input-box" placeholder="İşlem yapılacak e-posta..." style="margin: 0 0 10px 0;">
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-            <button onclick="setRole('premium')" style="background:var(--premium); border:none; padding:10px; border-radius:8px; font-weight:bold;">PRE YAP</button>
-            <button onclick="setRole('freemium')" style="background:#334155; border:none; padding:10px; border-radius:8px; color:white;">PRE SİL</button>
-        </div>
+    <div class="top-bar">
+        <div class="menu-btn" onclick="toggleMenu()">☰</div>
+        <div style="color: var(--primary); font-weight: bold; letter-spacing: 1px;">WROX VIP</div>
+        <div style="width: 28px;"></div>
     </div>
 
     <div class="sorgu-list">
-        <div class="sorgu-cat">TEMEL SORGULAR</div>
+        <div class="sorgu-cat">ÜCRETSİZ SORGULAR</div>
         <div class="sorgu-item">Ad Soyad Sorgulama</div>
         <div class="sorgu-item">T.C. Kimlik Sorgulama</div>
         <div class="sorgu-item">Aile Sorgulama</div>
-        <div class="sorgu-item">Sülale Sorgulama</div>
-        <div class="sorgu-item">Adres Sorgulama</div>
 
-        <div class="sorgu-cat">GSM & İLETİŞİM</div>
-        <div class="sorgu-item">GSM -> T.C. Sorgu</div>
-        <div class="sorgu-item">T.C. -> GSM Sorgu</div>
-        <div class="sorgu-item">Operatör Sorgulama</div>
-        <div class="sorgu-item">SMS Bomber <span class="vip-badge">HOT</span></div>
-
-        <div class="sorgu-cat">EĞİTİM & İŞ</div>
-        <div class="sorgu-item">Okul Sorgulama</div>
-        <div class="sorgu-item">Üniversite Sorgu</div>
-        <div class="sorgu-item">İşyeri Sorgulama <span class="vip-badge">VIP</span></div>
-
-        <div class="sorgu-cat">ARAÇ & MÜLK</div>
-        <div class="sorgu-item">Plaka Sorgulama <span class="vip-badge">VIP</span></div>
-        <div class="sorgu-item">Tapu Sorgulama <span class="vip-badge">VIP</span></div>
-        <div class="sorgu-item">Parsel Sorgulama</div>
-
-        <div class="sorgu-cat">ÖZEL KANALLAR</div>
-        <div class="sorgu-item">Hayat Hikayesi</div>
-        <div class="sorgu-item">MERNİS Veri Çekimi</div>
-        <div class="sorgu-item">Banka Sorgu <span class="vip-badge">PREMIUM</span></div>
+        <div id="premiumSorgular" style="display:none;">
+            <div class="sorgu-cat">ADMİN / PREMIUM ÖZEL</div>
+            <div class="sorgu-item">Sülale Sorgulama <span class="vip-badge">PRE</span></div>
+            <div class="sorgu-item">T.C. -> GSM Sorgu <span class="vip-badge">PRE</span></div>
+            <div class="sorgu-item">GSM -> T.C. Sorgu <span class="vip-badge">PRE</span></div>
+            <div class="sorgu-item">Adres Sorgulama <span class="vip-badge">PRE</span></div>
+            <div class="sorgu-item">SMS Bomber <span class="vip-badge">HOT</span></div>
+            <div class="sorgu-item">Plaka Sorgulama <span class="vip-badge">VIP</span></div>
+            <div class="sorgu-item">Tapu Sorgulama <span class="vip-badge">VIP</span></div>
+            <div class="sorgu-item">Banka Sorgu <span class="vip-badge">GOLD</span></div>
+        </div>
     </div>
 </div>
 
@@ -104,23 +110,25 @@
     const BOSS_MAIL = "afavan66@gmail.com";
     const BOSS_PASS = "Efecan1903";
 
+    function toggleMenu() {
+        document.getElementById('sideMenu').classList.toggle('active');
+        document.getElementById('overlay').classList.toggle('active');
+    }
+
     function login() {
         const email = document.getElementById('logEmail').value.trim().toLowerCase();
         const pass = document.getElementById('logPass').value;
-
         if(email === BOSS_MAIL && pass === BOSS_PASS) {
             localStorage.setItem('wrox_session', JSON.stringify({email: BOSS_MAIL, role: 'admin'}));
-            location.reload();
-            return;
+            location.reload(); return;
         }
-
         const key = email.replace(/\./g, '_');
         db.ref('users/' + key).once('value', s => {
             const u = s.val();
             if(u && u.pass === pass) {
                 localStorage.setItem('wrox_session', JSON.stringify(u));
                 location.reload();
-            } else alert("Giriş Hatalı!");
+            } else alert("Hata: Bilgiler Yanlış!");
         });
     }
 
@@ -128,14 +136,31 @@
     if(session) {
         document.getElementById('authScreen').style.display = 'none';
         document.getElementById('mainApp').style.display = 'block';
-        if(session.email === BOSS_MAIL || session.role === 'admin') {
-            document.getElementById('adminPanel').style.display = 'block';
+        if(session.role === 'admin' || session.role === 'premium' || session.email === BOSS_MAIL) {
+            document.getElementById('premiumSorgular').style.display = 'block';
         }
+        if(session.email === BOSS_MAIL || session.role === 'admin') {
+            document.getElementById('adminArea').style.display = 'block';
+            loadUsers();
+        }
+    }
+
+    function loadUsers() {
+        db.ref('users').on('value', s => {
+            const users = s.val(); let html = "";
+            for(let k in users) {
+                html += `<div class="user-item">
+                    <span>${users[k].email}</span>
+                    <span class="role">${users[k].role.toUpperCase()}</span>
+                </div>`;
+            }
+            document.getElementById('allUsersList').innerHTML = html || "Kullanıcı Yok.";
+        });
     }
 
     function setRole(r) {
         const t = document.getElementById('targetMail').value.trim().replace(/\./g, '_');
-        if(t) db.ref('users/' + t).update({ role: r }).then(() => alert("Yetki Değişti!"));
+        if(t) db.ref('users/' + t).update({ role: r }).then(() => alert("Yetki Başarıyla Güncellendi!"));
     }
 
     function logout() { localStorage.removeItem('wrox_session'); location.reload(); }
