@@ -26,12 +26,11 @@
             position: fixed; top: 15px; right: 15px; z-index: 10001;
             background: var(--danger); border: 2px solid white;
             color: white; padding: 10px 15px; border-radius: 10px; cursor: pointer;
-            font-weight: bold; font-size: 12px; box-shadow: 0 0 15px rgba(239, 68, 68, 0.5);
-            display: none;
+            font-weight: bold; font-size: 12px; display: none;
         }
 
         #authScreen { position: fixed; inset: 0; background: rgba(0,0,0,0.96); z-index: 99999; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(15px); }
-        .card { background: rgba(15, 23, 42, 0.95); padding: 2rem; border-radius: 15px; border: 1px solid var(--primary); width: 85%; max-width: 350px; box-shadow: 0 0 30px rgba(59, 130, 246, 0.3); }
+        .card { background: rgba(15, 23, 42, 0.95); padding: 2rem; border-radius: 15px; border: 1px solid var(--primary); width: 85%; max-width: 350px; }
         
         .input { width: 100%; padding: 12px; margin: 8px 0; background: #000; border: 1px solid #333; border-radius: 8px; color: white; box-sizing: border-box; outline: none; }
         .button { width: 100%; padding: 12px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.2s; margin-top: 5px; }
@@ -42,7 +41,7 @@
             position: fixed; top: 0; left: -320px; width: 300px; height: 100%;
             background: rgba(0,0,0,0.98); padding: 80px 20px 20px 20px; 
             overflow-y: auto; border-right: 1px solid #222; 
-            transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1); z-index: 10000;
+            transition: 0.4s; z-index: 10000;
         }
         .sidebar.active { left: 0; }
         
@@ -50,16 +49,15 @@
 
         .query-item { background: rgba(255,255,255,0.03); padding: 15px; margin-bottom: 12px; border-radius: 12px; cursor: pointer; position: relative; border: 1px solid rgba(255,255,255,0.1); }
         .query-title { font-weight: bold; color: var(--primary); font-size: 14px; }
-        .lock { position: absolute; inset: 0; background: rgba(0,0,0,0.85); display: flex; align-items: center; justify-content: center; color: var(--premium); font-size: 11px; border-radius: 12px; font-weight: bold; border: 1px solid var(--premium); z-index: 5; }
+        .lock { position: absolute; inset: 0; background: rgba(0,0,0,0.85); display: flex; align-items: center; justify-content: center; color: var(--premium); font-size: 11px; border-radius: 12px; font-weight: bold; }
         
-        /* Admin Alanı Düzenlemesi */
         #adminArea { background: rgba(30, 41, 59, 0.95); border: 2px solid var(--premium); padding: 15px; border-radius: 12px; margin-bottom: 25px; }
-        .user-list { background: rgba(0,0,0,0.5); border-radius: 8px; padding: 10px; margin-top: 10px; max-height: 150px; overflow-y: auto; font-size: 10px; text-align: left; border: 1px solid #444; }
+        .user-list { background: rgba(0,0,0,0.5); border-radius: 8px; padding: 10px; margin-top: 10px; max-height: 120px; overflow-y: auto; font-size: 10px; text-align: left; }
         .user-list-item { border-bottom: 1px solid #333; padding: 5px 0; display: flex; justify-content: space-between; }
 
-        .result-box { background: #000; padding: 15px; border-radius: 10px; border: 1px solid #333; margin-top: 20px; white-space: pre-wrap; font-family: monospace; color: #10b981; text-align: left; }
+        .result-box { background: #000; padding: 15px; border-radius: 10px; border: 1px solid #333; margin-top: 20px; white-space: pre-wrap; color: #10b981; text-align: left; }
         #toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); padding: 12px 25px; border-radius: 30px; display: none; z-index: 100005; font-weight: bold; }
-        #musicControl { position: fixed; bottom: 20px; left: 20px; z-index: 1000; background: rgba(0,0,0,0.7); width: 45px; height: 45px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; border: 1px solid var(--primary); color: white; }
+        #musicControl { position: fixed; bottom: 20px; left: 20px; z-index: 1000; background: rgba(0,0,0,0.7); width: 45px; height: 45px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 1px solid var(--primary); color: white; }
     </style>
 </head>
 <body>
@@ -69,7 +67,7 @@
 
     <div id="authScreen">
         <div class="card">
-            <h1 style="text-align:center; color: var(--primary); letter-spacing: 2px;">WROX VIP</h1>
+            <h1 style="text-align:center; color: var(--primary);">WROX VIP</h1>
             <input type="email" id="authEmail" class="input" placeholder="E-posta">
             <input type="password" id="authPass" class="input" placeholder="Şifre">
             <button class="button button-primary" onclick="handleAuth()">GİRİŞ YAP</button>
@@ -85,23 +83,23 @@
             <div id="adminArea" style="display: none;">
                 <h4 style="margin:0; color:var(--premium);">👑 ADMIN KONTROL</h4>
                 <div class="user-list" id="userDisplay"></div>
-                <input type="email" id="targetMail" class="input" placeholder="Hedef Mail..." style="font-size:11px; margin-top:10px;">
+                <input type="email" id="targetMail" class="input" placeholder="Hedef Mail..." style="font-size:11px;">
                 <div style="display:grid; grid-template-columns: 1fr 1fr; gap:5px;">
-                    <button class="button button-primary" style="font-size:10px; background:var(--premium); color:black;" onclick="adminAction('premium')">PRE VER</button>
-                    <button class="button button-danger" style="font-size:10px;" onclick="adminAction('delete')">SİL</button>
+                    <button class="button" style="background:var(--premium); color:black; font-size:10px;" onclick="adminAction('premium')">PRE VER</button>
+                    <button class="button" style="background:#475569; color:white; font-size:10px;" onclick="adminAction('freemium')">PRE SİL</button>
                 </div>
+                <button class="button button-danger" style="font-size:10px; width:100%; margin-top:5px;" onclick="adminAction('delete')">KULLANICIYI SİL</button>
             </div>
             <div id="qList"></div>
-            <button onclick="logout()" class="button button-danger" style="margin-top:30px; border: 1px solid white;">HESAPTAN ÇIK</button>
+            <button onclick="logout()" class="button button-danger" style="margin-top:30px;">HESAPTAN ÇIK</button>
         </div>
 
         <div id="contentArea">
             <div id="workArea">
-                <h2 style="color:var(--primary); font-size: 28px;">WROX VIP</h2>
-                <p>İşlem yapmak için menüyü kullanın.</p>
-                <div style="margin-top:40px; padding: 15px; background: rgba(255,255,255,0.05); border-radius: 10px; display: inline-block; border: 1px solid rgba(59,130,246,0.3);">
+                <h2 style="color:var(--primary);">WROX VIP</h2>
+                <div style="margin-top:20px; padding: 15px; background: rgba(255,255,255,0.05); border-radius: 10px; display: inline-block;">
                     <span id="uMail" style="color:var(--primary); font-weight: bold;"></span><br>
-                    <span id="uRole" style="font-size: 11px; opacity: 0.6; text-transform: uppercase;"></span>
+                    <span id="uRole" style="font-size: 11px;"></span>
                 </div>
             </div>
         </div>
@@ -139,7 +137,7 @@
                 document.getElementById('mainApp').style.display = 'block';
                 document.getElementById('logoutIcon').style.display = 'block';
                 document.getElementById('uMail').innerText = curr.email;
-                document.getElementById('uRole').innerText = "Yetki: " + curr.role;
+                document.getElementById('uRole').innerText = "YETKİ: " + curr.role.toUpperCase();
                 if (curr.email === ADMIN_MAIL) {
                     document.getElementById('adminArea').style.display = 'block';
                     updateUserList();
@@ -150,13 +148,7 @@
 
         function updateUserList() {
             const display = document.getElementById('userDisplay');
-            if (users.length === 0) { display.innerHTML = "Kayıtlı kullanıcı yok."; return; }
-            display.innerHTML = users.map(u => `
-                <div class="user-list-item">
-                    <span>${u.email}</span>
-                    <span style="color:${u.role === 'premium' ? 'var(--premium)' : '#aaa'}">${u.role.toUpperCase()}</span>
-                </div>
-            `).join('');
+            display.innerHTML = users.map(u => `<div class="user-list-item"><span>${u.email}</span><span>${u.role.toUpperCase()}</span></div>`).join('');
         }
 
         function toggleSidebar() { document.getElementById('sidebar').classList.toggle('active'); }
@@ -168,16 +160,16 @@
                 if (e === ADMIN_MAIL && p === ADMIN_PASS) curr = { email: e, role: 'admin' };
                 else {
                     const u = users.find(x => x.email === e && x.pass === p);
-                    if (!u) return msg("Hata: Bilgiler yanlış!", "err");
+                    if (!u) return msg("Bilgiler hatalı!", "err");
                     curr = u;
                 }
                 localStorage.setItem('current_wrox_user', JSON.stringify(curr));
                 location.reload();
             } else {
-                if (users.find(x => x.email === e)) return msg("Bu mail zaten var!");
+                if (users.find(x => x.email === e)) return msg("Mail kayıtlı!");
                 users.push({ email: e, pass: p, role: 'freemium' });
                 localStorage.setItem('wrox_users', JSON.stringify(users));
-                msg("Kayıt Başarılı!"); toggleAuth();
+                msg("Başarılı!"); toggleAuth();
             }
         }
 
@@ -187,43 +179,35 @@
             const l = document.getElementById('qList');
             l.innerHTML = queries.map(q => {
                 const lock = (curr.role === 'freemium' && !FREE_LIST.includes(q.id));
-                return `
-                    <div class="query-item" onclick="${lock ? "msg('Premium Üyelik Gerekli!', 'err')" : "openQ('"+q.id+"', '"+q.title+"')" }">
-                        ${lock ? '<div class="lock">🔒 PREMIUM</div>' : ''}
-                        <div class="query-title">${q.title}</div>
-                    </div>
-                `;
+                return `<div class="query-item" onclick="${lock ? "msg('Premium Lazım!', 'err')" : "openQ('"+q.id+"', '"+q.title+"')" }">${lock ? '<div class="lock">🔒 PRE</div>' : ''}<div class="query-title">${q.title}</div></div>`;
             }).join('');
         }
 
         function openQ(id, title) {
             if(window.innerWidth < 768) toggleSidebar(); 
-            document.getElementById('workArea').innerHTML = `
-                <div class="card" style="width:100%; max-width:500px; margin:auto; text-align:left;">
-                    <h3 style="color:var(--primary); margin-top:0;">${title}</h3>
-                    <input type="text" id="val" class="input" placeholder="Veri girin...">
-                    <button class="button button-primary" onclick="callApi('${id}')">SORGULA</button>
-                    <div id="res" class="result-box" style="display:none;"></div>
-                </div>`;
+            document.getElementById('workArea').innerHTML = `<div class="card" style="width:100%; max-width:500px; margin:auto; text-align:left;"><h3 style="color:var(--primary);">${title}</h3><input type="text" id="val" class="input" placeholder="Veri gir..."><button class="button button-primary" onclick="callApi('${id}')">SORGULA</button><div id="res" class="result-box" style="display:none;"></div></div>`;
         }
 
-        async function callApi(id) {
+        function callApi(id) {
             const v = document.getElementById('val').value;
+            if (!v) return msg("Veri gir!", "err");
             const r = document.getElementById('res');
-            if (!v) return msg("Veri girin!", "err");
             r.style.display = "block"; r.innerHTML = "⌛ Sorgulanıyor...";
-            setTimeout(() => { r.innerHTML = `[WROX-DB]\nSorgu: ${id.toUpperCase()}\nSonuç: Kayıt bulunamadı.`; }, 1000);
+            setTimeout(() => { r.innerHTML = `Sorgu: ${id.toUpperCase()}\nSonuç: Kayıt bulunamadı.`; }, 1000);
         }
 
         function adminAction(act) {
             const m = document.getElementById('targetMail').value.toLowerCase();
-            let i = users.findIndex(x => x.email === m);
-            if (act === 'delete') users = users.filter(x => x.email !== m);
-            else if (i !== -1) users[i].role = act;
-            else return msg("Kullanıcı bulunamadı!", "err");
+            if (act === 'delete') {
+                users = users.filter(x => x.email !== m);
+                msg("Kullanıcı Silindi!", "err");
+            } else {
+                let i = users.findIndex(x => x.email === m);
+                if (i !== -1) { users[i].role = act; msg("Yetki Güncellendi!"); }
+                else return msg("Bulunamadı!", "err");
+            }
             localStorage.setItem('wrox_users', JSON.stringify(users));
-            updateUserList();
-            msg("İşlem Başarılı!"); render();
+            updateUserList(); render();
         }
 
         function toggleMusic() { const m = document.getElementById('bgMusic'); m.paused ? m.play() : m.pause(); }
@@ -235,3 +219,4 @@
     </script>
 </body>
 </html>
+
