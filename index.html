@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WROX VIP - ADMIN CONTROL</title>
+    <title>WROX VIP - PREMİUM PANEL</title>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
     <style>
-        :root { --primary: #3b82f6; --premium: #eab308; --dark-bg: #0c111d; --card-bg: #111827; }
+        :root { --primary: #3b82f6; --premium: #eab308; --danger: #ef4444; --dark-bg: #0c111d; --card-bg: #111827; }
         body { margin: 0; font-family: 'Segoe UI', sans-serif; background: var(--dark-bg); color: white; height: 100vh; overflow: hidden; }
         .input-box { width: 100%; padding: 12px; margin: 8px 0; background: #000; border: 1px solid #333; border-radius: 10px; color: white; outline: none; box-sizing: border-box; }
         .btn-sorgu { width: 100%; background: var(--primary); border:none; padding: 15px; color:white; border-radius:10px; font-weight:bold; cursor:pointer; margin-top:10px; }
@@ -20,6 +20,9 @@
         .vip-tag { color: var(--premium); border: 1px solid var(--premium); padding: 2px 5px; border-radius: 4px; font-size: 10px; font-weight: bold; }
         .admin-box { border: 1px solid var(--premium); padding: 15px; border-radius: 15px; background: rgba(234, 179, 8, 0.05); margin-bottom: 20px; }
         .user-list { max-height: 120px; overflow-y: auto; background: #000; border-radius: 10px; padding: 10px; font-size: 11px; border: 1px solid #222; text-align: left; margin-top:10px; }
+        .page { display: none; animation: fadeIn 0.3s ease; padding: 20px; text-align: center; }
+        .page.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
 <body>
@@ -37,21 +40,30 @@
 <div id="mainApp" style="display:none;">
     <div class="menu-overlay" id="overlay" onclick="toggleMenu()"></div>
     <div class="side-menu" id="sideMenu">
+        
         <div id="adminArea" style="display:none;" class="admin-box">
-            <div style="color:var(--premium); font-size:12px; font-weight:bold; margin-bottom:5px;">👑 YETKİ PANELİ</div>
-            <input type="text" id="targetMail" class="input-box" placeholder="Kullanıcı Maili" style="font-size:11px; padding:8px;">
+            <div style="color:var(--premium); font-size:12px; font-weight:bold; margin-bottom:5px;">👑 ADMIN PANEL</div>
+            <input type="text" id="targetMail" class="input-box" placeholder="Mail Adresi" style="font-size:11px; padding:8px;">
             <button onclick="setRole('premium')" style="width:100%; background:var(--premium); border:none; padding:8px; border-radius:5px; font-weight:bold; cursor:pointer;">PREMİUM VER</button>
-            <div class="user-list" id="userListDisplay">Yükleniyor...</div>
+            <div class="user-list" id="userListDisplay">Üyeler yükleniyor...</div>
         </div>
 
-        <p style="color:#475569; font-size:11px; font-weight:bold;">SORGULAR</p>
+        <p style="color:#475569; font-size:11px; font-weight:bold;">ÜCRETSİZ SORGULAR</p>
         <div class="menu-item" onclick="openPage('adsoyad')">🔍 Ad Soyad</div>
         <div class="menu-item" onclick="openPage('tc')">🆔 T.C. Sorgu</div>
-        <div id="premiumMenu" style="display:none;">
-            <div class="menu-item" onclick="openPage('adres')">📍 Adres <span class="vip-tag">PRE</span></div>
-            <div class="menu-item" onclick="openPage('sulale')">🧬 Sülale <span class="vip-tag">PRE</span></div>
+
+        <p style="color:var(--premium); font-size:11px; font-weight:bold; margin-top:15px;">PREMİUM KANALLAR</p>
+        <div id="premiumMenu">
+            <div class="menu-item" onclick="checkPre('aile')">👨‍👩‍👧‍👦 Aile Sorgu <span class="vip-tag">PRE</span></div>
+            <div class="menu-item" onclick="checkPre('sulale')">🧬 Sülale Sorgu <span class="vip-tag">PRE</span></div>
+            <div class="menu-item" onclick="checkPre('tcgsm')">📱 T.C. -> GSM <span class="vip-tag">PRE</span></div>
+            <div class="menu-item" onclick="checkPre('gsmtc')">📞 GSM -> T.C. <span class="vip-tag">PRE</span></div>
+            <div class="menu-item" onclick="checkPre('adres')">📍 Adres Sorgu <span class="vip-tag">PRE</span></div>
+            <div class="menu-item" onclick="checkPre('plaka')">🚗 Plaka Sorgu <span class="vip-tag">PRE</span></div>
+            <div class="menu-item" onclick="checkPre('tapu')">🏠 Tapu Sorgu <span class="vip-tag">PRE</span></div>
         </div>
-        <button onclick="logout()" style="width:100%; background:#ef4444; border:none; padding:10px; border-radius:10px; margin-top:20px; color:white; font-weight:bold;">Çıkış</button>
+        
+        <button onclick="logout()" style="width:100%; background:var(--danger); border:none; padding:12px; border-radius:10px; margin-top:20px; color:white; font-weight:bold;">Çıkış Yap</button>
     </div>
 
     <div class="top-bar">
@@ -60,8 +72,25 @@
         <div style="width:24px;"></div>
     </div>
 
-    <div id="contentArea" style="padding:20px; text-align:center;">
-        <div id="page-home"><h2>Hoş Geldin</h2><p>Menüden sorgu seçin.</p></div>
+    <div id="contentArea">
+        <div id="page-home" class="page active"><h2>Hoş Geldin</h2><p>Lütfen menüden sorgu seçin.</p></div>
+        
+        <div id="page-adsoyad" class="page">
+            <h3>🔍 AD SOYAD SORGULAMA</h3>
+            <input class="input-box" id="inp-ad" placeholder="Ad">
+            <input class="input-box" id="inp-soyad" placeholder="Soyad">
+            <input class="input-box" id="inp-il" placeholder="İl">
+            <button class="btn-sorgu" onclick="alert('Veri tabanı bağlantısı bekleniyor...')">SORGULA</button>
+        </div>
+
+        <div id="page-tc" class="page"><h3>🆔 T.C. SORGULAMA</h3><input type="number" class="input-box" placeholder="T.C. No"><button class="btn-sorgu">SORGULA</button></div>
+        <div id="page-aile" class="page"><h3>👨‍👩‍👧‍👦 AİLE SORGULAMA</h3><input type="number" class="input-box" placeholder="T.C. No"><button class="btn-sorgu">SORGULA</button></div>
+        <div id="page-sulale" class="page"><h3>🧬 SÜLALE SORGULAMA</h3><input type="number" class="input-box" placeholder="T.C. No"><button class="btn-sorgu">SORGULA</button></div>
+        <div id="page-tcgsm" class="page"><h3>📱 T.C. -> GSM</h3><input type="number" class="input-box" placeholder="T.C. No"><button class="btn-sorgu">SORGULA</button></div>
+        <div id="page-gsmtc" class="page"><h3>📞 GSM -> T.C.</h3><input type="number" class="input-box" placeholder="GSM No"><button class="btn-sorgu">SORGULA</button></div>
+        <div id="page-adres" class="page"><h3>📍 ADRES SORGULAMA</h3><input type="number" class="input-box" placeholder="T.C. No"><button class="btn-sorgu">SORGULA</button></div>
+        <div id="page-plaka" class="page"><h3>🚗 PLAKA SORGULAMA</h3><input type="text" class="input-box" placeholder="Plaka (Örn: 34ABC123)"><button class="btn-sorgu">SORGULA</button></div>
+        <div id="page-tapu" class="page"><h3>🏠 TAPU SORGULAMA</h3><input type="number" class="input-box" placeholder="T.C. No"><button class="btn-sorgu">SORGULA</button></div>
     </div>
 </div>
 
@@ -79,7 +108,7 @@
 
     let isLogin = true;
     function toggleAuth() { isLogin = !isLogin; document.getElementById('authBtn').innerText = isLogin ? "GİRİŞ YAP" : "KAYIT OL"; }
-    
+
     function handleAuth() {
         const email = document.getElementById('logEmail').value.trim().toLowerCase();
         const pass = document.getElementById('logPass').value;
@@ -89,10 +118,10 @@
             db.ref('users/' + key).once('value', s => {
                 const u = s.val();
                 if(u && u.pass === pass) { localStorage.setItem('session', JSON.stringify(u)); location.reload(); }
-                else alert("Hata!");
+                else alert("Hatalı bilgiler!");
             });
         } else {
-            db.ref('users/' + key).set({email, pass, role:'freemium'}).then(() => { alert("Kayıt başarılı!"); isLogin=true; handleAuth(); });
+            db.ref('users/' + key).set({email, pass, role:'freemium'}).then(() => { alert("Kayıt başarılı! Giriş yapın."); toggleAuth(); });
         }
     }
 
@@ -102,22 +131,26 @@
         document.getElementById('mainApp').style.display = 'block';
         if(session.role === 'admin') {
             document.getElementById('adminArea').style.display = 'block';
-            document.getElementById('premiumMenu').style.display = 'block';
             db.ref('users').on('value', s => {
                 const data = s.val(); let html = "";
                 if(data) { Object.keys(data).forEach(k => { html += `<div>${data[k].email} [${data[k].role}]</div>`; }); }
                 document.getElementById('userListDisplay').innerHTML = html;
             });
         }
-        if(session.role === 'premium') document.getElementById('premiumMenu').style.display = 'block';
+    }
+
+    function checkPre(page) {
+        if(session.role === 'admin' || session.role === 'premium') { openPage(page); } 
+        else { alert("Bu özellik için PREMİUM üyelik gereklidir!"); }
     }
 
     function setRole(r) {
         const mail = document.getElementById('targetMail').value.trim().toLowerCase().replace(/\./g, '_');
-        if(mail) db.ref('users/' + mail).update({role: r}).then(() => alert("Yetki Verildi!"));
+        if(mail) db.ref('users/' + mail).update({role: r}).then(() => alert(mail + " artık PREMİUM!"));
     }
 
     function toggleMenu() { document.getElementById('sideMenu').classList.toggle('active'); document.getElementById('overlay').classList.toggle('active'); }
+    function openPage(p) { toggleMenu(); document.querySelectorAll('.page').forEach(x => x.classList.remove('active')); document.getElementById('page-'+p).classList.add('active'); }
     function logout() { localStorage.removeItem('session'); location.reload(); }
 </script>
 </body>
