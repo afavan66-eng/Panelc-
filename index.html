@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WROX VIP - PREMİUM PANEL</title>
+    <title>WROX VIP - PREMIUM & ADMIN</title>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
     <style>
@@ -23,6 +23,10 @@
         .page { display: none; animation: fadeIn 0.3s ease; padding: 20px; text-align: center; }
         .page.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        /* Yeni Buton Grubu */
+        .admin-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 5px; }
+        .btn-pre { background: var(--premium); color: black; border: none; padding: 10px; border-radius: 8px; font-weight: bold; cursor: pointer; }
+        .btn-del { background: var(--danger); color: white; border: none; padding: 10px; border-radius: 8px; font-weight: bold; cursor: pointer; }
     </style>
 </head>
 <body>
@@ -44,11 +48,14 @@
         <div id="adminArea" style="display:none;" class="admin-box">
             <div style="color:var(--premium); font-size:12px; font-weight:bold; margin-bottom:5px;">👑 ADMIN PANEL</div>
             <input type="text" id="targetMail" class="input-box" placeholder="Mail Adresi" style="font-size:11px; padding:8px;">
-            <button onclick="setRole('premium')" style="width:100%; background:var(--premium); border:none; padding:8px; border-radius:5px; font-weight:bold; cursor:pointer;">PREMİUM VER</button>
+            <div class="admin-btns">
+                <button onclick="setRole('premium')" class="btn-pre">PREMİUM VER</button>
+                <button onclick="setRole('freemium')" class="btn-del">PREMİUM SİL</button>
+            </div>
             <div class="user-list" id="userListDisplay">Üyeler yükleniyor...</div>
         </div>
 
-        <p style="color:#475569; font-size:11px; font-weight:bold;">ÜCRETSİZ SORGULAR</p>
+        <p style="color:#475569; font-size:11px; font-weight:bold;">SORGULAR</p>
         <div class="menu-item" onclick="openPage('adsoyad')">🔍 Ad Soyad</div>
         <div class="menu-item" onclick="openPage('tc')">🆔 T.C. Sorgu</div>
 
@@ -74,22 +81,14 @@
 
     <div id="contentArea">
         <div id="page-home" class="page active"><h2>Hoş Geldin</h2><p>Lütfen menüden sorgu seçin.</p></div>
-        
-        <div id="page-adsoyad" class="page">
-            <h3>🔍 AD SOYAD SORGULAMA</h3>
-            <input class="input-box" id="inp-ad" placeholder="Ad">
-            <input class="input-box" id="inp-soyad" placeholder="Soyad">
-            <input class="input-box" id="inp-il" placeholder="İl">
-            <button class="btn-sorgu" onclick="alert('Veri tabanı bağlantısı bekleniyor...')">SORGULA</button>
-        </div>
-
+        <div id="page-adsoyad" class="page"><h3>🔍 AD SOYAD SORGULAMA</h3><input class="input-box" placeholder="Ad"><input class="input-box" placeholder="Soyad"><button class="btn-sorgu">SORGULA</button></div>
         <div id="page-tc" class="page"><h3>🆔 T.C. SORGULAMA</h3><input type="number" class="input-box" placeholder="T.C. No"><button class="btn-sorgu">SORGULA</button></div>
         <div id="page-aile" class="page"><h3>👨‍👩‍👧‍👦 AİLE SORGULAMA</h3><input type="number" class="input-box" placeholder="T.C. No"><button class="btn-sorgu">SORGULA</button></div>
         <div id="page-sulale" class="page"><h3>🧬 SÜLALE SORGULAMA</h3><input type="number" class="input-box" placeholder="T.C. No"><button class="btn-sorgu">SORGULA</button></div>
         <div id="page-tcgsm" class="page"><h3>📱 T.C. -> GSM</h3><input type="number" class="input-box" placeholder="T.C. No"><button class="btn-sorgu">SORGULA</button></div>
         <div id="page-gsmtc" class="page"><h3>📞 GSM -> T.C.</h3><input type="number" class="input-box" placeholder="GSM No"><button class="btn-sorgu">SORGULA</button></div>
         <div id="page-adres" class="page"><h3>📍 ADRES SORGULAMA</h3><input type="number" class="input-box" placeholder="T.C. No"><button class="btn-sorgu">SORGULA</button></div>
-        <div id="page-plaka" class="page"><h3>🚗 PLAKA SORGULAMA</h3><input type="text" class="input-box" placeholder="Plaka (Örn: 34ABC123)"><button class="btn-sorgu">SORGULA</button></div>
+        <div id="page-plaka" class="page"><h3>🚗 PLAKA SORGULAMA</h3><input type="text" class="input-box" placeholder="Plaka"><button class="btn-sorgu">SORGULA</button></div>
         <div id="page-tapu" class="page"><h3>🏠 TAPU SORGULAMA</h3><input type="number" class="input-box" placeholder="T.C. No"><button class="btn-sorgu">SORGULA</button></div>
     </div>
 </div>
@@ -118,10 +117,10 @@
             db.ref('users/' + key).once('value', s => {
                 const u = s.val();
                 if(u && u.pass === pass) { localStorage.setItem('session', JSON.stringify(u)); location.reload(); }
-                else alert("Hatalı bilgiler!");
+                else alert("Hata!");
             });
         } else {
-            db.ref('users/' + key).set({email, pass, role:'freemium'}).then(() => { alert("Kayıt başarılı! Giriş yapın."); toggleAuth(); });
+            db.ref('users/' + key).set({email, pass, role:'freemium'}).then(() => { alert("Kayıt başarılı!"); toggleAuth(); });
         }
     }
 
@@ -141,12 +140,12 @@
 
     function checkPre(page) {
         if(session.role === 'admin' || session.role === 'premium') { openPage(page); } 
-        else { alert("Bu özellik için PREMİUM üyelik gereklidir!"); }
+        else { alert("PREMİUM GEREKLİ!"); }
     }
 
     function setRole(r) {
         const mail = document.getElementById('targetMail').value.trim().toLowerCase().replace(/\./g, '_');
-        if(mail) db.ref('users/' + mail).update({role: r}).then(() => alert(mail + " artık PREMİUM!"));
+        if(mail) db.ref('users/' + mail).update({role: r}).then(() => alert("İşlem Başarılı!"));
     }
 
     function toggleMenu() { document.getElementById('sideMenu').classList.toggle('active'); document.getElementById('overlay').classList.toggle('active'); }
