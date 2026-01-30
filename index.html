@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WROX VIP - MASTER</title>
+    <title>WROX VIP - ADMIN CONTROL</title>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
     <style>
@@ -18,19 +18,15 @@
         .menu-overlay.active { display: block; }
         .menu-item { padding: 14px; background: var(--card-bg); border-radius: 12px; margin-bottom: 8px; cursor: pointer; border: 1px solid #1e293b; display: flex; justify-content: space-between; align-items: center; font-size: 14px; }
         .vip-tag { color: var(--premium); border: 1px solid var(--premium); padding: 2px 5px; border-radius: 4px; font-size: 10px; font-weight: bold; }
-        #contentArea { padding: 20px; height: calc(100vh - 70px); overflow-y: auto; text-align: center; }
-        .page { display: none; animation: fadeIn 0.3s ease; }
-        .page.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         .admin-box { border: 1px solid var(--premium); padding: 15px; border-radius: 15px; background: rgba(234, 179, 8, 0.05); margin-bottom: 20px; }
-        .user-list { max-height: 150px; overflow-y: auto; background: #000; border-radius: 10px; padding: 10px; font-size: 12px; border: 1px solid #222; text-align: left; }
+        .user-list { max-height: 120px; overflow-y: auto; background: #000; border-radius: 10px; padding: 10px; font-size: 11px; border: 1px solid #222; text-align: left; margin-top:10px; }
     </style>
 </head>
 <body>
 
 <div id="authScreen" style="position:fixed; inset:0; background:#000; z-index:9999; display:flex; align-items:center; justify-content:center;">
     <div style="background:var(--card-bg); padding:2rem; border-radius:20px; border:1px solid var(--primary); width:85%; max-width:360px; text-align:center;">
-        <h2 id="authTitle" style="color: var(--primary); margin:0;">WROX VIP</h2>
+        <h2 style="color: var(--primary); margin:0;">WROX VIP</h2>
         <input type="email" id="logEmail" class="input-box" placeholder="E-posta">
         <input type="password" id="logPass" class="input-box" placeholder="Şifre">
         <button onclick="handleAuth()" id="authBtn" class="btn-sorgu">GİRİŞ YAP</button>
@@ -42,19 +38,20 @@
     <div class="menu-overlay" id="overlay" onclick="toggleMenu()"></div>
     <div class="side-menu" id="sideMenu">
         <div id="adminArea" style="display:none;" class="admin-box">
-            <div style="color:var(--premium); font-size:12px; font-weight:bold; margin-bottom:10px;">👑 ADMİN PANELİ</div>
+            <div style="color:var(--premium); font-size:12px; font-weight:bold; margin-bottom:5px;">👑 YETKİ PANELİ</div>
+            <input type="text" id="targetMail" class="input-box" placeholder="Kullanıcı Maili" style="font-size:11px; padding:8px;">
+            <button onclick="setRole('premium')" style="width:100%; background:var(--premium); border:none; padding:8px; border-radius:5px; font-weight:bold; cursor:pointer;">PREMİUM VER</button>
             <div class="user-list" id="userListDisplay">Yükleniyor...</div>
         </div>
-        <p style="color:#475569; font-size:11px; font-weight:bold;">MENÜ</p>
-        <div class="menu-item" onclick="openPage('home')">🏠 Anasayfa</div>
-        <div class="menu-item" onclick="openPage('adsoyad')">🔍 Ad Soyad Sorgu</div>
+
+        <p style="color:#475569; font-size:11px; font-weight:bold;">SORGULAR</p>
+        <div class="menu-item" onclick="openPage('adsoyad')">🔍 Ad Soyad</div>
         <div class="menu-item" onclick="openPage('tc')">🆔 T.C. Sorgu</div>
-        <div class="menu-item" onclick="openPage('aile')">👨‍👩‍👧‍👦 Aile Sorgu</div>
-        <div class="menu-item" onclick="openPage('sulale')">🧬 Sülale Sorgu <span class="vip-tag">PRE</span></div>
-        <div class="menu-item" onclick="openPage('tcgsm')">📱 T.C. -> GSM <span class="vip-tag">PRE</span></div>
-        <div class="menu-item" onclick="openPage('gsmtc')">📞 GSM -> T.C. <span class="vip-tag">PRE</span></div>
-        <div class="menu-item" onclick="openPage('adres')">📍 Adres Sorgu <span class="vip-tag">PRE</span></div>
-        <button onclick="logout()" style="width:100%; background:#ef4444; border:none; padding:12px; border-radius:10px; margin-top:20px; color:white; font-weight:bold;">Çıkış Yap</button>
+        <div id="premiumMenu" style="display:none;">
+            <div class="menu-item" onclick="openPage('adres')">📍 Adres <span class="vip-tag">PRE</span></div>
+            <div class="menu-item" onclick="openPage('sulale')">🧬 Sülale <span class="vip-tag">PRE</span></div>
+        </div>
+        <button onclick="logout()" style="width:100%; background:#ef4444; border:none; padding:10px; border-radius:10px; margin-top:20px; color:white; font-weight:bold;">Çıkış</button>
     </div>
 
     <div class="top-bar">
@@ -63,11 +60,8 @@
         <div style="width:24px;"></div>
     </div>
 
-    <div id="contentArea">
-        <div id="page-home" class="page active"><h2>Hoş Geldin</h2><p>Menüden bir sorgu kanalı seçin.</p></div>
-        <div id="page-adsoyad" class="page"><h3>🔍 AD SOYAD SORGULAMA</h3><input class="input-box" placeholder="Ad"><input class="input-box" placeholder="Soyad"><button class="btn-sorgu">SORGULA</button></div>
-        <div id="page-tc" class="page"><h3>🆔 T.C. SORGULAMA</h3><input type="number" class="input-box" placeholder="TC No"><button class="btn-sorgu">SORGULA</button></div>
-        <div id="page-aile" class="page"><h3>👨‍👩‍👧‍👦 AİLE SORGULAMA</h3><input type="number" class="input-box" placeholder="TC No"><button class="btn-sorgu">GETİR</button></div>
+    <div id="contentArea" style="padding:20px; text-align:center;">
+        <div id="page-home"><h2>Hoş Geldin</h2><p>Menüden sorgu seçin.</p></div>
     </div>
 </div>
 
@@ -84,7 +78,7 @@
     const BOSS = "afavan66@gmail.com";
 
     let isLogin = true;
-    function toggleAuth() { isLogin = !isLogin; document.getElementById('authBtn').innerText = isLogin ? "GİRİŞ YAP" : "KAYIT OL"; document.getElementById('authSwitch').innerText = isLogin ? "Kayıt Ol" : "Giriş Yap"; }
+    function toggleAuth() { isLogin = !isLogin; document.getElementById('authBtn').innerText = isLogin ? "GİRİŞ YAP" : "KAYIT OL"; }
     
     function handleAuth() {
         const email = document.getElementById('logEmail').value.trim().toLowerCase();
@@ -98,7 +92,7 @@
                 else alert("Hata!");
             });
         } else {
-            db.ref('users/' + key).set({email, pass, role:'freemium'}).then(() => { alert("Kayıt başarılı!"); toggleAuth(); });
+            db.ref('users/' + key).set({email, pass, role:'freemium'}).then(() => { alert("Kayıt başarılı!"); isLogin=true; handleAuth(); });
         }
     }
 
@@ -108,16 +102,22 @@
         document.getElementById('mainApp').style.display = 'block';
         if(session.role === 'admin') {
             document.getElementById('adminArea').style.display = 'block';
+            document.getElementById('premiumMenu').style.display = 'block';
             db.ref('users').on('value', s => {
                 const data = s.val(); let html = "";
-                if(data) { Object.keys(data).forEach(k => { html += `<div>${data[k].email} (${data[k].role})</div>`; }); }
-                document.getElementById('userListDisplay').innerHTML = html || "Üye yok.";
+                if(data) { Object.keys(data).forEach(k => { html += `<div>${data[k].email} [${data[k].role}]</div>`; }); }
+                document.getElementById('userListDisplay').innerHTML = html;
             });
         }
+        if(session.role === 'premium') document.getElementById('premiumMenu').style.display = 'block';
+    }
+
+    function setRole(r) {
+        const mail = document.getElementById('targetMail').value.trim().toLowerCase().replace(/\./g, '_');
+        if(mail) db.ref('users/' + mail).update({role: r}).then(() => alert("Yetki Verildi!"));
     }
 
     function toggleMenu() { document.getElementById('sideMenu').classList.toggle('active'); document.getElementById('overlay').classList.toggle('active'); }
-    function openPage(p) { toggleMenu(); document.querySelectorAll('.page').forEach(x => x.classList.remove('active')); document.getElementById('page-'+p).classList.add('active'); }
     function logout() { localStorage.removeItem('session'); location.reload(); }
 </script>
 </body>
