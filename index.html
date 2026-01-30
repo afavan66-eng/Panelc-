@@ -8,111 +8,190 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
     <style>
         :root { --primary: #3b82f6; --premium: #eab308; --danger: #ef4444; }
-        body { margin: 0; font-family: 'Segoe UI', sans-serif; background-color: #000; color: white; height: 100vh; overflow: hidden; }
+        body { margin: 0; font-family: 'Segoe UI', sans-serif; background-color: #0c111d; color: white; height: 100vh; overflow: hidden; }
+        
+        /* Giriş Ekranı */
         #authScreen { position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 99999; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(15px); }
-        .card { background: rgba(15, 23, 42, 0.9); padding: 2rem; border-radius: 15px; border: 1px solid var(--primary); width: 85%; max-width: 350px; }
-        .input { width: 100%; padding: 12px; margin: 8px 0; background: #000; border: 1px solid #333; border-radius: 8px; color: white; box-sizing: border-box; }
-        .button { width: 100%; padding: 12px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 5px; }
-        #logoutBtn { position: fixed; top: 15px; right: 15px; z-index: 10001; background: var(--danger); border: 1px solid white; color: white; padding: 8px 15px; border-radius: 8px; font-weight: bold; display: none; }
-        .sidebar { position: fixed; top: 0; left: -300px; width: 280px; height: 100%; background: #0a0a0a; padding: 70px 15px; transition: 0.3s; z-index: 10000; border-right: 1px solid #222; }
+        .card { background: rgba(15, 23, 42, 0.9); padding: 2.5rem; border-radius: 20px; border: 1px solid var(--primary); width: 85%; max-width: 360px; text-align: center; box-shadow: 0 0 20px rgba(59, 130, 246, 0.2); }
+        
+        .input { width: 100%; padding: 14px; margin: 10px 0; background: #000; border: 1px solid #333; border-radius: 10px; color: white; box-sizing: border-box; outline: none; transition: 0.3s; }
+        .input:focus { border-color: var(--primary); }
+        
+        .button { width: 100%; padding: 14px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; margin-top: 10px; color: white; transition: 0.3s; }
+        .button:active { transform: scale(0.98); }
+        
+        /* Panel Arayüzü */
+        #logoutBtn { position: fixed; top: 15px; right: 15px; z-index: 10001; background: var(--danger); border: 1px solid white; padding: 8px 15px; border-radius: 8px; font-weight: bold; display: none; cursor: pointer; font-size: 12px; }
+        .menu-icon { position: fixed; top: 15px; left: 15px; z-index: 10002; cursor: pointer; font-size: 28px; color: var(--primary); }
+        
+        .sidebar { position: fixed; top: 0; left: -300px; width: 280px; height: 100%; background: #070a11; padding: 80px 20px; transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1); z-index: 10000; border-right: 1px solid #1e293b; }
         .sidebar.active { left: 0; }
-        #adminArea { background: #1a1a1a; padding: 10px; border-radius: 10px; border: 1px solid var(--premium); margin-bottom: 20px; font-size: 12px; }
-        .user-row { display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px solid #333; }
+        
+        #adminArea { background: #111827; padding: 15px; border-radius: 12px; border: 1px solid var(--premium); margin-bottom: 25px; }
+        .user-list-container { max-height: 200px; overflow-y: auto; background: #000; border-radius: 8px; padding: 5px; margin: 10px 0; border: 1px solid #222; }
+        .user-row { display: flex; justify-content: space-between; padding: 8px 5px; border-bottom: 1px solid #222; font-size: 11px; }
+        .user-row b { color: var(--premium); }
+
+        .main-content { padding: 120px 20px; text-align: center; }
+        .status-badge { background: rgba(59, 130, 246, 0.1); border: 1px solid var(--primary); padding: 15px; border-radius: 15px; display: inline-block; margin-top: 20px; }
     </style>
 </head>
 <body>
 
 <div id="authScreen">
     <div class="card">
-        <h2 style="text-align:center; color: var(--primary);">WROX VIP GİRİŞ</h2>
-        <input type="email" id="email" class="input" placeholder="E-posta">
+        <h1 style="color: var(--primary); margin-bottom: 5px;">WROX VIP</h1>
+        <p id="authSubtitle" style="color: #64748b; font-size: 13px; margin-bottom: 20px;">Premium Veri Merkezi</p>
+        
+        <input type="email" id="email" class="input" placeholder="E-posta Adresi">
         <input type="password" id="pass" class="input" placeholder="Şifre">
-        <button class="button" style="background:var(--primary); color:white" onclick="handleAuth()">DEVAM ET</button>
-        <p id="toggleT" onclick="toggleM()" style="text-align:center; font-size:12px; cursor:pointer; color:#aaa; margin-top:15px;">Kayıt Olmak İçin Tıkla</p>
+        
+        <button class="button" style="background: var(--primary);" onclick="handleAuth()">DEVAM ET</button>
+        
+        <p id="toggleT" onclick="toggleMode()" style="font-size: 13px; cursor: pointer; color: #94a3b8; margin-top: 20px;">Hesabın yok mu? <b style="color: var(--primary);">Kayıt Ol</b></p>
     </div>
 </div>
 
-<div id="logoutBtn" onclick="logout()">ÇIKIŞ YAP</div>
-<div id="menuIcon" onclick="document.getElementById('sidebar').classList.toggle('active')" style="position:fixed; top:15px; left:15px; z-index:10002; cursor:pointer; font-size:24px;">☰</div>
+<div id="logoutBtn" onclick="logout()">GÜVENLİ ÇIKIŞ</div>
+
+<div class="menu-icon" onclick="document.getElementById('sidebar').classList.toggle('active')">☰</div>
 
 <div id="mainApp" style="display:none;">
     <div class="sidebar" id="sidebar">
         <div id="adminArea" style="display:none;">
-            <p style="color:var(--premium); margin-top:0;">👑 Admin Paneli</p>
-            <div id="userList" style="max-height:100px; overflow-y:auto; margin-bottom:10px;"></div>
-            <input type="email" id="tMail" class="input" placeholder="Mail Adresi" style="font-size:11px;">
-            <button class="button" style="background:var(--premium); font-size:11px; padding:5px;" onclick="setRole('premium')">PRE VER</button>
-            <button class="button" style="background:var(--danger); font-size:11px; padding:5px;" onclick="setRole('delete')">SİL</button>
+            <p style="color: var(--premium); margin: 0; font-weight: bold; font-size: 14px;">👑 ADMİN KONTROL</p>
+            <div class="user-list-container" id="userList">Kullanıcılar yükleniyor...</div>
+            
+            <input type="email" id="targetMail" class="input" placeholder="İşlem yapılacak mail" style="font-size: 11px; padding: 8px;">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 5px;">
+                <button class="button" style="background: var(--premium); color: black; font-size: 10px; padding: 8px;" onclick="adminSetRole('premium')">PRE VER</button>
+                <button class="button" style="background: #475569; font-size: 10px; padding: 8px;" onclick="adminSetRole('freemium')">PRE SİL</button>
+            </div>
+            <button class="button" style="background: var(--danger); font-size: 10px; padding: 8px; width: 100%;" onclick="adminSetRole('delete')">KULLANICIYI SİSTEMDEN AT</button>
         </div>
-        <div id="queries">
-            <div style="padding:10px; background:#222; margin-bottom:5px; border-radius:5px;">TC Sorgu</div>
-            <div style="padding:10px; background:#222; margin-bottom:5px; border-radius:5px;">Ad Soyad Sorgu</div>
+
+        <div style="color: #475569; font-size: 13px;">
+            <p>📁 Sorgu Paneli</p>
+            <div style="padding: 10px; background: #111827; border-radius: 8px; margin-bottom: 5px; cursor: not-allowed; opacity: 0.5;">TC Sorgu (Yakında)</div>
+            <div style="padding: 10px; background: #111827; border-radius: 8px; margin-bottom: 5px; cursor: not-allowed; opacity: 0.5;">Ad Soyad (Yakında)</div>
         </div>
     </div>
-    <div style="padding:100px 20px; text-align:center;">
-        <h1 style="color:var(--primary);">WROX VIP</h1>
-        <p id="userMailDisplay"></p>
+
+    <div class="main-content">
+        <h2 style="color: var(--primary); font-size: 32px; margin: 0;">WROX VIP PANEL</h2>
+        <div class="status-badge">
+            <p id="userMailDisplay" style="margin: 0; font-size: 16px; font-weight: bold;"></p>
+            <p id="userRoleDisplay" style="margin: 5px 0 0 0; font-size: 12px; color: var(--premium); letter-spacing: 1px;"></p>
+        </div>
     </div>
 </div>
 
 <script>
-    // FIREBASE AYARLARINI BURAYA YAPIŞTIR
+    // FIREBASE YAPILANDIRMASI
     const firebaseConfig = {
-        apiKey: "GÖRSELDEKİ_API_KEY",
+        apiKey: "AIzaSyD-he0y-CHV37ofCqNL0Gf-p96YFm8U_No",
         authDomain: "wrox-vip.firebaseapp.com",
         databaseURL: "https://wrox-vip-default-rtdb.firebaseio.com",
         projectId: "wrox-vip",
         storageBucket: "wrox-vip.appspot.com",
         messagingSenderId: "322623275508",
-        appId: "GÖRSELDEKİ_APP_ID"
+        appId: "1:322623275508:web:551921c56f71d9d977464a"
     };
 
-    firebase.initializeApp(firebaseConfig);
+    // Firebase Başlat
+    if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
-    let isLogin = true;
+    let isLoginMode = true;
 
+    // Giriş ve Kayıt İşlemi
     function handleAuth() {
-        const e = document.getElementById('email').value.replace(/\./g, '_');
-        const p = document.getElementById('pass').value;
-        if(isLogin) {
-            db.ref('users/' + e).once('value', s => {
-                const u = s.val();
-                if(u && u.pass === p) {
-                    localStorage.setItem('wrox_user', JSON.stringify(u));
+        const emailInput = document.getElementById('email').value.trim().toLowerCase();
+        const pass = document.getElementById('pass').value;
+        const fbKey = emailInput.replace(/\./g, '_'); // Firebase nokta kabul etmez
+
+        if(!emailInput || !pass) return alert("Lütfen tüm alanları doldurun!");
+
+        if(isLoginMode) {
+            // Giriş Yap
+            db.ref('users/' + fbKey).once('value').then(snapshot => {
+                const userData = snapshot.val();
+                if(userData && userData.pass === pass) {
+                    localStorage.setItem('wrox_session', JSON.stringify(userData));
                     location.reload();
-                } else alert("Hata!");
-            });
+                } else {
+                    alert("Hatalı giriş! Mail veya şifre yanlış.");
+                }
+            }).catch(err => alert("Veritabanı bağlantı hatası!"));
         } else {
-            db.ref('users/' + e).set({ email: e.replace(/_/g, '.'), pass: p, role: 'freemium' });
-            alert("Kayıt ok! Giriş yap."); location.reload();
+            // Kayıt Ol
+            db.ref('users/' + fbKey).set({
+                email: emailInput,
+                pass: pass,
+                role: 'freemium'
+            }).then(() => {
+                alert("Başarıyla kayıt oldunuz! Şimdi giriş yapabilirsiniz.");
+                location.reload();
+            });
         }
     }
 
-    const curr = JSON.parse(localStorage.getItem('wrox_user'));
-    if(curr) {
+    // Oturum Kontrolü
+    const session = JSON.parse(localStorage.getItem('wrox_session'));
+    if(session) {
         document.getElementById('authScreen').style.display = 'none';
         document.getElementById('mainApp').style.display = 'block';
         document.getElementById('logoutBtn').style.display = 'block';
-        document.getElementById('userMailDisplay').innerText = "Aktif Kullanıcı: " + curr.email;
-        if(curr.email === "afavan66@gmail.com") {
+        document.getElementById('userMailDisplay').innerText = session.email;
+        document.getElementById('userRoleDisplay').innerText = "YETKİ DURUMU: " + session.role.toUpperCase();
+        
+        // ADMİN Mİ? (afavan66@gmail.com kontrolü)
+        if(session.email === "afavan66@gmail.com") {
             document.getElementById('adminArea').style.display = 'block';
-            db.ref('users').on('value', s => {
-                const all = s.val(); let h = "";
-                for(let k in all) h += `<div class="user-row"><span>${all[k].email}</span> <span>${all[k].role}</span></div>`;
-                document.getElementById('userList').innerHTML = h;
+            // Tüm kullanıcıları gerçek zamanlı dinle
+            db.ref('users').on('value', snapshot => {
+                const users = snapshot.val();
+                let html = "";
+                for(let key in users) {
+                    html += `
+                    <div class="user-row">
+                        <span>${users[key].email}</span>
+                        <b>${users[key].role.toUpperCase()}</b>
+                    </div>`;
+                }
+                document.getElementById('userList').innerHTML = html || "Kayıtlı kullanıcı yok.";
             });
         }
     }
 
-    function setRole(r) {
-        const m = document.getElementById('tMail').value.replace(/\./g, '_');
-        if(r === 'delete') db.ref('users/' + m).remove();
-        else db.ref('users/' + m).update({ role: r });
-        alert("İşlem Başarılı!");
+    // Admin Yetki Verme/Silme Fonksiyonu
+    function adminSetRole(newRole) {
+        const targetMail = document.getElementById('targetMail').value.trim().toLowerCase();
+        const targetKey = targetMail.replace(/\./g, '_');
+        
+        if(!targetMail) return alert("Önce bir mail adresi yazın!");
+
+        if(newRole === 'delete') {
+            db.ref('users/' + targetKey).remove();
+            alert(targetMail + " sistemden silindi.");
+        } else {
+            db.ref('users/' + targetKey).update({ role: newRole });
+            alert(targetMail + " artık " + newRole.toUpperCase());
+        }
     }
 
-    function toggleM() { isLogin = !isLogin; document.getElementById('toggleT').innerText = isLogin ? "Kayıt Ol" : "Giriş Yap"; }
-    function logout() { localStorage.removeItem('wrox_user'); location.reload(); }
+    // Ekran Değiştirme (Giriş/Kayıt)
+    function toggleMode() {
+        isLoginMode = !isLoginMode;
+        document.getElementById('authSubtitle').innerText = isLoginMode ? "Premium Veri Merkezi" : "Yeni Hesap Oluştur";
+        document.querySelector('#authScreen h1').innerText = isLoginMode ? "WROX VIP" : "KAYIT OL";
+        document.getElementById('toggleT').innerHTML = isLoginMode ? 'Hesabın yok mu? <b style="color: var(--primary);">Kayıt Ol</b>' : 'Zaten üye misin? <b style="color: var(--primary);">Giriş Yap</b>';
+    }
+
+    // Çıkış
+    function logout() {
+        localStorage.removeItem('wrox_session');
+        location.reload();
+    }
 </script>
 </body>
 </html>
