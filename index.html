@@ -1,222 +1,118 @@
 <!DOCTYPE html>
-<html lang="tr" class="dark">
+<html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no">
-    <title>WROX VIP - Panel</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+    <title>WROX VIP - Cloud Panel</title>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
     <style>
-        :root { --primary: #3b82f6; --premium: #eab308; --danger: #ef4444; --bg: #0f172a; }
-        
-        body { 
-            margin: 0; font-family: 'Segoe UI', sans-serif; 
-            background: url('arka_plan.jpg') center/cover fixed !important; 
-            background-color: #000;
-            color: white; height: 100vh; overflow: hidden;
-        }
-
-        #menuBtn {
-            position: fixed; top: 15px; left: 15px; z-index: 10001;
-            background: rgba(0, 0, 0, 0.7); border: 1px solid var(--primary);
-            color: white; padding: 12px; border-radius: 8px; cursor: pointer;
-            display: flex; flex-direction: column; gap: 4px; backdrop-filter: blur(5px);
-        }
-        #menuBtn span { width: 22px; height: 2px; background: white; transition: 0.3s; }
-
-        #logoutIcon {
-            position: fixed; top: 15px; right: 15px; z-index: 10001;
-            background: var(--danger); border: 2px solid white;
-            color: white; padding: 10px 15px; border-radius: 10px; cursor: pointer;
-            font-weight: bold; font-size: 12px; display: none;
-        }
-
-        #authScreen { position: fixed; inset: 0; background: rgba(0,0,0,0.96); z-index: 99999; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(15px); }
-        .card { background: rgba(15, 23, 42, 0.95); padding: 2rem; border-radius: 15px; border: 1px solid var(--primary); width: 85%; max-width: 350px; }
-        
-        .input { width: 100%; padding: 12px; margin: 8px 0; background: #000; border: 1px solid #333; border-radius: 8px; color: white; box-sizing: border-box; outline: none; }
-        .button { width: 100%; padding: 12px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.2s; margin-top: 5px; }
-        .button-primary { background: var(--primary); color: white; }
-        .button-danger { background: var(--danger); color: white; }
-        
-        .sidebar { 
-            position: fixed; top: 0; left: -320px; width: 300px; height: 100%;
-            background: rgba(0,0,0,0.98); padding: 80px 20px 20px 20px; 
-            overflow-y: auto; border-right: 1px solid #222; 
-            transition: 0.4s; z-index: 10000;
-        }
+        :root { --primary: #3b82f6; --premium: #eab308; --danger: #ef4444; }
+        body { margin: 0; font-family: 'Segoe UI', sans-serif; background-color: #000; color: white; height: 100vh; overflow: hidden; }
+        #authScreen { position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 99999; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(15px); }
+        .card { background: rgba(15, 23, 42, 0.9); padding: 2rem; border-radius: 15px; border: 1px solid var(--primary); width: 85%; max-width: 350px; }
+        .input { width: 100%; padding: 12px; margin: 8px 0; background: #000; border: 1px solid #333; border-radius: 8px; color: white; box-sizing: border-box; }
+        .button { width: 100%; padding: 12px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 5px; }
+        #logoutBtn { position: fixed; top: 15px; right: 15px; z-index: 10001; background: var(--danger); border: 1px solid white; color: white; padding: 8px 15px; border-radius: 8px; font-weight: bold; display: none; }
+        .sidebar { position: fixed; top: 0; left: -300px; width: 280px; height: 100%; background: #0a0a0a; padding: 70px 15px; transition: 0.3s; z-index: 10000; border-right: 1px solid #222; }
         .sidebar.active { left: 0; }
-        
-        #contentArea { padding: 90px 15px 20px 15px; height: 100vh; box-sizing: border-box; overflow-y: auto; text-align: center; }
-
-        .query-item { background: rgba(255,255,255,0.03); padding: 15px; margin-bottom: 12px; border-radius: 12px; cursor: pointer; position: relative; border: 1px solid rgba(255,255,255,0.1); }
-        .query-title { font-weight: bold; color: var(--primary); font-size: 14px; }
-        .lock { position: absolute; inset: 0; background: rgba(0,0,0,0.85); display: flex; align-items: center; justify-content: center; color: var(--premium); font-size: 11px; border-radius: 12px; font-weight: bold; }
-        
-        #adminArea { background: rgba(30, 41, 59, 0.95); border: 2px solid var(--premium); padding: 15px; border-radius: 12px; margin-bottom: 25px; }
-        .user-list { background: rgba(0,0,0,0.5); border-radius: 8px; padding: 10px; margin-top: 10px; max-height: 120px; overflow-y: auto; font-size: 10px; text-align: left; }
-        .user-list-item { border-bottom: 1px solid #333; padding: 5px 0; display: flex; justify-content: space-between; }
-
-        .result-box { background: #000; padding: 15px; border-radius: 10px; border: 1px solid #333; margin-top: 20px; white-space: pre-wrap; color: #10b981; text-align: left; }
-        #toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); padding: 12px 25px; border-radius: 30px; display: none; z-index: 100005; font-weight: bold; }
-        #musicControl { position: fixed; bottom: 20px; left: 20px; z-index: 1000; background: rgba(0,0,0,0.7); width: 45px; height: 45px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 1px solid var(--primary); color: white; }
+        #adminArea { background: #1a1a1a; padding: 10px; border-radius: 10px; border: 1px solid var(--premium); margin-bottom: 20px; font-size: 12px; }
+        .user-row { display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px solid #333; }
     </style>
 </head>
 <body>
 
-    <audio id="bgMusic" loop><source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-15.mp3" type="audio/mpeg"></audio>
-    <div id="musicControl" onclick="toggleMusic()">🔊</div>
+<div id="authScreen">
+    <div class="card">
+        <h2 style="text-align:center; color: var(--primary);">WROX VIP GİRİŞ</h2>
+        <input type="email" id="email" class="input" placeholder="E-posta">
+        <input type="password" id="pass" class="input" placeholder="Şifre">
+        <button class="button" style="background:var(--primary); color:white" onclick="handleAuth()">DEVAM ET</button>
+        <p id="toggleT" onclick="toggleM()" style="text-align:center; font-size:12px; cursor:pointer; color:#aaa; margin-top:15px;">Kayıt Olmak İçin Tıkla</p>
+    </div>
+</div>
 
-    <div id="authScreen">
-        <div class="card">
-            <h1 style="text-align:center; color: var(--primary);">WROX VIP</h1>
-            <input type="email" id="authEmail" class="input" placeholder="E-posta">
-            <input type="password" id="authPass" class="input" placeholder="Şifre">
-            <button class="button button-primary" onclick="handleAuth()">GİRİŞ YAP</button>
-            <p onclick="toggleAuth()" style="text-align:center; font-size:13px; margin-top:20px; cursor:pointer; color:#777;">Kayıt Ol</p>
+<div id="logoutBtn" onclick="logout()">ÇIKIŞ YAP</div>
+<div id="menuIcon" onclick="document.getElementById('sidebar').classList.toggle('active')" style="position:fixed; top:15px; left:15px; z-index:10002; cursor:pointer; font-size:24px;">☰</div>
+
+<div id="mainApp" style="display:none;">
+    <div class="sidebar" id="sidebar">
+        <div id="adminArea" style="display:none;">
+            <p style="color:var(--premium); margin-top:0;">👑 Admin Paneli</p>
+            <div id="userList" style="max-height:100px; overflow-y:auto; margin-bottom:10px;"></div>
+            <input type="email" id="tMail" class="input" placeholder="Mail Adresi" style="font-size:11px;">
+            <button class="button" style="background:var(--premium); font-size:11px; padding:5px;" onclick="setRole('premium')">PRE VER</button>
+            <button class="button" style="background:var(--danger); font-size:11px; padding:5px;" onclick="setRole('delete')">SİL</button>
+        </div>
+        <div id="queries">
+            <div style="padding:10px; background:#222; margin-bottom:5px; border-radius:5px;">TC Sorgu</div>
+            <div style="padding:10px; background:#222; margin-bottom:5px; border-radius:5px;">Ad Soyad Sorgu</div>
         </div>
     </div>
-
-    <div id="menuBtn" onclick="toggleSidebar()"><span></span><span></span><span></span></div>
-    <div id="logoutIcon" onclick="logout()">ÇIKIŞ</div>
-
-    <div id="mainApp" style="display: none;">
-        <div class="sidebar" id="sidebar">
-            <div id="adminArea" style="display: none;">
-                <h4 style="margin:0; color:var(--premium);">👑 ADMIN KONTROL</h4>
-                <div class="user-list" id="userDisplay"></div>
-                <input type="email" id="targetMail" class="input" placeholder="Hedef Mail..." style="font-size:11px;">
-                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:5px;">
-                    <button class="button" style="background:var(--premium); color:black; font-size:10px;" onclick="adminAction('premium')">PRE VER</button>
-                    <button class="button" style="background:#475569; color:white; font-size:10px;" onclick="adminAction('freemium')">PRE SİL</button>
-                </div>
-                <button class="button button-danger" style="font-size:10px; width:100%; margin-top:5px;" onclick="adminAction('delete')">KULLANICIYI SİL</button>
-            </div>
-            <div id="qList"></div>
-            <button onclick="logout()" class="button button-danger" style="margin-top:30px;">HESAPTAN ÇIK</button>
-        </div>
-
-        <div id="contentArea">
-            <div id="workArea">
-                <h2 style="color:var(--primary);">WROX VIP</h2>
-                <div style="margin-top:20px; padding: 15px; background: rgba(255,255,255,0.05); border-radius: 10px; display: inline-block;">
-                    <span id="uMail" style="color:var(--primary); font-weight: bold;"></span><br>
-                    <span id="uRole" style="font-size: 11px;"></span>
-                </div>
-            </div>
-        </div>
+    <div style="padding:100px 20px; text-align:center;">
+        <h1 style="color:var(--primary);">WROX VIP</h1>
+        <p id="userMailDisplay"></p>
     </div>
+</div>
 
-    <div id="toast"></div>
+<script>
+    // FIREBASE AYARLARINI BURAYA YAPIŞTIR
+    const firebaseConfig = {
+        apiKey: "GÖRSELDEKİ_API_KEY",
+        authDomain: "wrox-vip.firebaseapp.com",
+        databaseURL: "https://wrox-vip-default-rtdb.firebaseio.com",
+        projectId: "wrox-vip",
+        storageBucket: "wrox-vip.appspot.com",
+        messagingSenderId: "322623275508",
+        appId: "GÖRSELDEKİ_APP_ID"
+    };
 
-    <script>
-        const ADMIN_MAIL = "afavan66@gmail.com";
-        const ADMIN_PASS = "Efecan1903";
-        const FREE_LIST = ['adsoyad', 'tc', 'aile'];
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+    let isLogin = true;
 
-        const queries = [
-            { id: 'adsoyad', title: 'Ad Soyad Sorgulama' },
-            { id: 'tc', title: 'TC Sorgulama' },
-            { id: 'aile', title: 'Aile Sorgulama' },
-            { id: 'hayat', title: 'Hayat Hikayesi' },
-            { id: 'tcgsm', title: 'TC GSM Sorgulama' },
-            { id: 'gsmtc', title: 'GSM TC Sorgulama' },
-            { id: 'adres', title: 'Adres Sorgulama' },
-            { id: 'hane', title: 'Hane Sorgulama' },
-            { id: 'sulale', title: 'Sülale Sorgulama' },
-            { id: 'leak', title: 'Leak Sorgulama' },
-            { id: 'papara', title: 'Papara Sorgulama' },
-            { id: 'plaka', title: 'Plaka Sorgulama' }
-        ];
-
-        let users = JSON.parse(localStorage.getItem('wrox_users')) || [];
-        let curr = JSON.parse(localStorage.getItem('current_wrox_user')) || null;
-        let loginMode = true;
-
-        function init() {
-            if (curr) {
-                document.getElementById('authScreen').style.display = 'none';
-                document.getElementById('mainApp').style.display = 'block';
-                document.getElementById('logoutIcon').style.display = 'block';
-                document.getElementById('uMail').innerText = curr.email;
-                document.getElementById('uRole').innerText = "YETKİ: " + curr.role.toUpperCase();
-                if (curr.email === ADMIN_MAIL) {
-                    document.getElementById('adminArea').style.display = 'block';
-                    updateUserList();
-                }
-                render();
-            }
+    function handleAuth() {
+        const e = document.getElementById('email').value.replace(/\./g, '_');
+        const p = document.getElementById('pass').value;
+        if(isLogin) {
+            db.ref('users/' + e).once('value', s => {
+                const u = s.val();
+                if(u && u.pass === p) {
+                    localStorage.setItem('wrox_user', JSON.stringify(u));
+                    location.reload();
+                } else alert("Hata!");
+            });
+        } else {
+            db.ref('users/' + e).set({ email: e.replace(/_/g, '.'), pass: p, role: 'freemium' });
+            alert("Kayıt ok! Giriş yap."); location.reload();
         }
+    }
 
-        function updateUserList() {
-            const display = document.getElementById('userDisplay');
-            display.innerHTML = users.map(u => `<div class="user-list-item"><span>${u.email}</span><span>${u.role.toUpperCase()}</span></div>`).join('');
+    const curr = JSON.parse(localStorage.getItem('wrox_user'));
+    if(curr) {
+        document.getElementById('authScreen').style.display = 'none';
+        document.getElementById('mainApp').style.display = 'block';
+        document.getElementById('logoutBtn').style.display = 'block';
+        document.getElementById('userMailDisplay').innerText = "Aktif Kullanıcı: " + curr.email;
+        if(curr.email === "afavan66@gmail.com") {
+            document.getElementById('adminArea').style.display = 'block';
+            db.ref('users').on('value', s => {
+                const all = s.val(); let h = "";
+                for(let k in all) h += `<div class="user-row"><span>${all[k].email}</span> <span>${all[k].role}</span></div>`;
+                document.getElementById('userList').innerHTML = h;
+            });
         }
+    }
 
-        function toggleSidebar() { document.getElementById('sidebar').classList.toggle('active'); }
+    function setRole(r) {
+        const m = document.getElementById('tMail').value.replace(/\./g, '_');
+        if(r === 'delete') db.ref('users/' + m).remove();
+        else db.ref('users/' + m).update({ role: r });
+        alert("İşlem Başarılı!");
+    }
 
-        function handleAuth() {
-            const e = document.getElementById('authEmail').value.trim().toLowerCase();
-            const p = document.getElementById('authPass').value;
-            if (loginMode) {
-                if (e === ADMIN_MAIL && p === ADMIN_PASS) curr = { email: e, role: 'admin' };
-                else {
-                    const u = users.find(x => x.email === e && x.pass === p);
-                    if (!u) return msg("Bilgiler hatalı!", "err");
-                    curr = u;
-                }
-                localStorage.setItem('current_wrox_user', JSON.stringify(curr));
-                location.reload();
-            } else {
-                if (users.find(x => x.email === e)) return msg("Mail kayıtlı!");
-                users.push({ email: e, pass: p, role: 'freemium' });
-                localStorage.setItem('wrox_users', JSON.stringify(users));
-                msg("Başarılı!"); toggleAuth();
-            }
-        }
-
-        function toggleAuth() { loginMode = !loginMode; document.querySelector('#authScreen button').innerText = loginMode ? "GİRİŞ YAP" : "KAYIT OL"; }
-
-        function render() {
-            const l = document.getElementById('qList');
-            l.innerHTML = queries.map(q => {
-                const lock = (curr.role === 'freemium' && !FREE_LIST.includes(q.id));
-                return `<div class="query-item" onclick="${lock ? "msg('Premium Lazım!', 'err')" : "openQ('"+q.id+"', '"+q.title+"')" }">${lock ? '<div class="lock">🔒 PRE</div>' : ''}<div class="query-title">${q.title}</div></div>`;
-            }).join('');
-        }
-
-        function openQ(id, title) {
-            if(window.innerWidth < 768) toggleSidebar(); 
-            document.getElementById('workArea').innerHTML = `<div class="card" style="width:100%; max-width:500px; margin:auto; text-align:left;"><h3 style="color:var(--primary);">${title}</h3><input type="text" id="val" class="input" placeholder="Veri gir..."><button class="button button-primary" onclick="callApi('${id}')">SORGULA</button><div id="res" class="result-box" style="display:none;"></div></div>`;
-        }
-
-        function callApi(id) {
-            const v = document.getElementById('val').value;
-            if (!v) return msg("Veri gir!", "err");
-            const r = document.getElementById('res');
-            r.style.display = "block"; r.innerHTML = "⌛ Sorgulanıyor...";
-            setTimeout(() => { r.innerHTML = `Sorgu: ${id.toUpperCase()}\nSonuç: Kayıt bulunamadı.`; }, 1000);
-        }
-
-        function adminAction(act) {
-            const m = document.getElementById('targetMail').value.toLowerCase();
-            if (act === 'delete') {
-                users = users.filter(x => x.email !== m);
-                msg("Kullanıcı Silindi!", "err");
-            } else {
-                let i = users.findIndex(x => x.email === m);
-                if (i !== -1) { users[i].role = act; msg("Yetki Güncellendi!"); }
-                else return msg("Bulunamadı!", "err");
-            }
-            localStorage.setItem('wrox_users', JSON.stringify(users));
-            updateUserList(); render();
-        }
-
-        function toggleMusic() { const m = document.getElementById('bgMusic'); m.paused ? m.play() : m.pause(); }
-        function logout() { localStorage.removeItem('current_wrox_user'); location.reload(); }
-        function msg(m, t) { const x = document.getElementById('toast'); x.innerText = m; x.style.background = t === "err" ? "red" : "green"; x.style.display = "block"; setTimeout(() => x.style.display = "none", 3000); }
-        
-        document.body.addEventListener('click', () => { if(document.getElementById('bgMusic').paused) document.getElementById('bgMusic').play(); }, { once: true });
-        init();
-    </script>
+    function toggleM() { isLogin = !isLogin; document.getElementById('toggleT').innerText = isLogin ? "Kayıt Ol" : "Giriş Yap"; }
+    function logout() { localStorage.removeItem('wrox_user'); location.reload(); }
+</script>
 </body>
 </html>
-
