@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="tr" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no">
+    <title>Yıldırım VIP - Tam Panel</title>
+    <style>
+        :root { --primary: #3b82f6; --premium: #eab308; --danger: #ef4444; --bg: #0f172a; }
+        
+        body { 
+            margin: 0; font-family: 'Segoe UI', sans-serif; 
+            background: url('https://r.resimlink.com/5rb9MuLzfam.jpg') center/cover fixed !important; 
+            color: white; height: 100vh; overflow: hidden;
+        }
+
+        /* Giriş Ekranı */
+        #authScreen { position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 9999; display: flex; align-items: center; justify-content: center; backdrop-filter: blur(15px); }
+        .card { background: rgba(15, 23, 42, 0.9); padding: 2rem; border-radius: 15px; border: 1px solid var(--primary); width: 350px; box-shadow: 0 0 20px var(--primary); }
+        
+        /* Form Elemanları */
+        .input { width: 100%; padding: 12px; margin: 8px 0; background: #1a1a1a; border: 1px solid #333; border-radius: 8px; color: white; box-sizing: border-box; outline: none; }
+        .input:focus { border-color: var(--primary); }
+        .button { width: 100%; padding: 12px; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.2s; margin-top: 5px; }
+        .button-primary { background: var(--primary); color: white; }
+        .button-premium { background: var(--premium); color: black; }
+        .button-danger { background: var(--danger); color: white; }
+        
+        /* Ana Panel Yapısı */
+        #mainApp { display: grid; grid-template-columns: 320px 1fr; height: 100vh; }
+        .sidebar { background: rgba(0,0,0,0.85); padding: 20px; overflow-y: auto; border-right: 1px solid #222; }
+        
+        /* Sorgu Kartları */
+        .query-item { background: rgba(255,255,255,0.05); padding: 15px; margin-bottom: 10px; border-radius: 10px; cursor: pointer; position: relative; border: 1px solid transparent; }
+        .query-item:hover { border-color: var(--primary); background: rgba(255,255,255,0.08); }
+        .lock { position: absolute; inset: 0; background: rgba(0,0,0,0.85); display: flex; align-items: center; justify-content: center; color: var(--premium); font-size: 11px; border-radius: 10px; font-weight: bold; text-transform: uppercase; border: 1px solid var(--premium); }
+        
+        /* Admin Paneli */
+        #adminArea { background: rgba(30, 41, 59, 0.9); border: 2px solid var(--premium); padding: 15px; border-radius: 10px; margin-bottom: 20px; box-shadow: 0 0 10px rgba(234, 179, 8, 0.3); }
+        .admin-btns { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 5px; margin-top: 10px; }
+        .admin-btns button { font-size: 9px; padding: 8px 2px; }
+
+        /* Sonuç ve Diğerleri */
+        .result-box { background: #000; padding: 15px; border-radius: 8px; border: 1px solid #333; margin-top: 20px; white-space: pre-wrap; font-family: monospace; color: #10b981; max-height: 400px; overflow-y: auto; }
+        #toast { position: fixed; top: 20px; right: 20px; padding: 15px 25px; border-radius: 8px; display: none; z-index: 10000; font-weight: bold; }
+        
+        #musicControl { position: fixed; bottom: 20px; right: 20px; z-index: 1000; background: rgba(0,0,0,0.7); width: 45px; height: 45px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; border: 1px solid var(--primary); color: white; font-size: 20px; transition: 0.3s; }
+        #musicControl:hover { transform: scale(1.1); background: var(--primary); }
+    </style>
+</head>
+<body>
+
+    <audio id="bgMusic" loop>
+        <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-15.mp3" type="audio/mpeg">
+    </audio>
+    <div id="musicControl" onclick="toggleMusic()">🔊</div>
+
+    <div id="authScreen">
+        <div class="card">
+            <h2 id="authTitle" style="text-align:center; color: var(--primary); margin-bottom: 20px;">YILDIRIM VIP</h2>
+            <input type="email" id="authEmail" class="input" placeholder="E-posta Adresiniz">
+            <input type="password" id="authPass" class="input" placeholder="Şifreniz">
+            <button class="button button-primary" onclick="handleAuth()" id="authBtn">Giriş Yap</button>
+            <p onclick="toggleAuth()" style="text-align:center; font-size:13px; margin-top:15px; cursor:pointer; opacity:0.7; color: #aaa;">Hesabın yok mu? <span style="color: var(--primary);">Kayıt Ol</span></p>
+        </div>
+    </div>
+
+    <div id="mainApp" style="display: none;">
+        <div class="sidebar">
+            <div id="adminArea" style="display: none;">
+                <h4 style="margin:0 0 10px 0; color:var(--premium); font-size: 13px; text-shadow: 0 0 5px orange;">👑 ADMİN YETKİ MERKEZİ</h4>
+                <input type="email" id="targetMail" class="input" placeholder="Kullanıcı Maili..." style="font-size: 12px; margin:0;">
+                <div class="admin-btns">
+                    <button class="button button-premium" onclick="adminAction('premium')">PRE VER</button>
+                    <button class="button button-primary" onclick="adminAction('freemium')" style="background:#475569">PRE AL</button>
+                    <button class="button button-danger" onclick="adminAction('delete')">SİL</button>
+                </div>
+            </div>
+
+            <div id="qList"></div>
+            
+            <button onclick="logout()" class="button button-danger" style="margin-top:20px; opacity:0.5; font-size: 12px;">Oturumu Kapat</button>
+        </div>
+
+        <div style="padding: 40px; overflow-y: auto;">
+            <div id="workArea">
+                <h1 style="color:var(--primary); text-shadow: 0 0 10px var(--primary);">SİSTEME HOŞ GELDİNİZ</h1>
+                <p style="opacity: 0.7;">Lütfen sol menüden bir sorgu seçerek başlayın.</p>
+                
+                <div style="margin-top: 50px; border-top: 1px solid #222; padding-top: 20px; font-size: 12px; color: #555;">
+                    <p>Aktif Oturum: <span id="userMailDisplay" style="color: var(--primary);"></span></p>
+                    <p>Üyelik Tipi: <span id="userRoleDisplay"></span></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast"></div>
+
+    <script>
+        // --- ADMİN VE YETKİ AYARLARI ---
+        const ADMIN_MAIL = "afavan66@gmail.com";
+        const ADMIN_PASS = "Efecan1903";
+        const FREE_LIST = ['adsoyad', 'tc', 'aile']; // Freemium kullanıcıların erişebileceği sorgu ID'leri
+
+        // SORGULAR LİSTESİ
+        const queries = [
+            { id: 'adsoyad', title: 'Ad Soyad Sorgu' },
+            { id: 'tc', title: 'TC Sorgu' },
+            { id: 'aile', title: 'Aile Sorgu' },
+            { id: 'gsm', title: 'GSM Sorgu (VIP)' },
+            { id: 'plaka', title: 'Plaka Sorgu (VIP)' },
+            { id: 'adres', title: 'Adres Sorgu (VIP)' }
+        ];
+
+        let users = JSON.parse(localStorage.getItem('vip_users')) || [];
+        let curr = JSON.parse(localStorage.getItem('current_vip_user')) || null;
+        let loginMode = true;
+
+        // --- SİSTEMİ BAŞLAT ---
+        function init() {
+            if (curr) {
+                document.getElementById('authScreen').style.display = 'none';
+                document.getElementById('mainApp').style.display = 'grid';
+                document.getElementById('userMailDisplay').innerText = curr.email;
+                document.getElementById('userRoleDisplay').innerText = curr.role.toUpperCase();
+                document.getElementById('userRoleDisplay').style.color = curr.role === 'premium' ? 'var(--premium)' : (curr.role === 'admin' ? 'red' : 'white');
+                
+                if (curr.email === ADMIN_MAIL) document.getElementById('adminArea').style.display = 'block';
+                render();
+            }
+        }
+
+        // --- GİRİŞ VE KAYIT MANTIĞI ---
+        function handleAuth() {
+            const e = document.getElementById('authEmail').value.trim().toLowerCase();
+            const p = document.getElementById('authPass').value;
+            
+            if(!e || !p) return msg("Lütfen boş alan bırakmayın!", "err");
+
+            if (loginMode) {
+                // Admin Girişi
+                if (e === ADMIN_MAIL && p === ADMIN_PASS) {
+                    curr = { email: e, role: 'admin' };
+                } else {
+                    // Kullanıcı Girişi
+                    const u = users.find(x => x.email === e && x.pass === p);
+                    if (!u) return msg("E-posta veya şifre yanlış!", "err");
+                    curr = u;
+                }
+                localStorage.setItem('current_vip_user', JSON.stringify(curr));
+                location.reload();
+            } else {
+                // Kayıt Olma
+                if (users.find(x => x.email === e)) return msg("Bu e-posta zaten kayıtlı!", "err");
+                if (e === ADMIN_MAIL) return msg("Bu maille kayıt olunamaz!", "err");
+                
+                users.push({ email: e, pass: p, role: 'freemium' });
+                localStorage.setItem('vip_users', JSON.stringify(users));
+                msg("Başarıyla kayıt oldunuz! Giriş yapabilirsiniz.");
+                toggleAuth();
+            }
+        }
+
+        function toggleAuth() {
+            loginMode = !loginMode;
+            document.getElementById('authTitle').innerText = loginMode ? "YILDIRIM VIP" : "KAYIT OL";
+            document.getElementById('authBtn').innerText = loginMode ? "Giriş Yap" : "Kayıt Ol";
+        }
+
+        // --- SOL MENÜYÜ YETKİYE GÖRE ÇİZ ---
+        function render() {
+            const l = document.getElementById('qList');
+            l.innerHTML = queries.map(q => {
+                const lock = (curr.role === 'freemium' && !FREE_LIST.includes(q.id));
+                return `
+                    <div class="query-item" onclick="${lock ? "msg('Bu sorgu sadece Premium üyeler içindir!', 'err')" : "openQ('"+q.id+"', '"+q.title+"')" }">
+                        ${lock ? '<div class="lock">🔒 PREMIUM GEREKLİ</div>' : ''}
+                        <div style="font-weight:bold; color:var(--primary)">${q.title}</div>
+                        <div style="font-size:10px; opacity:0.5; margin-top:3px;">İşlem yapmak için tıkla</div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // --- SORGU EKRANINI AÇ ---
+        function openQ(id, title) {
+            document.getElementById('workArea').innerHTML = `
+                <div class="card" style="width:100%; max-width:600px;">
+                    <h2 style="color:var(--primary); margin-top:0;">${title}</h2>
+                    <input type="text" id="val" class="input" placeholder="Sorgulanacak Değer (Örn: TC No veya İsim)">
+                    <button class="button button-primary" onclick="callApi('${id}')">VERİLERİ SORGULA</button>
+                    <div id="res" class="result-box" style="display:none;"></div>
+                </div>`;
+        }
+
+        // --- API ÇAĞRISI (Burası API'lerin bağlanacağı yer) ---
+        async function callApi(id) {
+            const v = document.getElementById('val').value.trim();
+            const r = document.getElementById('res');
+            if (!v) return msg("Sorgu değeri boş olamaz!", "err");
+            
+            r.style.display = "block";
+            r.innerHTML = "⌛ Veritabanına istek gönderiliyor...";
+
+            // API LINKLERINI BURAYA EKLE:
+            let url = "";
+            if(id === 'adsoyad') url = `https://api.seninsiten.com/adsoyad?key=KEY&q=${v}`;
+            if(id === 'tc') url = `https://api.seninsiten.com/tc?key=KEY&q=${v}`;
+            
+            try {
+                // API Aktif olduğunda şu 3 satırı kullan:
+                // const response = await fetch(url);
+                // const data = await response.json();
+                // r.innerHTML = JSON.stringify(data, null, 2);
+                
+                // TEST SİMÜLASYONU:
+                setTimeout(() => { 
+                    r.innerHTML = `[SONUÇ BULUNDU]\n--------------------\nSorgu Tipi: ${id.toUpperCase()}\nDeğer: ${v}\nDurum: Başarılı\nVeri: API henüz tanımlanmadığı için ham veri çekilemedi.`; 
+                }, 1500);
+            } catch (e) { r.innerHTML = "❌ Sunucu hatası veya API bağlantı sorunu!"; }
+        }
+
+        // --- ADMİN YETKİ YÖNETİMİ ---
+        function adminAction(act) {
+            const m = document.getElementById('targetMail').value.trim().toLowerCase();
+            if(!m) return msg("Hedef mail girmediniz!", "err");
+
+            if (act === 'delete') {
+                if(m === ADMIN_MAIL) return msg("Admin silinemez!", "err");
+                users = users.filter(x => x.email !== m);
+                msg("Hesap sistemden temizlendi.");
+            } else {
+                let i = users.findIndex(x => x.email === m);
+                if (i !== -1) { 
+                    users[i].role = act; 
+                    msg(`${m} artık ${act.toUpperCase()} yetkisine sahip.`);
+                } else {
+                    msg("Böyle bir kullanıcı kayıtlı değil!", "err");
+                }
+            }
+            localStorage.setItem('vip_users', JSON.stringify(users));
+            render();
+            document.getElementById('targetMail').value = "";
+        }
+
+        // --- MÜZİK KONTROLLERİ ---
+        function toggleMusic() {
+            const m = document.getElementById('bgMusic');
+            const c = document.getElementById('musicControl');
+            if (m.paused) { m.play(); c.innerHTML = "🔊"; } else { m.pause(); c.innerHTML = "🔇"; }
+        }
+
+        // Kullanıcı sayfada herhangi bir yere tıkladığında müziği başlat (Tarayıcı engeli için)
+        document.body.addEventListener('click', () => {
+            const m = document.getElementById('bgMusic');
+            if(m.paused) { 
+                m.play(); 
+                document.getElementById('musicControl').innerHTML = "🔊"; 
+            }
+        }, { once: true });
+
+        // Çıkış
+        function logout() { localStorage.removeItem('current_vip_user'); location.reload(); }
+        
+        // Bildirim (Toast) Mesajı
+        function msg(m, t) {
+            const x = document.getElementById('toast');
+            x.innerText = m; 
+            x.style.background = t === "err" ? "var(--danger)" : "#10b981";
+            x.style.display = "block"; 
+            setTimeout(() => x.style.display = "none", 3000);
+        }
+
+        init();
+    </script>
+</body>
+</html>
