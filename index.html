@@ -9,200 +9,156 @@
     <style>
         :root { --primary: #3b82f6; --premium: #eab308; --danger: #ef4444; --dark-bg: #0c111d; --card-bg: #111827; }
         body { margin: 0; font-family: 'Segoe UI', sans-serif; background: var(--dark-bg); color: white; height: 100vh; overflow: hidden; }
-        
-        /* Input & Button Styles */
         .input-box { width: 100%; padding: 12px; margin: 8px 0; background: #000; border: 1px solid #333; border-radius: 10px; color: white; outline: none; box-sizing: border-box; }
-        .btn-sorgu { width: 100%; background: var(--primary); border:none; padding: 15px; color:white; border-radius:10px; font-weight:bold; cursor:pointer; margin-top:10px; transition: 0.3s; }
-        .btn-sorgu:active { transform: scale(0.98); background: #2563eb; }
-
-        /* Auth Screen */
-        #authScreen { position: fixed; inset: 0; background: #000; z-index: 99999; display: flex; align-items: center; justify-content: center; }
-        .auth-card { background: var(--card-bg); padding: 2.5rem; border-radius: 20px; border: 1px solid var(--primary); width: 85%; max-width: 350px; text-align: center; }
-
-        /* Layout */
+        .btn-sorgu { width: 100%; background: var(--primary); border:none; padding: 15px; color:white; border-radius:10px; font-weight:bold; cursor:pointer; margin-top:10px; }
         .top-bar { display: flex; justify-content: space-between; align-items: center; padding: 15px; background: var(--dark-bg); border-bottom: 1px solid #1e293b; }
         .side-menu { position: fixed; top: 0; left: -100%; width: 85%; max-width: 320px; height: 100%; background: #070a11; transition: 0.4s; z-index: 1000; padding: 20px; border-right: 2px solid var(--primary); overflow-y: auto; box-sizing: border-box; }
         .side-menu.active { left: 0; }
         .menu-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); display: none; z-index: 999; }
         .menu-overlay.active { display: block; }
-
-        /* Menu Items */
-        .menu-item { padding: 14px; background: var(--card-bg); border-radius: 8px; margin-bottom: 8px; cursor: pointer; border: 1px solid #1e293b; display: flex; justify-content: space-between; align-items: center; font-size: 14px; }
+        .menu-item { padding: 14px; background: var(--card-bg); border-radius: 10px; margin-bottom: 8px; cursor: pointer; border: 1px solid #1e293b; display: flex; justify-content: space-between; align-items: center; font-size: 14px; transition: 0.2s; }
+        .menu-item:active { background: #1e293b; }
         .vip-tag { color: var(--premium); border: 1px solid var(--premium); padding: 2px 5px; border-radius: 4px; font-size: 10px; font-weight: bold; }
-
-        /* Pages */
-        #contentArea { padding: 20px; height: calc(100vh - 70px); overflow-y: auto; box-sizing: border-box; text-align: center; }
+        #contentArea { padding: 20px; height: calc(100vh - 70px); overflow-y: auto; text-align: center; }
         .page { display: none; animation: fadeIn 0.3s ease; }
         .page.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-        /* Admin Dashboard Styles */
         .admin-box { border: 1px solid var(--premium); padding: 12px; border-radius: 12px; background: rgba(234, 179, 8, 0.05); margin-bottom: 20px; }
-        .user-list { max-height: 180px; overflow-y: auto; background: #000; border-radius: 8px; margin-top: 10px; padding: 8px; font-size: 11px; border: 1px solid #222; text-align: left; }
-        .user-row { padding: 5px 0; border-bottom: 1px solid #111; display: flex; justify-content: space-between; }
+        .user-list-container { max-height: 180px; overflow-y: auto; background: #000; border-radius: 8px; margin-top: 10px; padding: 8px; font-size: 11px; border: 1px solid #222; text-align: left; }
+        .user-row { padding: 6px 0; border-bottom: 1px solid #111; display: flex; justify-content: space-between; align-items: center; }
     </style>
 </head>
 <body>
 
-<div id="authScreen">
-    <div class="auth-card">
+<div id="authScreen" style="position:fixed; inset:0; background:#000; z-index:99999; display:flex; align-items:center; justify-content:center;">
+    <div style="background:var(--card-bg); padding:2.5rem; border-radius:20px; border:1px solid var(--primary); width:85%; max-width:350px; text-align:center;">
         <h2 id="authTitle" style="color: var(--primary); margin-bottom: 5px;">WROX VIP</h2>
-        <p style="color: #475569; font-size: 12px; margin-bottom: 20px;">Master Control Panel</p>
-        <input type="email" id="logEmail" class="input-box" placeholder="E-posta Adresi">
+        <input type="email" id="logEmail" class="input-box" placeholder="E-posta">
         <input type="password" id="logPass" class="input-box" placeholder="Şifre">
-        <button onclick="handleAuth()" id="authBtn" style="width: 100%; background: var(--primary); border:none; padding:15px; color:white; border-radius:10px; font-weight:bold; cursor:pointer;">DEVAM ET</button>
-        <p onclick="toggleAuthMode()" id="authSwitcher" style="font-size:12px; color:#475569; margin-top:20px; cursor:pointer;">Hesabın yok mu? Kayıt Ol</p>
+        <button onclick="handleAuth()" style="width: 100%; background: var(--primary); border:none; padding:15px; color:white; border-radius:10px; font-weight:bold; cursor:pointer;">GİRİŞ YAP / KAYDOL</button>
     </div>
 </div>
 
 <div id="mainApp" style="display:none;">
     <div class="menu-overlay" id="overlay" onclick="toggleMenu()"></div>
-
+    
     <div class="side-menu" id="sideMenu">
         <div id="adminArea" style="display:none;">
             <div class="admin-box">
-                <p style="color:var(--premium); font-size:12px; font-weight:bold; text-align:center; margin-bottom:10px;">👑 ADMİN PANELİ</p>
-                <input type="text" id="targetMail" class="input-box" placeholder="Yetki verilecek mail..." style="font-size:11px;">
+                <p style="color:var(--premium); font-size:12px; font-weight:bold; text-align:center;">👑 ADMİN PANELİ</p>
+                <input type="text" id="targetMail" class="input-box" placeholder="Mail adresi..." style="font-size:11px;">
                 <div style="display:grid; grid-template-columns: 1fr 1fr; gap:5px;">
                     <button onclick="setRole('premium')" style="background:var(--premium); border:none; padding:8px; border-radius:5px; font-weight:bold; cursor:pointer;">PRE YAP</button>
                     <button onclick="setRole('freemium')" style="background:#334155; border:none; padding:8px; border-radius:5px; color:white; cursor:pointer;">PRE SİL</button>
                 </div>
-                <p style="color:#666; font-size:10px; margin-top:15px; font-weight:bold;">KAYITLI KULLANICILAR</p>
-                <div class="user-list" id="userListDisplay">Yükleniyor...</div>
+                <p style="color:#666; font-size:10px; margin-top:15px; font-weight:bold;">👥 KAYITLI KULLANICILAR</p>
+                <div class="user-list-container" id="userListDisplay">Veriler çekiliyor...</div>
             </div>
         </div>
         
-        <p style="color:#475569; font-size:11px; margin-bottom:10px; font-weight:bold;">SORGULAMA KANALLARI</p>
+        <p style="color:#475569; font-size:11px; margin-bottom:10px; font-weight:bold;">MENÜ</p>
         <div class="menu-item" onclick="openPage('home')">🏠 Anasayfa</div>
         <div class="menu-item" onclick="openPage('adsoyad')">🔍 Ad Soyad Sorgu</div>
         <div class="menu-item" onclick="openPage('tc')">🆔 T.C. Sorgu</div>
         <div class="menu-item" onclick="openPage('aile')">👨‍👩‍👧‍👦 Aile Sorgu</div>
 
         <div id="premiumMenu" style="display:none;">
-            <div class="menu-item" onclick="openPage('sulale')">🧬 Sülale Sorgu <span class="vip-tag">PRE</span></div>
-            <div class="menu-item" onclick="openPage('tcgsm')">📱 T.C. -> GSM <span class="vip-tag">PRE</span></div>
-            <div class="menu-item" onclick="openPage('gsmtc')">📞 GSM -> T.C. <span class="vip-tag">PRE</span></div>
             <div class="menu-item" onclick="openPage('adres')">📍 Adres Sorgu <span class="vip-tag">PRE</span></div>
-            <div class="menu-item" onclick="openPage('plaka')">🚗 Plaka Sorgu <span class="vip-tag">VIP</span></div>
             <div class="menu-item" onclick="openPage('tapu')">🏠 Tapu Sorgu <span class="vip-tag">VIP</span></div>
             <div class="menu-item" onclick="openPage('banka')">💰 Banka Sorgu <span class="vip-tag">GOLD</span></div>
+            <div class="menu-item" onclick="openPage('tcgsm')">📱 T.C. -> GSM <span class="vip-tag">PRE</span></div>
+            <div class="menu-item" onclick="openPage('gsmtc')">📞 GSM -> T.C. <span class="vip-tag">PRE</span></div>
+            <div class="menu-item" onclick="openPage('plaka')">🚗 Plaka Sorgu <span class="vip-tag">VIP</span></div>
         </div>
-
-        <button onclick="logout()" style="width:100%; background:var(--danger); border:none; padding:12px; border-radius:10px; margin-top:20px; color:white; font-weight:bold; cursor:pointer;">GÜVENLİ ÇIKIŞ</button>
+        <button onclick="logout()" style="width:100%; background:var(--danger); border:none; padding:12px; border-radius:10px; margin-top:20px; color:white; font-weight:bold;">ÇIKIŞ YAP</button>
     </div>
 
     <div class="top-bar">
         <div onclick="toggleMenu()" style="font-size:28px; cursor:pointer; color:var(--primary);">☰</div>
-        <div style="color:var(--primary); font-weight:bold; letter-spacing:1px;">WROX VIP</div>
+        <div style="color:var(--primary); font-weight:bold;">WROX VIP</div>
         <div style="width:28px;"></div>
     </div>
 
     <div id="contentArea">
-        <div id="page-home" class="page active">
-            <h2 style="margin-top:60px; color:var(--primary);">Hoş Geldin</h2>
-            <p style="color:#64748b;">Lütfen işlem yapmak için menüden bir kanal seçin.</p>
-        </div>
-
-        <div id="page-adsoyad" class="page">
-            <h3 style="color:var(--primary);">AD SOYAD SORGULAMA</h3>
-            <input class="input-box" placeholder="Ad">
-            <input class="input-box" placeholder="Soyad">
-            <input class="input-box" placeholder="İl (Opsiyonel)">
-            <input class="input-box" placeholder="İlçe (Opsiyonel)">
-            <button class="btn-sorgu" onclick="alert('API Hatası: Veritabanı bağlantısı bekleniyor.')">SORGULA</button>
-        </div>
-
-        <div id="page-tc" class="page">
-            <h3 style="color:var(--primary);">T.C. KİMLİK SORGULAMA</h3>
-            <input type="number" class="input-box" placeholder="11 Haneli T.C. No">
-            <button class="btn-sorgu">SORGULA</button>
-        </div>
-
-        <div id="page-aile" class="page">
-            <h3 style="color:var(--primary);">AİLE SORGULAMA</h3>
-            <input type="number" class="input-box" id="aileInput" placeholder="Sorgulanacak Kişinin T.C. Nosu">
-            <button class="btn-sorgu">AİLEYİ GETİR</button>
-        </div>
-
-        <div id="page-sulale" class="page"><h3>SÜLALE SORGULAMA</h3><input type="number" class="input-box" placeholder="T.C. No"><button class="btn-sorgu">ÇEK</button></div>
+        <div id="page-home" class="page active"><h2 style="margin-top:60px; color:var(--primary);">Hoş Geldin</h2><p>Sorgu yapmak için menüyü açın.</p></div>
+        <div id="page-adsoyad" class="page"><h3>AD SOYAD SORGULAMA</h3><input class="input-box" placeholder="Ad"><input class="input-box" placeholder="Soyad"><button class="btn-sorgu">SORGULA</button></div>
+        <div id="page-tc" class="page"><h3>T.C. KİMLİK SORGULAMA</h3><input type="number" class="input-box" placeholder="T.C. No"><button class="btn-sorgu">SORGULA</button></div>
+        <div id="page-aile" class="page"><h3>AİLE SORGULAMA</h3><input type="number" class="input-box" placeholder="T.C. No"><button class="btn-sorgu">AİLE GETİR</button></div>
+        <div id="page-adres" class="page"><h3>ADRES SORGULAMA</h3><input type="number" class="input-box" placeholder="T.C. No"><button class="btn-sorgu">ADRES BUL</button></div>
+        <div id="page-tapu" class="page"><h3>TAPU SORGULAMA</h3><input type="number" class="input-box" placeholder="T.C. No"><button class="btn-sorgu">TAPU ÇIKAR</button></div>
+        <div id="page-banka" class="page"><h3>BANKA SORGULAMA</h3><input type="number" class="input-box" placeholder="T.C. No"><button class="btn-sorgu">SORGULA</button></div>
         <div id="page-tcgsm" class="page"><h3>T.C. -> GSM</h3><input type="number" class="input-box" placeholder="T.C. No"><button class="btn-sorgu">NUMARA BUL</button></div>
-        <div id="page-gsmtc" class="page"><h3>GSM -> T.C.</h3><input type="number" class="input-box" placeholder="05XX XXX XX XX"><button class="btn-sorgu">KİMLİK BUL</button></div>
-        <div id="page-plaka" class="page"><h3>PLAKA SORGULAMA</h3><input class="input-box" placeholder="Plaka No (Örn: 06ABC123)"><button class="btn-sorgu">SORGULA</button></div>
+        <div id="page-gsmtc" class="page"><h3>GSM -> T.C.</h3><input type="number" class="input-box" placeholder="Telefon No"><button class="btn-sorgu">T.C. BUL</button></div>
+        <div id="page-plaka" class="page"><h3>PLAKA SORGULAMA</h3><input class="input-box" placeholder="Plaka"><button class="btn-sorgu">SORGULA</button></div>
     </div>
 </div>
 
 <script>
-    // Firebase Bağlantısı
+    // Firebase Ayarları
     const firebaseConfig = { 
         apiKey: "AIzaSyD-he0y-CHV37ofCqNL0Gf-p96YFm8U_No", 
         authDomain: "wrox-vip.firebaseapp.com", 
         databaseURL: "https://wrox-vip-default-rtdb.firebaseio.com", 
         projectId: "wrox-vip", 
-        storageBucket: "wrox-vip.appspot.com", 
         appId: "1:322623275508:web:551921c56f71d9d977464a" 
     };
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    let isLoginMode = true;
     const BOSS_MAIL = "afavan66@gmail.com";
     const BOSS_PASS = "Efecan1903";
-
-    function toggleAuthMode() { 
-        isLoginMode = !isLoginMode; 
-        document.getElementById('authTitle').innerText = isLoginMode ? "WROX VIP" : "KAYIT OL";
-        document.getElementById('authSwitcher').innerText = isLoginMode ? "Hesabın yok mu? Kayıt Ol" : "Zaten hesabın var mı? Giriş Yap";
-    }
 
     function handleAuth() {
         const email = document.getElementById('logEmail').value.trim().toLowerCase();
         const pass = document.getElementById('logPass').value;
-        if(!email || !pass) return alert("Alanları doldur!");
+        if(!email || !pass) return alert("Boş bırakma!");
 
-        if(isLoginMode) {
-            if(email === BOSS_MAIL && pass === BOSS_PASS) {
-                localStorage.setItem('wrox_session', JSON.stringify({email, role:'admin'}));
-                location.reload(); return;
-            }
-            const key = email.replace(/\./g,'_');
-            db.ref('users/'+key).once('value', s => {
-                const u = s.val();
-                if(u && u.pass === pass) { localStorage.setItem('wrox_session', JSON.stringify(u)); location.reload(); }
-                else alert("Hatalı Bilgiler!");
-            });
-        } else {
-            const key = email.replace(/\./g,'_');
-            db.ref('users/'+key).set({email, pass, role:'freemium'}).then(() => {
-                alert("Kayıt Başarılı! Şimdi giriş yap.");
-                toggleAuthMode();
-            });
+        if(email === BOSS_MAIL && pass === BOSS_PASS) {
+            localStorage.setItem('wrox_session', JSON.stringify({email, role:'admin'}));
+            location.reload(); return;
         }
+
+        const key = email.replace(/\./g,'_');
+        db.ref('users/'+key).once('value', s => {
+            const u = s.val();
+            if(u && u.pass === pass) {
+                localStorage.setItem('wrox_session', JSON.stringify(u));
+                location.reload();
+            } else {
+                db.ref('users/'+key).set({email, pass, role:'freemium'}).then(() => {
+                    alert("Kayıt başarılı! Giriş yapabilirsin.");
+                    location.reload();
+                });
+            }
+        });
     }
 
     const session = JSON.parse(localStorage.getItem('wrox_session'));
     if(session) {
         document.getElementById('authScreen').style.display = 'none';
         document.getElementById('mainApp').style.display = 'block';
-        
-        // Yetki Kontrolleri
+
         if(session.role === 'admin' || session.role === 'premium' || session.email === BOSS_MAIL) {
             document.getElementById('premiumMenu').style.display = 'block';
         }
-        
+
         if(session.role === 'admin' || session.email === BOSS_MAIL) {
             document.getElementById('adminArea').style.display = 'block';
-            // Kullanıcı Listesini Canlı Yükle
-            db.ref('users').on('value', s => {
-                const users = s.val(); let html = "";
-                for(let k in users) {
-                    let u = users[k];
-                    let roleColor = u.role === 'premium' ? 'var(--premium)' : '#666';
-                    html += `<div class="user-row">
-                        <span style="color:#fff">${u.email}</span>
-                        <span style="color:${roleColor}; font-weight:bold;">${u.role.toUpperCase()}</span>
-                    </div>`;
-                }
-                document.getElementById('userListDisplay').innerHTML = html || "Kullanıcı yok.";
+            // CANLI LİSTE TETİKLEYİCİ
+            db.ref('users').on('value', snapshot => {
+                const users = snapshot.val();
+                let html = "";
+                if(users) {
+                    for(let k in users) {
+                        let u = users[k];
+                        let rColor = u.role === 'premium' ? 'var(--premium)' : '#666';
+                        html += `<div class="user-row">
+                            <span style="color:#eee">${u.email}</span>
+                            <span style="color:${rColor}; font-weight:bold;">${u.role.toUpperCase()}</span>
+                        </div>`;
+                    }
+                } else { html = "Henüz kullanıcı yok."; }
+                document.getElementById('userListDisplay').innerHTML = html;
             });
         }
     }
@@ -219,9 +175,10 @@
     }
 
     function setRole(r) {
-        const t = document.getElementById('targetMail').value.trim().replace(/\./g,'_');
-        if(t) db.ref('users/'+t).update({role:r}).then(() => alert("Başarıyla güncellendi!"));
-        else alert("Mail gir!");
+        const t = document.getElementById('targetMail').value.trim().toLowerCase().replace(/\./g,'_');
+        if(t) {
+            db.ref('users/'+t).update({role:r}).then(() => alert("Yetki başarıyla güncellendi!"));
+        } else alert("Mail gir!");
     }
 
     function logout() { localStorage.removeItem('wrox_session'); location.reload(); }
