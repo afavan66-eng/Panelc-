@@ -85,7 +85,6 @@
         <div id="page-adsoyad" class="page"><h3>🔍 AD SOYAD SORGULAMA</h3><input id="in-ad" class="input-box" placeholder="Ad"><input id="in-soyad" class="input-box" placeholder="Soyad"><input id="in-il" class="input-box" placeholder="İl"><input id="in-ilce" class="input-box" placeholder="İlçe"><button onclick="runSorgu('adsoyad')" class="btn-sorgu">SORGULA</button><div id="res-adsoyad" class="result-area"></div></div>
         <div id="page-tc" class="page"><h3>🆔 T.C. SORGULAMA</h3><input id="in-tc" type="number" class="input-box" placeholder="T.C. No"><button onclick="runSorgu('tc')" class="btn-sorgu">SORGULA</button><div id="res-tc" class="result-area"></div></div>
         <div id="page-sulale" class="page"><h3>🧬 SÜLALE SORGULAMA</h3><input id="in-sulale" type="number" class="input-box" placeholder="T.C. No"><button onclick="runSorgu('sulale')" class="btn-sorgu">SORGULA</button><div id="res-sulale" class="result-area"></div></div>
-        
         <div id="page-tcgsm" class="page"><h3>📱 T.C. -> GSM</h3><input id="in-tcgsm" type="number" class="input-box" placeholder="T.C. No"><button onclick="runSorgu('tcgsm')" class="btn-sorgu">SORGULA</button><div id="res-tcgsm" class="result-area"></div></div>
         <div id="page-gsmtc" class="page"><h3>📞 GSM -> T.C.</h3><input id="in-gsmtc" type="number" class="input-box" placeholder="GSM No"><button onclick="runSorgu('gsmtc')" class="btn-sorgu">SORGULA</button><div id="res-gsmtc" class="result-area"></div></div>
         <div id="page-adres" class="page"><h3>📍 ADRES SORGULAMA</h3><input id="in-adres" type="number" class="input-box" placeholder="T.C. No"><button onclick="runSorgu('adres')" class="btn-sorgu">SORGULA</button><div id="res-adres" class="result-area"></div></div>
@@ -139,9 +138,11 @@
         }
     }
 
+    // --- GÜNCELLENMİŞ SORGULAMA FONKSİYONU ---
     async function runSorgu(tip) {
         const resBox = document.getElementById('res-' + tip);
         let finalUrl = "";
+        const proxy = "https://api.allorigins.win/get?url="; // CORS engelini aşmak için
 
         if(tip === 'adsoyad') {
             const ad = document.getElementById('in-ad').value;
@@ -149,7 +150,7 @@
             const il = document.getElementById('in-il').value || "";
             const ilce = document.getElementById('in-ilce').value || "";
             if(!ad || !soyad) return alert("Ad ve Soyad giriniz!");
-            finalUrl = `https://arastir.sbs/api/adsoyad.php?adi=${ad}&soyadi=${soyad}&il=${il}&ilce=${ilce}`;
+            finalUrl = `https://arastir.sbs/api/adsoyad.php?adi=${encodeURIComponent(ad)}&soyadi=${encodeURIComponent(soyad)}&il=${encodeURIComponent(il)}&ilce=${encodeURIComponent(ilce)}`;
         } 
         else if(tip === 'tc') finalUrl = `https://arastir.sbs/api/sulale.php?tc=${document.getElementById('in-tc').value}`;
         else if(tip === 'sulale') finalUrl = `https://hukumsuz.de/api/sulale.php?tc=${document.getElementById('in-sulale').value}`;
@@ -162,14 +163,22 @@
         if(!finalUrl.includes('adsoyad') && !document.getElementById('in-' + tip).value) return alert("Lütfen alanı doldurun!");
 
         resBox.style.display = "block";
-        resBox.innerHTML = "⌛ İşlem yapılıyor...";
+        resBox.innerHTML = "⌛ İşlem yapılıyor (Proxy Aktif)...";
 
         try {
-            const response = await fetch(finalUrl);
-            const data = await response.json();
-            resBox.innerHTML = `<pre style="color:#00ff00; white-space: pre-wrap;">${JSON.stringify(data, null, 2)}</pre>`;
+            const response = await fetch(proxy + encodeURIComponent(finalUrl));
+            const result = await response.json();
+            
+            // API'den dönen veriyi oku
+            const data = JSON.parse(result.contents);
+            
+            if(!data || Object.keys(data).length === 0) {
+                resBox.innerHTML = "❌ Sonuç bulunamadı.";
+            } else {
+                resBox.innerHTML = `<pre style="color:#00ff00; white-space: pre-wrap; font-size:12px;">${JSON.stringify(data, null, 2)}</pre>`;
+            }
         } catch (err) {
-            resBox.innerHTML = `<span style="color:red;">❌ Hata: API'ye bağlanılamadı.</span>`;
+            resBox.innerHTML = `<span style="color:red;">❌ Hata: API veya Proxy şu an yanıt vermiyor.</span>`;
         }
     }
 
