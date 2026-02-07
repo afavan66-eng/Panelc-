@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WROX VIP - FINAL EDITION</title>
+    <title>WROX VIP - FULL EDITION</title>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
     <style>
@@ -16,11 +16,11 @@
         .side-menu.active { left: 0; }
         .menu-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); display: none; z-index: 999; }
         .menu-overlay.active { display: block; }
-        .menu-item { padding: 14px; background: var(--card-bg); border-radius: 12px; margin-bottom: 8px; cursor: pointer; border: 1px solid #1e293b; display: flex; justify-content: space-between; align-items: center; font-size: 14px; }
-        .vip-tag { color: var(--premium); border: 1px solid var(--premium); padding: 2px 5px; border-radius: 4px; font-size: 10px; font-weight: bold; }
+        .menu-item { padding: 14px; background: var(--card-bg); border-radius: 12px; margin-bottom: 8px; cursor: pointer; border: 1px solid #1e293b; display: flex; justify-content: space-between; align-items: center; font-size: 14px; transition: 0.2s; }
+        .admin-only { display: none; border-left: 3px solid var(--premium) !important; }
         .page { display: none; animation: fadeIn 0.3s ease; padding: 20px; text-align: center; height: calc(100vh - 70px); overflow-y: auto; }
         .page.active { display: block; }
-        .result-area { margin-top: 20px; background: #000; border-radius: 10px; padding: 15px; text-align: left; font-size: 13px; border: 1px solid var(--primary); display: none; white-space: pre-wrap; }
+        .result-area { margin-top: 20px; background: #000; border-radius: 10px; padding: 15px; text-align: left; font-size: 13px; border: 1px solid var(--primary); display: none; white-space: pre-wrap; color: #00ff00; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
@@ -28,29 +28,30 @@
 
 <div id="authScreen" style="position:fixed; inset:0; background:#000; z-index:9999; display:flex; align-items:center; justify-content:center;">
     <div style="background:var(--card-bg); padding:2rem; border-radius:20px; border:1px solid var(--primary); width:85%; max-width:360px; text-align:center;">
-        <h2 style="color: var(--primary); margin-bottom: 20px;">WROX VIP</h2>
+        <h1 style="color: var(--primary);">WROX VIP</h1>
         <input type="email" id="logEmail" class="input-box" placeholder="E-posta">
-        <input type="password" id="logPass" class="input-box" placeholder="Şifre">
-        <button onclick="handleAuth()" class="btn-sorgu">GİRİŞ YAP</button>
+        <input type="password" id="logPass" class="input-box" placeholder="VIP Şifre">
+        <button onclick="handleAuth()" class="btn-sorgu">SİSTEME GİRİŞ YAP</button>
     </div>
 </div>
 
 <div id="mainApp" style="display:none;">
     <div class="menu-overlay" id="overlay" onclick="toggleMenu()"></div>
     <div class="side-menu" id="sideMenu">
-        <p style="color:#475569; font-size:11px;">ÜCRETSİZ ARAÇLAR (FREEMIUM)</p>
+        <p style="color:#475569; font-size:11px; font-weight: bold;">YÖNETİCİ</p>
+        <div class="menu-item admin-only" onclick="openPage('admin')">👑 Admin Paneli</div>
+        <div class="menu-item admin-only" onclick="openPage('logs')">📜 Sorgu Logları</div>
+        
+        <p style="color:#475569; font-size:11px; font-weight: bold; margin-top:15px;">FREE ARAÇLAR</p>
         <div class="menu-item" onclick="openPage('adsoyad')">🔍 Ad Soyad PRO</div>
         <div class="menu-item" onclick="openPage('tc')">🆔 T.C. Sorgu</div>
-        <div class="menu-item" onclick="openPage('aile')">👨‍👩‍👧 Aile Sorgu</div>
         
-        <p style="color:var(--premium); font-size:11px; margin-top:15px;">PREMIUM (VIP)</p>
-        <div class="menu-item" onclick="checkPre('sulale')">🌳 Sülale Sorgu <span class="vip-tag">VIP</span></div>
-        <div class="menu-item" onclick="checkPre('operator')">📡 Operatör Sorgu <span class="vip-tag">VIP</span></div>
-        <div class="menu-item" onclick="checkPre('insta')">📸 Instagram Bilgi <span class="vip-tag">VIP</span></div>
-        <div class="menu-item" onclick="checkPre('ss')">🖥️ Ekran Görüntüsü <span class="vip-tag">VIP</span></div>
-        <div class="menu-item" onclick="checkPre('mail')">📧 Geçici Mail <span class="vip-tag">VIP</span></div>
+        <p style="color:#475569; font-size:11px; font-weight: bold; margin-top:15px;">VIP ARAÇLAR</p>
+        <div class="menu-item" onclick="checkPre('isyeri')">🏢 İş Yeri / SGK <span style="color:var(--premium)">[VIP]</span></div>
+        <div class="menu-item" onclick="checkPre('bomber')">💣 SMS Bomber <span style="color:var(--premium)">[VIP]</span></div>
+        <div class="menu-item" onclick="checkPre('sulale')">🌳 Sülale Sorgu <span style="color:var(--premium)">[VIP]</span></div>
         
-        <button onclick="logout()" class="btn-sorgu" style="background:var(--danger); margin-top:20px;">Çıkış Yap</button>
+        <button onclick="logout()" class="btn-sorgu" style="background:var(--danger); margin-top:30px;">GÜVENLİ ÇIKIŞ</button>
     </div>
 
     <div class="top-bar">
@@ -60,63 +61,23 @@
     </div>
 
     <div id="contentArea">
-        <div id="page-adsoyad" class="page">
-            <h3>🔍 AD SOYAD PRO</h3>
-            <input id="in-ad" class="input-box" placeholder="Ad">
-            <input id="in-soyad" class="input-box" placeholder="Soyad">
-            <button onclick="runSorgu('adsoyad')" class="btn-sorgu">SORGULA</button>
-            <div id="res-adsoyad" class="result-area"></div>
+        <div id="page-home" class="page active"><h2>Sistem Hazır</h2><p>Hoş geldin. İş yeri sorgusu VIP kısmına eklendi.</p></div>
+
+        <div id="page-isyeri" class="page">
+            <h3 style="color:var(--primary)">🏢 İŞ YERİ / SGK SORGULAMA</h3>
+            <p style="color:gray; font-size:12px;">Hedef kişinin T.C. numarasını girin.</p>
+            <input id="in-is-tc" class="input-box" placeholder="11 Haneli T.C. No">
+            <button onclick="runSorgu('isyeri')" class="btn-sorgu">İŞ YERİ BUL</button>
+            <div id="res-isyeri" class="result-area"></div>
         </div>
 
-        <div id="page-tc" class="page">
-            <h3>🆔 T.C. SORGULAMA</h3>
-            <input id="in-tc" class="input-box" placeholder="T.C. No">
-            <button onclick="runSorgu('tc')" class="btn-sorgu">SORGULA</button>
-            <div id="res-tc" class="result-area"></div>
-        </div>
-
-        <div id="page-aile" class="page">
-            <h3>👨‍👩‍👧 AİLE SORGULAMA</h3>
-            <input id="in-aile-tc" class="input-box" placeholder="T.C. No">
-            <button onclick="runSorgu('aile')" class="btn-sorgu">AİLEYİ GETİR</button>
-            <div id="res-aile" class="result-area"></div>
-        </div>
-
-        <div id="page-sulale" class="page">
-            <h3>🌳 SÜLALE SORGULAMA (VIP)</h3>
-            <input id="in-sulale-tc" class="input-box" placeholder="T.C. No">
-            <button onclick="runSorgu('sulale')" class="btn-sorgu">SÜLALEYİ GETİR</button>
-            <div id="res-sulale" class="result-area"></div>
-        </div>
-
-        <div id="page-operator" class="page">
-            <h3>📡 OPERATÖR SORGULA (VIP)</h3>
-            <input id="in-op-gsm" class="input-box" placeholder="+905xxxxxxxxx">
-            <button onclick="runSorgu('operator')" class="btn-sorgu">SORGULA</button>
-            <div id="res-operator" class="result-area"></div>
-        </div>
-
-        <div id="page-insta" class="page">
-            <h3>📸 INSTAGRAM BİLGİ (VIP)</h3>
-            <input id="in-insta-user" class="input-box" placeholder="Kullanıcı Adı">
-            <button onclick="runSorgu('insta')" class="btn-sorgu">BİLGİLERİ GETİR</button>
-            <div id="res-insta" class="result-area"></div>
-        </div>
-
-        <div id="page-ss" class="page">
-            <h3>🖥️ EKRAN GÖRÜNTÜSÜ (VIP)</h3>
-            <input id="in-ss-url" class="input-box" placeholder="google.com">
-            <button onclick="runSorgu('ss')" class="btn-sorgu">GÖRÜNTÜ AL</button>
-            <div id="res-ss" class="result-area"></div>
-        </div>
-
-        <div id="page-mail" class="page">
-            <h3>📧 GEÇİCİ MAİL (VIP)</h3>
-            <div id="mail-display" style="padding:15px; background:#000; border:1px solid var(--primary); border-radius:10px; color:var(--premium); margin-bottom:10px;">Adres oluşturun</div>
-            <button onclick="generateMail()" class="btn-sorgu">YENİ MAİL</button>
-            <button onclick="checkInbox()" class="btn-sorgu" style="background:#1e293b;">KUTUYU YENİLE</button>
-            <div id="res-mail" class="result-area" style="display:block;"></div>
-        </div>
+        <div id="page-bomber" class="page"><h3>💣 SMS BOMBER</h3><input id="bomber-phone" class="input-box" placeholder="5xxxxxxxxx"><button onclick="startBomber()" class="btn-sorgu">BAŞLAT</button><div id="res-bomber" class="result-area"></div></div>
+        <div id="page-adsoyad" class="page"><h3>🔍 AD SOYAD</h3><input id="in-ad" class="input-box"><input id="in-soyad" class="input-box"><button onclick="runSorgu('adsoyad')" class="btn-sorgu">SORGULA</button><div id="res-adsoyad" class="result-area"></div></div>
+        <div id="page-tc" class="page"><h3>🆔 T.C. SORGULAMA</h3><input id="in-tc" class="input-box"><button onclick="runSorgu('tc')" class="btn-sorgu">SORGULA</button><div id="res-tc" class="result-area"></div></div>
+        <div id="page-sulale" class="page"><h3>🌳 SÜLALE SORGULAMA</h3><input id="in-su-tc" class="input-box"><button onclick="runSorgu('sulale')" class="btn-sorgu">SORGULA</button><div id="res-sulale" class="result-area"></div></div>
+        
+        <div id="page-admin" class="page"><h3>👑 ADMIN PANELİ</h3><div id="liveUserList"></div></div>
+        <div id="page-logs" class="page"><h3>📜 SORGU LOGLARI</h3><div id="logTerminal" style="text-align:left; background:#000; padding:10px; font-family:monospace; height:60vh; overflow:auto;"></div></div>
     </div>
 </div>
 
@@ -124,106 +85,73 @@
     const firebaseConfig = { apiKey: "AIzaSyD-heOy-CHV37ofCqNLbjchG5FtU6mRxc", authDomain: "wrox-vip.firebaseapp.com", databaseURL: "https://wrox-vip-default-rtdb.firebaseio.com", projectId: "wrox-vip", appId: "1:322623275508:web:55192bd1063ca6e56f39a1" };
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
-    let tempMail = ""; let tempDomain = "";
 
     function handleAuth() {
         const email = document.getElementById('logEmail').value.trim().toLowerCase();
         const pass = document.getElementById('logPass').value;
-        const key = email.replace(/\./g, '_');
-        if(email === "afavan66@gmail.com" && pass === "Efecan1903") { localStorage.setItem('session', JSON.stringify({email, role:'admin'})); location.reload(); return; }
-        db.ref('users/' + key).once('value', s => {
-            const u = s.val();
-            if(u && u.pass === pass) { localStorage.setItem('session', JSON.stringify(u)); location.reload(); }
-            else alert("Hatalı Giriş!");
-        });
+        if(email === "afavan66@gmail.com" && pass === "Efecan1903") { 
+            localStorage.setItem('session', JSON.stringify({email, role:'admin'})); 
+            location.reload(); 
+        } else {
+            const key = email.replace(/\./g, '_');
+            db.ref('users/' + key).once('value', s => {
+                const u = s.val();
+                if(u && u.pass === pass) { localStorage.setItem('session', JSON.stringify(u)); location.reload(); }
+                else alert("Hatalı!");
+            });
+        }
     }
 
     const session = JSON.parse(localStorage.getItem('session'));
     if(session) {
         document.getElementById('authScreen').style.display = 'none';
         document.getElementById('mainApp').style.display = 'block';
+        if(session.role === 'admin') {
+            document.querySelectorAll('.admin-only').forEach(e => e.style.display = 'flex');
+            startAdminMonitoring();
+        }
     }
 
     async function runSorgu(tip) {
         const resBox = document.getElementById('res-'+tip);
-        resBox.style.display = "block"; resBox.innerHTML = "⌛ Sorgulanıyor...";
+        resBox.style.display = "block"; resBox.innerHTML = "⌛ Veriler Sorgulanıyor...";
+        
+        let detail = document.getElementById('in-is-tc')?.value || document.getElementById('in-tc')?.value || document.getElementById('in-ad').value;
+        db.ref('logs').push({user: session.email, type: tip.toUpperCase(), detail: detail, time: new Date().toLocaleTimeString()});
+
         const proxy = "https://api.allorigins.win/get?url=";
         let target = "";
-
-        // API URL Tanımlamaları
+        if(tip==='isyeri') target = `https://arastir.sbs/api/isyeri.php?tc=${document.getElementById('in-is-tc').value}`;
         if(tip==='adsoyad') target = `https://arastir.sbs/api/adsoyad.php?ad=${document.getElementById('in-ad').value}&soyad=${document.getElementById('in-soyad').value}`;
         if(tip==='tc') target = `https://arastir.sbs/api/tc.php?tc=${document.getElementById('in-tc').value}`;
-        if(tip==='aile') target = `https://arastir.sbs/api/aile.php?tc=${document.getElementById('in-aile-tc').value}`;
-        if(tip==='sulale') target = `https://arastir.sbs/api/sulale.php?tc=${document.getElementById('in-sulale-tc').value}`;
+        if(tip==='sulale') target = `https://arastir.sbs/api/sulale.php?tc=${document.getElementById('in-su-tc').value}`;
 
-        // Özel API Fonksiyonları (Oturum gerektirmeyenler)
-        if(tip==='operator') {
-            try {
-                const r = await fetch(`https://api.veriphone.io/v2/verify?phone=${document.getElementById('in-op-gsm').value}&key=39DE61066E0C4F6184C8A66D298286CC`);
-                const d = await r.json();
-                resBox.innerHTML = `<pre style="color:#00ff00;">Operatör: ${d.carrier || 'Bilinmiyor'}\nÜlke: ${d.country}\nDurum: ${d.phone_type}</pre>`;
-            } catch(e) { resBox.innerHTML = "❌ Operatör API Hatası."; }
-            return;
-        }
-
-        if(tip==='insta') {
-            try {
-                const r = await fetch(`https://api.v1.pwn.sh/instagram/info?username=${document.getElementById('in-insta-user').value}`);
-                const d = await r.json();
-                resBox.innerHTML = `<b>Takipçi:</b> ${d.follower_count}\n<b>Biyografi:</b> ${d.biography}`;
-            } catch(e) { resBox.innerHTML = "❌ Instagram API Hatası."; }
-            return;
-        }
-
-        if(tip==='ss') {
-            let site = document.getElementById('in-ss-url').value;
-            if(!site.startsWith('http')) site = 'https://' + site;
-            resBox.innerHTML = `<img src="https://image.thum.io/get/width/400/${site}" style="width:100%; border-radius:5px;">`;
-            return;
-        }
-
-        // Genel Proxy Sorgusu
         try {
             const r = await fetch(proxy + encodeURIComponent(target));
             const d = await r.json();
-            if(d.contents && d.contents.length > 5) {
-                resBox.innerHTML = `<pre style="color:#00ff00;">${d.contents}</pre>`;
-            } else {
-                resBox.innerHTML = "❌ Kayıt bulunamadı veya API kapalı.";
-            }
-        } catch(e) { resBox.innerHTML = "❌ Sunucu Hatası."; }
+            resBox.innerHTML = `<pre>${d.contents}</pre>`;
+        } catch(e) { resBox.innerHTML = "❌ API hatası oluştu."; }
     }
 
-    async function generateMail() {
-        const r = await fetch('https://www.1secmail.com/api/v1/?action=genRandomMailbox&count=1');
-        const d = await r.json();
-        tempMail = d[0].split('@')[0]; tempDomain = d[0].split('@')[1];
-        document.getElementById('mail-display').innerText = d[0];
+    function startAdminMonitoring() {
+        db.ref('users').on('value', s => {
+            const div = document.getElementById('liveUserList'); div.innerHTML = "";
+            const users = s.val();
+            for(let k in users) div.innerHTML += `<div style="padding:10px; border-bottom:1px solid #333;">${users[k].email} (${users[k].role})</div>`;
+        });
+        db.ref('logs').limitToLast(30).on('value', s => {
+            const term = document.getElementById('logTerminal'); term.innerHTML = "";
+            const logs = s.val();
+            if(!logs) return;
+            Object.values(logs).reverse().forEach(l => {
+                term.innerHTML += `<div style="margin-bottom:5px;"><span style="color:var(--primary)">[${l.time}]</span> <b>${l.user}</b> -> ${l.type}: ${l.detail}</div>`;
+            });
+        });
     }
 
-    async function checkInbox() {
-        if(!tempMail) return alert("Önce mail oluşturun!");
-        const r = await fetch(`https://www.1secmail.com/api/v1/?action=getMessages&login=${tempMail}&domain=${tempDomain}`);
-        const d = await r.json();
-        document.getElementById('res-mail').innerHTML = d.length ? JSON.stringify(d, null, 2) : "Gelen kutusu boş.";
-    }
-
-    function checkPre(p) { 
-        if(session.role==='admin' || session.role==='premium') openPage(p); 
-        else alert("Bu işlem için Premium (VIP) üyeliği gereklidir!"); 
-    }
-    
-    function openPage(p) { 
-        document.querySelectorAll('.page').forEach(x=>x.classList.remove('active')); 
-        document.getElementById('page-'+p).classList.add('active'); 
-        if(document.getElementById('sideMenu').classList.contains('active')) toggleMenu(); 
-    }
-    
-    function toggleMenu() { 
-        document.getElementById('sideMenu').classList.toggle('active'); 
-        document.getElementById('overlay').classList.toggle('active'); 
-    }
-    
+    function checkPre(p) { if(session.role==='admin' || session.role==='premium') openPage(p); else alert("🔒 VIP Gerekli!"); }
+    function openPage(p) { document.querySelectorAll('.page').forEach(x=>x.classList.remove('active')); document.getElementById('page-'+p).classList.add('active'); if(document.getElementById('sideMenu').classList.contains('active')) toggleMenu(); }
+    function toggleMenu() { document.getElementById('sideMenu').classList.toggle('active'); document.getElementById('overlay').classList.toggle('active'); }
     function logout() { localStorage.removeItem('session'); location.reload(); }
 </script>
 </body>
