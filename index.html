@@ -11,7 +11,6 @@
         body { margin: 0; font-family: 'Segoe UI', sans-serif; background: var(--dark-bg); color: white; height: 100vh; overflow: hidden; }
         .input-box { width: 100%; padding: 12px; margin: 8px 0; background: #000; border: 1px solid #333; border-radius: 10px; color: white; outline: none; box-sizing: border-box; }
         .btn-sorgu { width: 100%; background: var(--primary); border:none; padding: 15px; color:white; border-radius:10px; font-weight:bold; cursor:pointer; margin-top:10px; transition: 0.3s; }
-        .btn-status { background: #1e293b; padding: 10px; font-size: 12px; margin-bottom: 10px; }
         .top-bar { display: flex; justify-content: space-between; align-items: center; padding: 15px; background: var(--dark-bg); border-bottom: 1px solid #1e293b; }
         .side-menu { position: fixed; top: 0; left: -100%; width: 85%; max-width: 320px; height: 100%; background: #070a11; transition: 0.4s; z-index: 1000; padding: 20px; border-right: 2px solid var(--primary); overflow-y: auto; }
         .side-menu.active { left: 0; }
@@ -20,14 +19,11 @@
         .menu-item { padding: 14px; background: var(--card-bg); border-radius: 12px; margin-bottom: 8px; cursor: pointer; border: 1px solid #1e293b; display: flex; justify-content: space-between; align-items: center; font-size: 14px; }
         .vip-tag { color: var(--premium); border: 1px solid var(--premium); padding: 2px 5px; border-radius: 4px; font-size: 10px; font-weight: bold; }
         .admin-box { border: 1px solid var(--premium); padding: 15px; border-radius: 15px; background: rgba(234, 179, 8, 0.05); margin-bottom: 20px; }
-        .user-list { max-height: 120px; overflow-y: auto; background: #000; border-radius: 10px; padding: 10px; font-size: 11px; border: 1px solid #222; text-align: left; margin-top:10px; }
         .page { display: none; animation: fadeIn 0.3s ease; padding: 20px; text-align: center; height: calc(100vh - 70px); overflow-y: auto; }
         .page.active { display: block; }
         .result-area { margin-top: 20px; background: #000; border-radius: 10px; padding: 15px; text-align: left; font-size: 13px; border: 1px solid var(--primary); display: none; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        .admin-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 5px; }
-        .btn-pre { background: var(--premium); color: black; border: none; padding: 10px; border-radius: 8px; font-weight: bold; cursor: pointer; }
-        .btn-del { background: var(--danger); color: white; border: none; padding: 10px; border-radius: 8px; font-weight: bold; cursor: pointer; }
+        img.res-img { width: 100%; border-radius: 10px; border: 1px solid var(--primary); }
     </style>
 </head>
 <body>
@@ -38,7 +34,7 @@
         <input type="email" id="logEmail" class="input-box" placeholder="E-posta">
         <input type="password" id="logPass" class="input-box" placeholder="Şifre">
         <button onclick="handleAuth()" id="authBtn" class="btn-sorgu">GİRİŞ YAP</button>
-        <p onclick="toggleAuth()" id="authSwitch" style="color: #94a3b8; font-size: 12px; margin-top: 20px; cursor: pointer; text-decoration: underline;">Kayıt Ol</p>
+        <p onclick="toggleAuth()" id="authSwitch" style="color: #94a3b8; font-size: 12px; margin-top: 20px; cursor: pointer;">Kayıt Ol</p>
     </div>
 </div>
 
@@ -47,33 +43,25 @@
     <div class="side-menu" id="sideMenu">
         <div id="adminArea" style="display:none;" class="admin-box">
             <div style="color:var(--premium); font-size:12px; font-weight:bold; margin-bottom:5px;">👑 ADMIN PANEL</div>
-            <input type="text" id="targetMail" class="input-box" placeholder="Mail Adresi" style="font-size:11px; padding:8px;">
-            <div class="admin-btns">
-                <button onclick="setRole('premium')" class="btn-pre">PREMİUM VER</button>
-                <button onclick="setRole('freemium')" class="btn-del">PREMİUM SİL</button>
-            </div>
-            <div class="user-list" id="userListDisplay">Üyeler yükleniyor...</div>
+            <input type="text" id="targetMail" class="input-box" placeholder="Mail Adresi">
+            <button onclick="setRole('premium')" style="background:var(--premium); border:none; padding:8px; border-radius:5px; width:48%; font-weight:bold;">PRE VER</button>
+            <button onclick="setRole('freemium')" style="background:var(--danger); border:none; padding:8px; border-radius:5px; width:48%; font-weight:bold; color:white;">PRE SİL</button>
         </div>
 
-        <p style="color:#475569; font-size:11px; font-weight:bold;">ÜCRETSİZ SORGULAR</p>
-        <div class="menu-item" onclick="openPage('adsoyad')">🔍 Ad Soyad</div>
+        <p style="color:#475569; font-size:11px; font-weight:bold;">ÜCRETSİZ ARAÇLAR</p>
+        <div class="menu-item" onclick="openPage('adsoyad')">🔍 Ad Soyad PRO</div>
         <div class="menu-item" onclick="openPage('tc')">🆔 T.C. Sorgu</div>
-        <div class="menu-item" onclick="openPage('aile')">👨‍👩‍👧‍👦 Aile Sorgu</div>
-
-        <p style="color:var(--premium); font-size:11px; font-weight:bold; margin-top:15px;">PREMİUM KANALLAR</p>
-        <div id="premiumMenu">
-            <div class="menu-item" onclick="checkPre('insta')">📸 Instagram Bilgi <span class="vip-tag">PRE</span></div>
-            <div class="menu-item" onclick="checkPre('ss')">🖥️ Ekran Görüntüsü Al <span class="vip-tag">PRE</span></div>
-            <div class="menu-item" onclick="checkPre('plaka')">🚗 Plaka Sorgu <span class="vip-tag">PRE</span></div>
-            <div class="menu-item" onclick="checkPre('turknet')">🌐 TurkNet Sorgu <span class="vip-tag">PRE</span></div>
-            <div class="menu-item" onclick="checkPre('multeci')">🛂 Mülteci Sorgu <span class="vip-tag">PRE</span></div>
-            <div class="menu-item" onclick="checkPre('sulale')">🧬 Sülale Sorgu <span class="vip-tag">PRE</span></div>
-            <div class="menu-item" onclick="checkPre('tcgsm')">📱 T.C. -> GSM <span class="vip-tag">PRE</span></div>
-            <div class="menu-item" onclick="checkPre('gsmtc')">📞 GSM -> T.C. <span class="vip-tag">PRE</span></div>
-            <div class="menu-item" onclick="checkPre('adres')">📍 Adres Sorgu <span class="vip-tag">PRE</span></div>
-            <div class="menu-item" onclick="checkPre('isyeri')">🏢 İş Yeri Sorgu <span class="vip-tag">PRE</span></div>
-            <div class="menu-item" onclick="checkPre('sms')">💣 SMS Bomber <span class="vip-tag">PRE</span></div>
-        </div>
+        
+        <p style="color:var(--premium); font-size:11px; font-weight:bold; margin-top:15px;">PREMİUM SORGULAR</p>
+        <div class="menu-item" onclick="checkPre('ai-img')">🖼️ AI Görsel Oluştur <span class="vip-tag">PRE</span></div>
+        <div class="menu-item" onclick="checkPre('mail')">📧 Geçici Mail <span class="vip-tag">PRE</span></div>
+        <div class="menu-item" onclick="checkPre('ai')">🤖 Yapay Zeka (AI) <span class="vip-tag">PRE</span></div>
+        <div class="menu-item" onclick="checkPre('operator')">📡 Operatör Sorgu <span class="vip-tag">PRE</span></div>
+        <div class="menu-item" onclick="checkPre('insta')">📸 Instagram Bilgi <span class="vip-tag">PRE</span></div>
+        <div class="menu-item" onclick="checkPre('ss')">🖥️ Ekran Görüntüsü <span class="vip-tag">PRE</span></div>
+        <div class="menu-item" onclick="checkPre('plaka')">🚗 Plaka Sorgu <span class="vip-tag">PRE</span></div>
+        <div class="menu-item" onclick="checkPre('sms')">💣 SMS Bomber <span class="vip-tag">PRE</span></div>
+        
         <button onclick="logout()" style="width:100%; background:var(--danger); border:none; padding:12px; border-radius:10px; margin-top:20px; color:white; font-weight:bold;">Çıkış Yap</button>
     </div>
 
@@ -84,38 +72,24 @@
     </div>
 
     <div id="contentArea">
-        <div id="page-home" class="page active"><h2>Hoş Geldin</h2><p>Lütfen menüden sorgu seçin.</p></div>
+        <div id="page-home" class="page active"><h2>Hoş Geldin</h2><p>İşlem yapmak için bir araç seçin.</p></div>
 
-        <div id="page-adsoyad" class="page">
-            <h3>🔍 AD SOYAD SORGULAMA</h3>
-            <input id="in-ad" class="input-box" placeholder="Ad (Zorunlu)">
-            <input id="in-soyad" class="input-box" placeholder="Soyad (Zorunlu)">
-            <input id="in-il" class="input-box" placeholder="İl (Opsiyonel)">
-            <input id="in-ilce" class="input-box" placeholder="İlçe (Opsiyonel)">
-            <button onclick="runSorgu('adsoyad')" class="btn-sorgu">SORGULA</button>
-            <div id="res-adsoyad" class="result-area"></div>
+        <div id="page-ai-img" class="page">
+            <h3>🖼️ AI GÖRSEL OLUŞTUR (PRE)</h3>
+            <input id="in-img-prompt" class="input-box" placeholder="Ne çizmemi istersin? (Örn: Cyberpunk city)">
+            <button onclick="runSorgu('ai-img')" class="btn-sorgu">GÖRSEL ÜRET</button>
+            <div id="res-ai-img" class="result-area"></div>
         </div>
 
+        <div id="page-mail" class="page"><h3>📧 GEÇİCİ MAİL (PRE)</h3><div id="mail-display" style="padding:15px; background:#000; border-radius:10px; border:1px solid #333; margin-bottom:10px; color:var(--primary); font-weight:bold;">Mail Oluşturulmadı</div><button onclick="runMail('olustur')" class="btn-sorgu">OLUŞTUR</button><button onclick="runMail('oku')" class="btn-sorgu" style="background:#1e293b; margin-top:5px;">YENİLE</button><div id="res-mail" class="result-area"></div></div>
+        <div id="page-ai" class="page"><h3>🤖 AI SOHBET (PRE)</h3><div id="ai-chat-box" style="background:#000; border:1px solid #333; height:200px; border-radius:15px; overflow-y:auto; padding:15px; margin-bottom:10px; text-align:left;"></div><input id="in-ai-msg" class="input-box" placeholder="Mesaj..."><button onclick="runSorgu('ai')" class="btn-sorgu">GÖNDER</button></div>
+        <div id="page-adsoyad" class="page"><h3>🔍 AD SOYAD PRO</h3><input id="in-ad" class="input-box" placeholder="Ad"><input id="in-soyad" class="input-box" placeholder="Soyad"><button onclick="runSorgu('adsoyad')" class="btn-sorgu">SORGULA</button><div id="res-adsoyad" class="result-area"></div></div>
         <div id="page-tc" class="page"><h3>🆔 T.C. SORGULAMA</h3><input id="in-tc" type="number" class="input-box" placeholder="T.C. No"><button onclick="runSorgu('tc')" class="btn-sorgu">SORGULA</button><div id="res-tc" class="result-area"></div></div>
-        <div id="page-aile" class="page"><h3>👨‍👩‍👧‍👦 AİLE SORGULAMA</h3><input id="in-aile" type="number" class="input-box" placeholder="T.C. No"><button onclick="runSorgu('aile')" class="btn-sorgu">SORGULA</button><div id="res-aile" class="result-area"></div></div>
-        <div id="page-turknet" class="page"><h3>🌐 TURKNET SORGULAMA</h3><input id="in-turknet" type="number" class="input-box" placeholder="T.C. No"><button onclick="runSorgu('turknet')" class="btn-sorgu">SORGULA</button><div id="res-turknet" class="result-area"></div></div>
-        <div id="page-multeci" class="page"><h3>🛂 MÜLTECİ SORGULAMA</h3><input id="in-multeci" type="number" class="input-box" placeholder="99'lu T.C. No"><button onclick="runSorgu('multeci')" class="btn-sorgu">SORGULA</button><div id="res-multeci" class="result-area"></div></div>
-        <div id="page-sulale" class="page"><h3>🧬 SÜLALE SORGULAMA</h3><input id="in-sulale" type="number" class="input-box" placeholder="T.C. No"><button onclick="runSorgu('sulale')" class="btn-sorgu">SORGULA</button><div id="res-sulale" class="result-area"></div></div>
-        <div id="page-tcgsm" class="page"><h3>📱 T.C. -> GSM</h3><input id="in-tcgsm" type="number" class="input-box" placeholder="T.C. No"><button onclick="runSorgu('tcgsm')" class="btn-sorgu">SORGULA</button><div id="res-tcgsm" class="result-area"></div></div>
-        <div id="page-gsmtc" class="page"><h3>📞 GSM -> T.C.</h3><input id="in-gsmtc" type="number" class="input-box" placeholder="GSM No"><button onclick="runSorgu('gsmtc')" class="btn-sorgu">SORGULA</button><div id="res-gsmtc" class="result-area"></div></div>
-        <div id="page-adres" class="page"><h3>📍 ADRES SORGULAMA</h3><input id="in-adres" type="number" class="input-box" placeholder="T.C. No"><button onclick="runSorgu('adres')" class="btn-sorgu">SORGULA</button><div id="res-adres" class="result-area"></div></div>
-        <div id="page-isyeri" class="page"><h3>🏢 İŞ YERİ SORGULAMA</h3><input id="in-isyeri" type="number" class="input-box" placeholder="T.C. No"><button onclick="runSorgu('isyeri')" class="btn-sorgu">SORGULA</button><div id="res-isyeri" class="result-area"></div></div>
-        <div id="page-insta" class="page"><h3>📸 INSTAGRAM BİLGİ</h3><input id="in-insta-user" class="input-box" placeholder="Kullanıcı Adı"><button onclick="runSorgu('insta')" class="btn-sorgu">SORGULA</button><div id="res-insta" class="result-area"></div></div>
-        <div id="page-ss" class="page"><h3>🖥️ EKRAN GÖRÜNTÜSÜ AL</h3><input id="in-ss-link" class="input-box" placeholder="Link (google.com)"><button onclick="runSorgu('ss')" class="btn-sorgu">GÖRÜNTÜ AL</button><div id="res-ss" class="result-area"></div></div>
-        
-        <div id="page-plaka" class="page">
-            <h3>🚗 PLAKA SORGULAMA</h3>
-            <div id="plakaStep1"><input id="in-plaka-no" class="input-box" placeholder="Plaka"><button onclick="runPlaka('baslat')" class="btn-sorgu">1. OTURUM BAŞLAT</button></div>
-            <div id="plakaStep2" style="display:none; margin-top:15px;"><input id="in-plaka-id" class="input-box" placeholder="ID"><input id="in-plaka-kod" class="input-box" placeholder="Kod"><button onclick="runPlaka('tamamla')" class="btn-sorgu">2. BİTİR</button></div>
-            <div id="res-plaka" class="result-area"></div>
-        </div>
-
-        <div id="page-sms" class="page"><h3>💣 SMS BOMBER</h3><button onclick="runSorgu('sms_status')" class="btn-sorgu btn-status">📡 DURUM</button><input id="in-sms" type="number" class="input-box" placeholder="5xx..."><button onclick="runSorgu('sms')" class="btn-sorgu">🔥 BAŞLAT</button><div id="res-sms" class="result-area"></div></div>
+        <div id="page-operator" class="page"><h3>📡 OPERATÖR SORGULA</h3><input id="in-op-gsm" class="input-box" placeholder="GSM No"><button onclick="runSorgu('operator')" class="btn-sorgu">SORGULA</button><div id="res-operator" class="result-area"></div></div>
+        <div id="page-insta" class="page"><h3>📸 INSTAGRAM BİLGİ</h3><input id="in-insta-user" class="input-box" placeholder="Kullanıcı"><button onclick="runSorgu('insta')" class="btn-sorgu">SORGULA</button><div id="res-insta" class="result-area"></div></div>
+        <div id="page-ss" class="page"><h3>🖥️ EKRAN GÖRÜNTÜSÜ</h3><input id="in-ss-link" class="input-box" placeholder="Link"><button onclick="runSorgu('ss')" class="btn-sorgu">GÖRÜNTÜ AL</button><div id="res-ss" class="result-area"></div></div>
+        <div id="page-plaka" class="page"><h3>🚗 PLAKA SORGULA</h3><div id="plakaStep1"><input id="in-plaka-no" class="input-box" placeholder="Plaka"><button onclick="runPlaka('baslat')" class="btn-sorgu">BAŞLAT</button></div><div id="plakaStep2" style="display:none;"><input id="in-plaka-id" class="input-box" placeholder="ID"><input id="in-plaka-kod" class="input-box" placeholder="Kod"><button onclick="runPlaka('tamamla')" class="btn-sorgu">BİTİR</button></div><div id="res-plaka" class="result-area"></div></div>
+        <div id="page-sms" class="page"><h3>💣 SMS BOMBER</h3><input id="in-sms" type="number" class="input-box" placeholder="5xx..."><button onclick="runSorgu('sms')" class="btn-sorgu">BAŞLAT</button><div id="res-sms" class="result-area"></div></div>
     </div>
 </div>
 
@@ -130,78 +104,88 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
     const BOSS = "afavan66@gmail.com";
-
-    let isLogin = true;
-    function toggleAuth() { isLogin = !isLogin; document.getElementById('authBtn').innerText = isLogin ? "GİRİŞ YAP" : "KAYIT OL"; }
+    let currentMail = "";
 
     function handleAuth() {
         const email = document.getElementById('logEmail').value.trim().toLowerCase();
         const pass = document.getElementById('logPass').value;
         const key = email.replace(/\./g, '_');
-        if(isLogin) {
-            if(email === BOSS && pass === "Efecan1903") { localStorage.setItem('session', JSON.stringify({email, role:'admin'})); location.reload(); return; }
-            db.ref('users/' + key).once('value', s => {
-                const u = s.val();
-                if(u && u.pass === pass) { localStorage.setItem('session', JSON.stringify(u)); location.reload(); }
-                else alert("Hata: Bilgiler Yanlış!");
-            });
-        } else {
-            db.ref('users/' + key).set({email, pass, role:'freemium'}).then(() => { alert("Kayıt başarılı!"); toggleAuth(); });
-        }
+        if(email === BOSS && pass === "Efecan1903") { localStorage.setItem('session', JSON.stringify({email, role:'admin'})); location.reload(); return; }
+        db.ref('users/' + key).once('value', s => {
+            const u = s.val();
+            if(u && u.pass === pass) { localStorage.setItem('session', JSON.stringify(u)); location.reload(); }
+            else alert("Giriş Başarısız!");
+        });
     }
 
     const session = JSON.parse(localStorage.getItem('session'));
     if(session) {
         document.getElementById('authScreen').style.display = 'none';
         document.getElementById('mainApp').style.display = 'block';
-        if(session.role === 'admin') {
-            document.getElementById('adminArea').style.display = 'block';
-            db.ref('users').on('value', s => {
-                const data = s.val(); let html = "";
-                if(data) { Object.keys(data).forEach(k => { html += `<div>${data[k].email} [${data[k].role}]</div>`; }); }
-                document.getElementById('userListDisplay').innerHTML = html;
-            });
-        }
+        if(session.role === 'admin') document.getElementById('adminArea').style.display = 'block';
     }
 
     async function runSorgu(tip) {
-        const resBox = document.getElementById('res-' + (tip === 'sms_status' ? 'sms' : tip));
-        let finalUrl = "";
         const proxy = "https://api.allorigins.win/get?url=";
+        let finalUrl = "";
 
-        if(tip === 'adsoyad') {
-            const ad = document.getElementById('in-ad').value.trim();
-            const soyad = document.getElementById('in-soyad').value.trim();
-            const il = document.getElementById('in-il').value.trim();
-            const ilce = document.getElementById('in-ilce').value.trim();
-            if(!ad || !soyad) return alert("Ad ve Soyad zorunludur!");
-            finalUrl = `https://arastir.sbs/api/adsoyad.php?adi=${encodeURIComponent(ad)}&soyadi=${encodeURIComponent(soyad)}`;
-            if(il) finalUrl += `&il=${encodeURIComponent(il)}`;
-            if(ilce) finalUrl += `&ilce=${encodeURIComponent(ilce)}`;
-        } 
+        if(tip === 'ai-img') {
+            const pr = document.getElementById('in-img-prompt').value.trim();
+            if(!pr) return;
+            const resBox = document.getElementById('res-ai-img');
+            resBox.style.display = "block"; resBox.innerHTML = "🎨 Görseliniz çiziliyor, lütfen bekleyin...";
+            finalUrl = `https://hukumsuz.de/api/ai-img.php?prompt=${encodeURIComponent(pr)}`;
+            try {
+                const response = await fetch(proxy + encodeURIComponent(finalUrl));
+                const result = await response.json();
+                resBox.innerHTML = `<img src="${result.contents}" class="res-img" alt="AI Result">`;
+            } catch (e) { resBox.innerHTML = "❌ Görsel oluşturulamadı."; }
+            return;
+        }
+
+        if(tip === 'ai') {
+            const msg = document.getElementById('in-ai-msg').value.trim();
+            if(!msg) return;
+            const chatBox = document.getElementById('ai-chat-box');
+            chatBox.innerHTML += `<div style="color:#94a3b8;"><b>Siz:</b> ${msg}</div>`;
+            finalUrl = `https://hukumsuz.de/api/ai.php?msg=${encodeURIComponent(msg)}`;
+            try {
+                const response = await fetch(proxy + encodeURIComponent(finalUrl));
+                const result = await response.json();
+                chatBox.innerHTML += `<div style="color:#00ff00;"><b>AI:</b> ${result.contents}</div>`;
+                chatBox.scrollTop = chatBox.scrollHeight;
+            } catch (e) { chatBox.innerHTML += `<div>Hata!</div>`; }
+            return;
+        }
+
+        const resBox = document.getElementById('res-' + tip);
+        resBox.style.display = "block"; resBox.innerHTML = "⌛...";
+        if(tip === 'operator') finalUrl = `https://hukumsuz.de/api/operator.php?gsm=${document.getElementById('in-op-gsm').value}`;
+        else if(tip === 'adsoyad') finalUrl = `http://194.15.52.78/bakim/adsoyadpro.php?ad=${encodeURIComponent(document.getElementById('in-ad').value)}&soyad=${encodeURIComponent(document.getElementById('in-soyad').value)}`;
         else if(tip === 'tc') finalUrl = `https://arastir.sbs/api/sulale.php?tc=${document.getElementById('in-tc').value}`;
-        else if(tip === 'aile') finalUrl = `http://194.15.52.78/bakim/aile.php?auth=Breach&tc=${document.getElementById('in-aile').value}`;
-        else if(tip === 'turknet') finalUrl = `https://hukumsuz.de/api/turknet.php?tc=${document.getElementById('in-turknet').value}`;
-        else if(tip === 'multeci') finalUrl = `https://hukumsuz.de/api/multeci.php?tc=${document.getElementById('in-multeci').value}`;
-        else if(tip === 'sulale') finalUrl = `https://hukumsuz.de/api/sulale.php?tc=${document.getElementById('in-sulale').value}`;
-        else if(tip === 'gsmtc') finalUrl = `https://arastir.sbs/api/gsmtc.php?gsm=${document.getElementById('in-gsmtc').value}`;
-        else if(tip === 'tcgsm') finalUrl = `https://arastir.sbs/api/tcgsm.php?tc=${document.getElementById('in-tcgsm').value}`;
-        else if(tip === 'adres') finalUrl = `https://arastir.sbs/api/adres.php?tc=${document.getElementById('in-adres').value}`;
-        else if(tip === 'isyeri') finalUrl = `https://arastir.sbs/api/isyeri.php?tc=${document.getElementById('in-isyeri').value}`;
         else if(tip === 'insta') finalUrl = `https://hukumsuz.de/api/insta.php?action=link&username=${encodeURIComponent(document.getElementById('in-insta-user').value)}`;
         else if(tip === 'ss') finalUrl = `https://hukumsuz.de/api/screenshot.php?link=${encodeURIComponent(document.getElementById('in-ss-link').value)}`;
         else if(tip === 'sms') finalUrl = `https://hukumsuz.de/api/sms.php?action=gonder&no=${document.getElementById('in-sms').value}`;
-        else if(tip === 'sms_status') finalUrl = `https://hukumsuz.de/api/sms.php?action=durum`;
 
-        resBox.style.display = "block"; resBox.innerHTML = "⌛ İşleniyor...";
         try {
             const response = await fetch(proxy + encodeURIComponent(finalUrl));
             const result = await response.json();
-            // Bazı API'ler direkt string, bazıları JSON döner.
-            let content = result.contents;
-            try { content = JSON.stringify(JSON.parse(content), null, 2); } catch(e) {}
-            resBox.innerHTML = `<pre style="color:#00ff00; white-space: pre-wrap; font-size:12px;">${content}</pre>`;
-        } catch (err) { resBox.innerHTML = "<span style='color:red;'>❌ API veya Proxy hatası! Lütfen tekrar deneyin.</span>"; }
+            resBox.innerHTML = `<pre style="color:#00ff00; white-space: pre-wrap; font-size:12px;">${result.contents}</pre>`;
+        } catch (err) { resBox.innerHTML = "❌ Hata!"; }
+    }
+
+    async function runMail(action) {
+        const resBox = document.getElementById('res-mail');
+        const proxy = "https://api.allorigins.win/get?url=";
+        let url = `https://hukumsuz.de/api/mail.php?action=${action}`;
+        if(action === 'oku') url += `&mail=${encodeURIComponent(currentMail)}`;
+        resBox.style.display = "block"; resBox.innerHTML = "⌛...";
+        try {
+            const response = await fetch(proxy + encodeURIComponent(url));
+            const result = await response.json();
+            if(action === 'olustur') { currentMail = result.contents; document.getElementById('mail-display').innerText = currentMail; }
+            resBox.innerHTML = `<pre style="color:#00ff00; font-size:12px;">${result.contents}</pre>`;
+        } catch (err) { resBox.innerHTML = "❌"; }
     }
 
     async function runPlaka(adim) {
@@ -218,15 +202,13 @@
     }
 
     function checkPre(page) {
-        if(session.role === 'admin' || session.role === 'premium') { openPage(page); } 
-        else { alert("Bu özellik sadece Premium üyeler içindir!"); }
+        if(session.role === 'admin' || session.role === 'premium') openPage(page);
+        else alert("Bu özellik sadece Premium üyeler içindir.");
     }
-
     function setRole(r) {
         const mail = document.getElementById('targetMail').value.trim().toLowerCase().replace(/\./g, '_');
         if(mail) db.ref('users/' + mail).update({role: r}).then(() => alert("Yetki Güncellendi!"));
     }
-
     function toggleMenu() { document.getElementById('sideMenu').classList.toggle('active'); document.getElementById('overlay').classList.toggle('active'); }
     function openPage(p) { 
         if(document.getElementById('sideMenu').classList.contains('active')) toggleMenu(); 
