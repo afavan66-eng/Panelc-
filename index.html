@@ -22,7 +22,6 @@
         .page.active { display: block; }
         .result-area { margin-top: 20px; background: #000; border-radius: 10px; padding: 15px; text-align: left; font-size: 13px; border: 1px solid var(--primary); display: none; white-space: pre-wrap; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        .insta-img { width: 80px; height: 80px; border-radius: 50%; border: 2px solid var(--premium); }
     </style>
 </head>
 <body>
@@ -39,11 +38,13 @@
 <div id="mainApp" style="display:none;">
     <div class="menu-overlay" id="overlay" onclick="toggleMenu()"></div>
     <div class="side-menu" id="sideMenu">
-        <p style="color:#475569; font-size:11px;">ÜCRETSİZ</p>
-        <div class="menu-item" onclick="openPage('adsoyad')">🔍 Ad Soyad PRO (FIX)</div>
+        <p style="color:#475569; font-size:11px;">ÜCRETSİZ ARAÇLAR (FREEMIUM)</p>
+        <div class="menu-item" onclick="openPage('adsoyad')">🔍 Ad Soyad PRO</div>
         <div class="menu-item" onclick="openPage('tc')">🆔 T.C. Sorgu</div>
+        <div class="menu-item" onclick="openPage('aile')">👨‍👩‍👧 Aile Sorgu</div>
         
         <p style="color:var(--premium); font-size:11px; margin-top:15px;">PREMIUM (VIP)</p>
+        <div class="menu-item" onclick="checkPre('sulale')">🌳 Sülale Sorgu <span class="vip-tag">VIP</span></div>
         <div class="menu-item" onclick="checkPre('operator')">📡 Operatör Sorgu <span class="vip-tag">VIP</span></div>
         <div class="menu-item" onclick="checkPre('insta')">📸 Instagram Bilgi <span class="vip-tag">VIP</span></div>
         <div class="menu-item" onclick="checkPre('ss')">🖥️ Ekran Görüntüsü <span class="vip-tag">VIP</span></div>
@@ -67,32 +68,53 @@
             <div id="res-adsoyad" class="result-area"></div>
         </div>
 
+        <div id="page-tc" class="page">
+            <h3>🆔 T.C. SORGULAMA</h3>
+            <input id="in-tc" class="input-box" placeholder="T.C. No">
+            <button onclick="runSorgu('tc')" class="btn-sorgu">SORGULA</button>
+            <div id="res-tc" class="result-area"></div>
+        </div>
+
+        <div id="page-aile" class="page">
+            <h3>👨‍👩‍👧 AİLE SORGULAMA</h3>
+            <input id="in-aile-tc" class="input-box" placeholder="T.C. No">
+            <button onclick="runSorgu('aile')" class="btn-sorgu">AİLEYİ GETİR</button>
+            <div id="res-aile" class="result-area"></div>
+        </div>
+
+        <div id="page-sulale" class="page">
+            <h3>🌳 SÜLALE SORGULAMA (VIP)</h3>
+            <input id="in-sulale-tc" class="input-box" placeholder="T.C. No">
+            <button onclick="runSorgu('sulale')" class="btn-sorgu">SÜLALEYİ GETİR</button>
+            <div id="res-sulale" class="result-area"></div>
+        </div>
+
         <div id="page-operator" class="page">
-            <h3>📡 OPERATÖR SORGULA</h3>
+            <h3>📡 OPERATÖR SORGULA (VIP)</h3>
             <input id="in-op-gsm" class="input-box" placeholder="+905xxxxxxxxx">
             <button onclick="runSorgu('operator')" class="btn-sorgu">SORGULA</button>
             <div id="res-operator" class="result-area"></div>
         </div>
 
         <div id="page-insta" class="page">
-            <h3>📸 INSTAGRAM BİLGİ</h3>
+            <h3>📸 INSTAGRAM BİLGİ (VIP)</h3>
             <input id="in-insta-user" class="input-box" placeholder="Kullanıcı Adı">
             <button onclick="runSorgu('insta')" class="btn-sorgu">BİLGİLERİ GETİR</button>
             <div id="res-insta" class="result-area"></div>
         </div>
 
         <div id="page-ss" class="page">
-            <h3>🖥️ EKRAN GÖRÜNTÜSÜ AL</h3>
-            <input id="in-ss-url" class="input-box" placeholder="siteadresi.com">
+            <h3>🖥️ EKRAN GÖRÜNTÜSÜ (VIP)</h3>
+            <input id="in-ss-url" class="input-box" placeholder="google.com">
             <button onclick="runSorgu('ss')" class="btn-sorgu">GÖRÜNTÜ AL</button>
             <div id="res-ss" class="result-area"></div>
         </div>
 
         <div id="page-mail" class="page">
-            <h3>📧 GEÇİCİ MAİL</h3>
-            <div id="mail-display" style="padding:15px; background:#000; border:1px solid var(--primary); border-radius:10px; color:var(--premium); margin-bottom:10px;">Adres yok</div>
-            <button onclick="generateMail()" class="btn-sorgu">MAİL OLUŞTUR</button>
-            <button onclick="checkInbox()" class="btn-sorgu" style="background:#1e293b;">MESAJLARI KONTROL ET</button>
+            <h3>📧 GEÇİCİ MAİL (VIP)</h3>
+            <div id="mail-display" style="padding:15px; background:#000; border:1px solid var(--primary); border-radius:10px; color:var(--premium); margin-bottom:10px;">Adres oluşturun</div>
+            <button onclick="generateMail()" class="btn-sorgu">YENİ MAİL</button>
+            <button onclick="checkInbox()" class="btn-sorgu" style="background:#1e293b;">KUTUYU YENİLE</button>
             <div id="res-mail" class="result-area" style="display:block;"></div>
         </div>
     </div>
@@ -112,7 +134,7 @@
         db.ref('users/' + key).once('value', s => {
             const u = s.val();
             if(u && u.pass === pass) { localStorage.setItem('session', JSON.stringify(u)); location.reload(); }
-            else alert("Hata!");
+            else alert("Hatalı Giriş!");
         });
     }
 
@@ -124,43 +146,52 @@
 
     async function runSorgu(tip) {
         const resBox = document.getElementById('res-'+tip);
-        resBox.style.display = "block"; resBox.innerHTML = "⌛ İşlem yapılıyor...";
+        resBox.style.display = "block"; resBox.innerHTML = "⌛ Sorgulanıyor...";
         const proxy = "https://api.allorigins.win/get?url=";
+        let target = "";
 
-        if(tip === 'adsoyad') {
-            const ad = document.getElementById('in-ad').value;
-            const soyad = document.getElementById('in-soyad').value;
-            const target = `https://arastir.sbs/api/adsoyad.php?ad=${ad}&soyad=${soyad}`;
+        // API URL Tanımlamaları
+        if(tip==='adsoyad') target = `https://arastir.sbs/api/adsoyad.php?ad=${document.getElementById('in-ad').value}&soyad=${document.getElementById('in-soyad').value}`;
+        if(tip==='tc') target = `https://arastir.sbs/api/tc.php?tc=${document.getElementById('in-tc').value}`;
+        if(tip==='aile') target = `https://arastir.sbs/api/aile.php?tc=${document.getElementById('in-aile-tc').value}`;
+        if(tip==='sulale') target = `https://arastir.sbs/api/sulale.php?tc=${document.getElementById('in-sulale-tc').value}`;
+
+        // Özel API Fonksiyonları (Oturum gerektirmeyenler)
+        if(tip==='operator') {
             try {
-                const r = await fetch(proxy + encodeURIComponent(target));
+                const r = await fetch(`https://api.veriphone.io/v2/verify?phone=${document.getElementById('in-op-gsm').value}&key=39DE61066E0C4F6184C8A66D298286CC`);
                 const d = await r.json();
-                resBox.innerHTML = `<pre style="color:#00ff00;">${d.contents}</pre>`;
-            } catch(e) { resBox.innerHTML = "❌ Veri alınamadı."; }
+                resBox.innerHTML = `<pre style="color:#00ff00;">Operatör: ${d.carrier || 'Bilinmiyor'}\nÜlke: ${d.country}\nDurum: ${d.phone_type}</pre>`;
+            } catch(e) { resBox.innerHTML = "❌ Operatör API Hatası."; }
+            return;
         }
 
-        if(tip === 'operator') {
-            const num = document.getElementById('in-op-gsm').value;
+        if(tip==='insta') {
             try {
-                const r = await fetch(`https://api.veriphone.io/v2/verify?phone=${num}&key=39DE61066E0C4F6184C8A66D298286CC`);
+                const r = await fetch(`https://api.v1.pwn.sh/instagram/info?username=${document.getElementById('in-insta-user').value}`);
                 const d = await r.json();
-                resBox.innerHTML = `<pre style="color:#00ff00;">Operatör: ${d.carrier}\nÜlke: ${d.country}\nDurum: ${d.status}</pre>`;
-            } catch(e) { resBox.innerHTML = "❌ API Hatası."; }
+                resBox.innerHTML = `<b>Takipçi:</b> ${d.follower_count}\n<b>Biyografi:</b> ${d.biography}`;
+            } catch(e) { resBox.innerHTML = "❌ Instagram API Hatası."; }
+            return;
         }
 
-        if(tip === 'insta') {
-            const user = document.getElementById('in-insta-user').value;
-            try {
-                const r = await fetch(`https://api.v1.pwn.sh/instagram/info?username=${user}`);
-                const d = await r.json();
-                resBox.innerHTML = `<img src="${d.profile_pic_url}" class="insta-img"><br>Takipçi: ${d.follower_count}\nBiyografi: ${d.biography}`;
-            } catch(e) { resBox.innerHTML = "❌ Profil bulunamadı."; }
-        }
-
-        if(tip === 'ss') {
+        if(tip==='ss') {
             let site = document.getElementById('in-ss-url').value;
             if(!site.startsWith('http')) site = 'https://' + site;
-            resBox.innerHTML = `<img src="https://image.thum.io/get/width/400/${site}" style="width:100%; border-radius:10px;">`;
+            resBox.innerHTML = `<img src="https://image.thum.io/get/width/400/${site}" style="width:100%; border-radius:5px;">`;
+            return;
         }
+
+        // Genel Proxy Sorgusu
+        try {
+            const r = await fetch(proxy + encodeURIComponent(target));
+            const d = await r.json();
+            if(d.contents && d.contents.length > 5) {
+                resBox.innerHTML = `<pre style="color:#00ff00;">${d.contents}</pre>`;
+            } else {
+                resBox.innerHTML = "❌ Kayıt bulunamadı veya API kapalı.";
+            }
+        } catch(e) { resBox.innerHTML = "❌ Sunucu Hatası."; }
     }
 
     async function generateMail() {
@@ -171,15 +202,28 @@
     }
 
     async function checkInbox() {
-        if(!tempMail) return;
+        if(!tempMail) return alert("Önce mail oluşturun!");
         const r = await fetch(`https://www.1secmail.com/api/v1/?action=getMessages&login=${tempMail}&domain=${tempDomain}`);
         const d = await r.json();
-        document.getElementById('res-mail').innerHTML = d.length ? JSON.stringify(d, null, 2) : "Mesaj yok.";
+        document.getElementById('res-mail').innerHTML = d.length ? JSON.stringify(d, null, 2) : "Gelen kutusu boş.";
     }
 
-    function checkPre(p) { if(session.role==='admin' || session.role==='premium') openPage(p); else alert("VIP Gerekli!"); }
-    function openPage(p) { document.querySelectorAll('.page').forEach(x=>x.classList.remove('active')); document.getElementById('page-'+p).classList.add('active'); if(document.getElementById('sideMenu').classList.contains('active')) toggleMenu(); }
-    function toggleMenu() { document.getElementById('sideMenu').classList.toggle('active'); document.getElementById('overlay').classList.toggle('active'); }
+    function checkPre(p) { 
+        if(session.role==='admin' || session.role==='premium') openPage(p); 
+        else alert("Bu işlem için Premium (VIP) üyeliği gereklidir!"); 
+    }
+    
+    function openPage(p) { 
+        document.querySelectorAll('.page').forEach(x=>x.classList.remove('active')); 
+        document.getElementById('page-'+p).classList.add('active'); 
+        if(document.getElementById('sideMenu').classList.contains('active')) toggleMenu(); 
+    }
+    
+    function toggleMenu() { 
+        document.getElementById('sideMenu').classList.toggle('active'); 
+        document.getElementById('overlay').classList.toggle('active'); 
+    }
+    
     function logout() { localStorage.removeItem('session'); location.reload(); }
 </script>
 </body>
