@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WROX VIP - FULL API CONTROL</title>
+    <title>WROX VIP - PLAKA & FULL API</title>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
     <style>
@@ -38,21 +38,20 @@
 <div id="mainApp" style="display:none;">
     <div class="menu-overlay" id="overlay" onclick="toggleMenu()"></div>
     <div class="side-menu" id="sideMenu">
-        <p style="color:#475569; font-size:11px; font-weight: bold;">YÖNETİCİ</p>
+        <p style="color:#475569; font-size:11px; font-weight: bold;">KONTROL</p>
         <div class="menu-item admin-only" onclick="openPage('admin')">👑 Admin Paneli</div>
         <div class="menu-item admin-only" onclick="openPage('logs')">📜 Sorgu Logları</div>
         
-        <p style="color:#475569; font-size:11px; font-weight: bold; margin-top:15px;">ÜCRETSİZ ARAÇLAR</p>
+        <p style="color:#475569; font-size:11px; font-weight: bold; margin-top:15px;">SORGULAR</p>
         <div class="menu-item" onclick="openPage('adsoyad')">🔍 Ad Soyad PRO</div>
         <div class="menu-item" onclick="openPage('tc')">🆔 T.C. Sorgu</div>
         <div class="menu-item" onclick="openPage('aile')">👨‍👩‍👧 Aile Sorgu</div>
-        
-        <p style="color:#475569; font-size:11px; font-weight: bold; margin-top:15px;">VIP ÖZEL ARAÇLAR</p>
-        <div class="menu-item" onclick="checkPre('sulale')">🌳 Sülale Sorgu</div>
-        <div class="menu-item" onclick="checkPre('isyeri')">🏢 İş Yeri / SGK</div>
-        <div class="menu-item" onclick="checkPre('operator')">📡 Operatör Sorgu</div>
-        <div class="menu-item" onclick="checkPre('insta')">📸 Instagram Sorgu</div>
-        <div class="menu-item" onclick="checkPre('bomber')">💣 SMS Bomber</div>
+        <div class="menu-item" onclick="checkPre('sulale')">🌳 Sülale Sorgu <span style="color:var(--premium)">[VIP]</span></div>
+        <div class="menu-item" onclick="checkPre('isyeri')">🏢 İş Yeri / SGK <span style="color:var(--premium)">[VIP]</span></div>
+        <div class="menu-item" onclick="checkPre('plaka')">🚗 Plaka Sorgu <span style="color:var(--premium)">[VIP]</span></div>
+        <div class="menu-item" onclick="checkPre('operator')">📡 Operatör <span style="color:var(--premium)">[VIP]</span></div>
+        <div class="menu-item" onclick="checkPre('insta')">📸 Instagram <span style="color:var(--premium)">[VIP]</span></div>
+        <div class="menu-item" onclick="checkPre('bomber')">💣 SMS Bomber <span style="color:var(--premium)">[VIP]</span></div>
         
         <button onclick="logout()" class="btn-sorgu" style="background:var(--danger); margin-top:30px;">GÜVENLİ ÇIKIŞ</button>
     </div>
@@ -64,26 +63,26 @@
     </div>
 
     <div id="contentArea">
-        <div id="page-home" class="page active"><h2>Sistem Çevrimiçi</h2><p>Efecan, tüm sorgu modülleri (8 adet) sisteme bağlandı.</p></div>
+        <div id="page-home" class="page active"><h2>Panel Aktif</h2><p>Efecan, Plaka API dahil tüm sistem hazır.</p></div>
 
-        <div id="page-adsoyad" class="page"><h3>🔍 AD SOYAD PRO</h3><input id="in-ad" class="input-box" placeholder="Ad"><input id="in-soyad" class="input-box" placeholder="Soyad"><button onclick="runUniversal('adsoyad')" class="btn-sorgu">SORGULA</button><div id="res-adsoyad" class="result-area"></div></div>
-        <div id="page-tc" class="page"><h3>🆔 T.C. SORGULAMA</h3><input id="in-tc" class="input-box" placeholder="T.C. No"><button onclick="runUniversal('tc')" class="btn-sorgu">SORGULA</button><div id="res-tc" class="result-area"></div></div>
-        <div id="page-aile" class="page"><h3>👨‍👩‍👧 AİLE SORGULAMA</h3><input id="in-aile-tc" class="input-box" placeholder="T.C. No"><button onclick="runUniversal('aile')" class="btn-sorgu">SORGULA</button><div id="res-aile" class="result-area"></div></div>
-        <div id="page-sulale" class="page"><h3>🌳 SÜLALE SORGULAMA</h3><input id="in-su-tc" class="input-box" placeholder="T.C. No"><button onclick="runUniversal('sulale')" class="btn-sorgu">SORGULA</button><div id="res-sulale" class="result-area"></div></div>
-        <div id="page-isyeri" class="page"><h3>🏢 İŞ YERİ / SGK</h3><input id="in-is-tc" class="input-box" placeholder="T.C. No"><button onclick="runUniversal('isyeri')" class="btn-sorgu">SORGULA</button><div id="res-isyeri" class="result-area"></div></div>
-        <div id="page-operator" class="page"><h3>📡 OPERATÖR SORGULAMA</h3><input id="in-op-tel" class="input-box" placeholder="Telefon (0 olmadan)"><button onclick="runUniversal('operator')" class="btn-sorgu">SORGULA</button><div id="res-operator" class="result-area"></div></div>
-        <div id="page-insta" class="page"><h3>📸 INSTAGRAM SORGULAMA</h3><input id="in-insta-user" class="input-box" placeholder="Kullanıcı Adı"><button onclick="runUniversal('insta')" class="btn-sorgu">SORGULA</button><div id="res-insta" class="result-area"></div></div>
-        
-        <div id="page-bomber" class="page">
-            <h3 style="color:var(--danger)">💣 SMS BOMBER</h3>
-            <input id="bomb-no" class="input-box" placeholder="5xxxxxxxx">
-            <input id="bomb-adet" type="number" class="input-box" value="10">
-            <button onclick="runUniversal('bomber')" class="btn-sorgu" style="background:var(--danger)">BAŞLAT</button>
-            <div id="res-bomber" class="result-area"></div>
+        <div id="page-plaka" class="page">
+            <h3>🚗 PLAKA SORGULAMA</h3>
+            <input id="in-plaka-val" class="input-box" placeholder="34XXX000">
+            <button onclick="runUniversal('plaka')" class="btn-sorgu">SORGULA</button>
+            <div id="res-plaka" class="result-area"></div>
         </div>
 
+        <div id="page-adsoyad" class="page"><h3>🔍 AD SOYAD</h3><input id="in-ad" class="input-box"><input id="in-soyad" class="input-box"><button onclick="runUniversal('adsoyad')" class="btn-sorgu">ARA</button><div id="res-adsoyad" class="result-area"></div></div>
+        <div id="page-tc" class="page"><h3>🆔 T.C. SORGULAMA</h3><input id="in-tc" class="input-box"><button onclick="runUniversal('tc')" class="btn-sorgu">ARA</button><div id="res-tc" class="result-area"></div></div>
+        <div id="page-aile" class="page"><h3>👨‍👩‍👧 AİLE</h3><input id="in-aile-tc" class="input-box"><button onclick="runUniversal('aile')" class="btn-sorgu">ARA</button><div id="res-aile" class="result-area"></div></div>
+        <div id="page-sulale" class="page"><h3>🌳 SÜLALE</h3><input id="in-su-tc" class="input-box"><button onclick="runUniversal('sulale')" class="btn-sorgu">ARA</button><div id="res-sulale" class="result-area"></div></div>
+        <div id="page-isyeri" class="page"><h3>🏢 İŞ YERİ</h3><input id="in-is-tc" class="input-box"><button onclick="runUniversal('isyeri')" class="btn-sorgu">ARA</button><div id="res-isyeri" class="result-area"></div></div>
+        <div id="page-operator" class="page"><h3>📡 OPERATÖR</h3><input id="in-op-tel" class="input-box"><button onclick="runUniversal('operator')" class="btn-sorgu">ARA</button><div id="res-operator" class="result-area"></div></div>
+        <div id="page-insta" class="page"><h3>📸 INSTA</h3><input id="in-insta-user" class="input-box"><button onclick="runUniversal('insta')" class="btn-sorgu">ARA</button><div id="res-insta" class="result-area"></div></div>
+        <div id="page-bomber" class="page"><h3>💣 BOMBER</h3><input id="bomb-no" class="input-box"><input id="bomb-adet" type="number" value="10"><button onclick="runUniversal('bomber')" class="btn-sorgu" style="background:var(--danger)">BAŞLAT</button><div id="res-bomber" class="result-area"></div></div>
+
         <div id="page-admin" class="page"><h3>👑 ADMIN</h3><div id="liveUserList"></div></div>
-        <div id="page-logs" class="page"><h3>📜 LOGLAR</h3><div id="logTerminal" style="text-align:left; background:#000; padding:10px; font-family:monospace; font-size:11px; height:60vh; overflow:auto;"></div></div>
+        <div id="page-logs" class="page"><h3>📜 LOGLAR</h3><div id="logTerminal" style="text-align:left; background:#000; padding:10px; font-family:monospace; height:60vh; overflow:auto;"></div></div>
     </div>
 </div>
 
@@ -92,7 +91,6 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    // AUTH VE SESSION (AYNI KALIYOR)
     function handleAuth() {
         const email = document.getElementById('logEmail').value.trim().toLowerCase();
         const pass = document.getElementById('logPass').value;
@@ -118,15 +116,13 @@
         }
     }
 
-    // --- TÜM SORGULARIN TEK MOTORU ---
     async function runUniversal(tip) {
         const resBox = document.getElementById('res-'+tip);
-        resBox.style.display = "block"; resBox.innerHTML = "⌛ İşleniyor...";
+        resBox.style.display = "block"; resBox.innerHTML = "⌛ Sorgulanıyor...";
         
         let target = `https://arastir.sbs/api/${tip}.php?`;
         let logVal = "";
 
-        // Veri eşleme
         if(tip==='adsoyad') {
             const ad = document.getElementById('in-ad').value;
             const soy = document.getElementById('in-soyad').value;
@@ -137,13 +133,16 @@
             const adet = document.getElementById('bomb-adet').value;
             target += `no=${no}&adet=${adet}`;
             logVal = no + " (" + adet + ")";
+        } else if(tip==='plaka') {
+            const plaka = document.getElementById('in-plaka-val').value;
+            target += `plaka=${plaka}`;
+            logVal = plaka;
         } else {
-            const val = document.getElementById('in-'+tip+'-tc')?.value || document.getElementById('in-tc')?.value || document.getElementById('in-op-tel')?.value || document.getElementById('in-insta-user')?.value || document.getElementById('in-su-tc')?.value || document.getElementById('in-is-tc')?.value;
+            const val = document.getElementById('in-'+tip+'-tc')?.value || document.getElementById('in-tc')?.value || document.getElementById('in-op-tel')?.value || document.getElementById('in-insta-user')?.value || document.getElementById('in-su-tc')?.value || document.getElementById('in-is-tc')?.value || document.getElementById('in-aile-tc')?.value;
             target += (tip === 'operator' || tip === 'insta' ? 'q=' : 'tc=') + val;
             logVal = val;
         }
 
-        // Log
         db.ref('logs').push({user: session.email, type: tip.toUpperCase(), detail: logVal, time: new Date().toLocaleTimeString()});
 
         try {
@@ -153,11 +152,10 @@
         } catch(e) { resBox.innerHTML = "❌ API Bağlantı Hatası!"; }
     }
 
-    // ADMIN MONITORING VE DİĞER FONKSİYONLAR (AYNI KALIYOR)
     function startAdminMonitoring() {
         db.ref('users').on('value', s => {
             const div = document.getElementById('liveUserList'); div.innerHTML = "";
-            const u = s.val(); for(let k in u) div.innerHTML += `<div style="padding:8px; border-bottom:1px solid #222;">${u[k].email} (${u[k].role}) <button onclick="db.ref('users/${k}').remove()" style="color:red; background:none; border:none; float:right;">❌</button></div>`;
+            const u = s.val(); for(let k in u) div.innerHTML += `<div style="padding:8px; border-bottom:1px solid #222;">${u[k].email} (${u[k].role})</div>`;
         });
         db.ref('logs').limitToLast(50).on('value', s => {
             const term = document.getElementById('logTerminal'); term.innerHTML = "";
