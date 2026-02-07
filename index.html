@@ -10,7 +10,8 @@
         :root { --primary: #3b82f6; --premium: #eab308; --danger: #ef4444; --dark-bg: #0c111d; --card-bg: #111827; }
         body { margin: 0; font-family: 'Segoe UI', sans-serif; background: var(--dark-bg); color: white; height: 100vh; overflow: hidden; }
         .input-box { width: 100%; padding: 12px; margin: 8px 0; background: #000; border: 1px solid #333; border-radius: 10px; color: white; outline: none; box-sizing: border-box; }
-        .btn-sorgu { width: 100%; background: var(--primary); border:none; padding: 15px; color:white; border-radius:10px; font-weight:bold; cursor:pointer; margin-top:10px; }
+        .btn-sorgu { width: 100%; background: var(--primary); border:none; padding: 15px; color:white; border-radius:10px; font-weight:bold; cursor:pointer; margin-top:10px; transition: 0.3s; }
+        .btn-sorgu:active { opacity: 0.7; }
         .top-bar { display: flex; justify-content: space-between; align-items: center; padding: 15px; background: var(--dark-bg); border-bottom: 1px solid #1e293b; }
         .side-menu { position: fixed; top: 0; left: -100%; width: 85%; max-width: 320px; height: 100%; background: #070a11; transition: 0.4s; z-index: 1000; padding: 20px; border-right: 2px solid var(--primary); overflow-y: auto; }
         .side-menu.active { left: 0; }
@@ -20,10 +21,10 @@
         .vip-tag { color: var(--premium); border: 1px solid var(--premium); padding: 2px 5px; border-radius: 4px; font-size: 10px; font-weight: bold; }
         .admin-box { border: 1px solid var(--premium); padding: 15px; border-radius: 15px; background: rgba(234, 179, 8, 0.05); margin-bottom: 20px; }
         .user-list { max-height: 120px; overflow-y: auto; background: #000; border-radius: 10px; padding: 10px; font-size: 11px; border: 1px solid #222; text-align: left; margin-top:10px; }
-        .page { display: none; animation: fadeIn 0.3s ease; padding: 20px; text-align: center; }
+        .page { display: none; animation: fadeIn 0.3s ease; padding: 20px; text-align: center; height: calc(100vh - 70px); overflow-y: auto; }
         .page.active { display: block; }
+        .result-area { margin-top: 20px; background: #000; border-radius: 10px; padding: 15px; text-align: left; font-size: 13px; border: 1px solid var(--primary); display: none; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        /* Yeni Buton Grubu */
         .admin-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 5px; }
         .btn-pre { background: var(--premium); color: black; border: none; padding: 10px; border-radius: 8px; font-weight: bold; cursor: pointer; }
         .btn-del { background: var(--danger); color: white; border: none; padding: 10px; border-radius: 8px; font-weight: bold; cursor: pointer; }
@@ -55,19 +56,18 @@
             <div class="user-list" id="userListDisplay">Üyeler yükleniyor...</div>
         </div>
 
-        <p style="color:#475569; font-size:11px; font-weight:bold;">SORGULAR</p>
+        <p style="color:#475569; font-size:11px; font-weight:bold;">ÜCRETSİZ SORGULAR</p>
         <div class="menu-item" onclick="openPage('adsoyad')">🔍 Ad Soyad</div>
         <div class="menu-item" onclick="openPage('tc')">🆔 T.C. Sorgu</div>
+        <div class="menu-item" onclick="openPage('sulale')">🧬 Sülale Sorgu</div>
 
         <p style="color:var(--premium); font-size:11px; font-weight:bold; margin-top:15px;">PREMİUM KANALLAR</p>
         <div id="premiumMenu">
-            <div class="menu-item" onclick="checkPre('aile')">👨‍👩‍👧‍👦 Aile Sorgu <span class="vip-tag">PRE</span></div>
-            <div class="menu-item" onclick="checkPre('sulale')">🧬 Sülale Sorgu <span class="vip-tag">PRE</span></div>
             <div class="menu-item" onclick="checkPre('tcgsm')">📱 T.C. -> GSM <span class="vip-tag">PRE</span></div>
             <div class="menu-item" onclick="checkPre('gsmtc')">📞 GSM -> T.C. <span class="vip-tag">PRE</span></div>
             <div class="menu-item" onclick="checkPre('adres')">📍 Adres Sorgu <span class="vip-tag">PRE</span></div>
-            <div class="menu-item" onclick="checkPre('plaka')">🚗 Plaka Sorgu <span class="vip-tag">PRE</span></div>
-            <div class="menu-item" onclick="checkPre('tapu')">🏠 Tapu Sorgu <span class="vip-tag">PRE</span></div>
+            <div class="menu-item" onclick="checkPre('isyeri')">🏢 İş Yeri Sorgu <span class="vip-tag">PRE</span></div>
+            <div class="menu-item" onclick="checkPre('sms')">💣 SMS Bomber <span class="vip-tag">PRE</span></div>
         </div>
         
         <button onclick="logout()" style="width:100%; background:var(--danger); border:none; padding:12px; border-radius:10px; margin-top:20px; color:white; font-weight:bold;">Çıkış Yap</button>
@@ -81,15 +81,16 @@
 
     <div id="contentArea">
         <div id="page-home" class="page active"><h2>Hoş Geldin</h2><p>Lütfen menüden sorgu seçin.</p></div>
-        <div id="page-adsoyad" class="page"><h3>🔍 AD SOYAD SORGULAMA</h3><input class="input-box" placeholder="Ad"><input class="input-box" placeholder="Soyad"><button class="btn-sorgu">SORGULA</button></div>
-        <div id="page-tc" class="page"><h3>🆔 T.C. SORGULAMA</h3><input type="number" class="input-box" placeholder="T.C. No"><button class="btn-sorgu">SORGULA</button></div>
-        <div id="page-aile" class="page"><h3>👨‍👩‍👧‍👦 AİLE SORGULAMA</h3><input type="number" class="input-box" placeholder="T.C. No"><button class="btn-sorgu">SORGULA</button></div>
-        <div id="page-sulale" class="page"><h3>🧬 SÜLALE SORGULAMA</h3><input type="number" class="input-box" placeholder="T.C. No"><button class="btn-sorgu">SORGULA</button></div>
-        <div id="page-tcgsm" class="page"><h3>📱 T.C. -> GSM</h3><input type="number" class="input-box" placeholder="T.C. No"><button class="btn-sorgu">SORGULA</button></div>
-        <div id="page-gsmtc" class="page"><h3>📞 GSM -> T.C.</h3><input type="number" class="input-box" placeholder="GSM No"><button class="btn-sorgu">SORGULA</button></div>
-        <div id="page-adres" class="page"><h3>📍 ADRES SORGULAMA</h3><input type="number" class="input-box" placeholder="T.C. No"><button class="btn-sorgu">SORGULA</button></div>
-        <div id="page-plaka" class="page"><h3>🚗 PLAKA SORGULAMA</h3><input type="text" class="input-box" placeholder="Plaka"><button class="btn-sorgu">SORGULA</button></div>
-        <div id="page-tapu" class="page"><h3>🏠 TAPU SORGULAMA</h3><input type="number" class="input-box" placeholder="T.C. No"><button class="btn-sorgu">SORGULA</button></div>
+        
+        <div id="page-adsoyad" class="page"><h3>🔍 AD SOYAD SORGULAMA</h3><input id="in-ad" class="input-box" placeholder="Ad"><input id="in-soyad" class="input-box" placeholder="Soyad"><input id="in-il" class="input-box" placeholder="İl"><input id="in-ilce" class="input-box" placeholder="İlçe"><button onclick="runSorgu('adsoyad')" class="btn-sorgu">SORGULA</button><div id="res-adsoyad" class="result-area"></div></div>
+        <div id="page-tc" class="page"><h3>🆔 T.C. SORGULAMA</h3><input id="in-tc" type="number" class="input-box" placeholder="T.C. No"><button onclick="runSorgu('tc')" class="btn-sorgu">SORGULA</button><div id="res-tc" class="result-area"></div></div>
+        <div id="page-sulale" class="page"><h3>🧬 SÜLALE SORGULAMA</h3><input id="in-sulale" type="number" class="input-box" placeholder="T.C. No"><button onclick="runSorgu('sulale')" class="btn-sorgu">SORGULA</button><div id="res-sulale" class="result-area"></div></div>
+        
+        <div id="page-tcgsm" class="page"><h3>📱 T.C. -> GSM</h3><input id="in-tcgsm" type="number" class="input-box" placeholder="T.C. No"><button onclick="runSorgu('tcgsm')" class="btn-sorgu">SORGULA</button><div id="res-tcgsm" class="result-area"></div></div>
+        <div id="page-gsmtc" class="page"><h3>📞 GSM -> T.C.</h3><input id="in-gsmtc" type="number" class="input-box" placeholder="GSM No"><button onclick="runSorgu('gsmtc')" class="btn-sorgu">SORGULA</button><div id="res-gsmtc" class="result-area"></div></div>
+        <div id="page-adres" class="page"><h3>📍 ADRES SORGULAMA</h3><input id="in-adres" type="number" class="input-box" placeholder="T.C. No"><button onclick="runSorgu('adres')" class="btn-sorgu">SORGULA</button><div id="res-adres" class="result-area"></div></div>
+        <div id="page-isyeri" class="page"><h3>🏢 İŞ YERİ SORGULAMA</h3><input id="in-isyeri" type="number" class="input-box" placeholder="T.C. No"><button onclick="runSorgu('isyeri')" class="btn-sorgu">SORGULA</button><div id="res-isyeri" class="result-area"></div></div>
+        <div id="page-sms" class="page"><h3>💣 SMS BOMBER</h3><input id="in-sms" type="number" class="input-box" placeholder="Telefon No"><button onclick="runSorgu('sms')" class="btn-sorgu">BOMBALA</button><div id="res-sms" class="result-area"></div></div>
     </div>
 </div>
 
@@ -138,6 +139,40 @@
         }
     }
 
+    async function runSorgu(tip) {
+        const resBox = document.getElementById('res-' + tip);
+        let finalUrl = "";
+
+        if(tip === 'adsoyad') {
+            const ad = document.getElementById('in-ad').value;
+            const soyad = document.getElementById('in-soyad').value;
+            const il = document.getElementById('in-il').value || "";
+            const ilce = document.getElementById('in-ilce').value || "";
+            if(!ad || !soyad) return alert("Ad ve Soyad giriniz!");
+            finalUrl = `https://arastir.sbs/api/adsoyad.php?adi=${ad}&soyadi=${soyad}&il=${il}&ilce=${ilce}`;
+        } 
+        else if(tip === 'tc') finalUrl = `https://arastir.sbs/api/sulale.php?tc=${document.getElementById('in-tc').value}`;
+        else if(tip === 'sulale') finalUrl = `https://hukumsuz.de/api/sulale.php?tc=${document.getElementById('in-sulale').value}`;
+        else if(tip === 'gsmtc') finalUrl = `https://arastir.sbs/api/gsmtc.php?gsm=${document.getElementById('in-gsmtc').value}`;
+        else if(tip === 'tcgsm') finalUrl = `https://arastir.sbs/api/tcgsm.php?tc=${document.getElementById('in-tcgsm').value}`;
+        else if(tip === 'adres') finalUrl = `https://arastir.sbs/api/adres.php?tc=${document.getElementById('in-adres').value}`;
+        else if(tip === 'isyeri') finalUrl = `https://arastir.sbs/api/isyeri.php?tc=${document.getElementById('in-isyeri').value}`;
+        else if(tip === 'sms') finalUrl = `https://hukumsuz.de/api/sms.php?action=gonder&no=${document.getElementById('in-sms').value}`;
+
+        if(!finalUrl.includes('adsoyad') && !document.getElementById('in-' + tip).value) return alert("Lütfen alanı doldurun!");
+
+        resBox.style.display = "block";
+        resBox.innerHTML = "⌛ İşlem yapılıyor...";
+
+        try {
+            const response = await fetch(finalUrl);
+            const data = await response.json();
+            resBox.innerHTML = `<pre style="color:#00ff00; white-space: pre-wrap;">${JSON.stringify(data, null, 2)}</pre>`;
+        } catch (err) {
+            resBox.innerHTML = `<span style="color:red;">❌ Hata: API'ye bağlanılamadı.</span>`;
+        }
+    }
+
     function checkPre(page) {
         if(session.role === 'admin' || session.role === 'premium') { openPage(page); } 
         else { alert("PREMİUM GEREKLİ!"); }
@@ -149,7 +184,11 @@
     }
 
     function toggleMenu() { document.getElementById('sideMenu').classList.toggle('active'); document.getElementById('overlay').classList.toggle('active'); }
-    function openPage(p) { toggleMenu(); document.querySelectorAll('.page').forEach(x => x.classList.remove('active')); document.getElementById('page-'+p).classList.add('active'); }
+    function openPage(p) { 
+        if(document.getElementById('sideMenu').classList.contains('active')) toggleMenu(); 
+        document.querySelectorAll('.page').forEach(x => x.classList.remove('active')); 
+        document.getElementById('page-'+p).classList.add('active'); 
+    }
     function logout() { localStorage.removeItem('session'); location.reload(); }
 </script>
 </body>
